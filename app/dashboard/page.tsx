@@ -1,3 +1,4 @@
+import { ProductCard } from "@/components/product-card"
 import { SidebarLeft } from "../../components/sidebar-left"
 import { SidebarRight } from "../../components/sidebar-right"
 import {
@@ -13,7 +14,16 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-export function Dashboard() {
+import { getProducts } from "../products/products.api"
+
+
+
+
+
+export async function Dashboard({children}) {
+  const products = await getProducts()
+
+
   return (
     <SidebarProvider>
       <SidebarLeft />
@@ -34,8 +44,16 @@ export function Dashboard() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="mx-auto h-24 w-full max-w-3xl rounded-xl bg-muted/50" />
-          <div className="mx-auto h-[100vh] w-full max-w-3xl rounded-xl bg-muted/50" />
+         
+         {
+          children
+         }
+            {/* {
+              products.map((product) => (
+                <ProductCard product={product} key={product.id} />
+              ))
+            } */}
+          
         </div>
       </SidebarInset>
       <SidebarRight />

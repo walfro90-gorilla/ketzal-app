@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { Dashboard } from "./dashboard/page";
 
 
 
@@ -57,7 +58,8 @@ export default function RootLayout({
           </li>
         </nav> */}
         <main className="container mx-auto pt-4">
-          {children}
+          <Dashboard children={children} />
+          {/* {children} */}
         </main>
 
       </body>

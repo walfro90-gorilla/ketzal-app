@@ -1,15 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getProduct } from "../products.api";
+import { getSupplier} from "@/app/suppliers/suppliers.api";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-async function ProductDetailPage({ params }: { params: { id: string } }) {
+async function SupplierDetailPage({ params }: { params: { id: string } }) {
     // console.log(params);
 
     const resolvedParams = await params
 
-    const product = await getProduct(resolvedParams.id)
-    console.log(product)
+    const supplier = await getSupplier(resolvedParams.id)
+    console.log(supplier)
 
     return (
         <div
@@ -18,21 +18,21 @@ async function ProductDetailPage({ params }: { params: { id: string } }) {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex justify-between" >
-                        Product Details: {product.id}
+                        Supplier Details: {supplier.id}
                         <Link
                             className={buttonVariants()}
-                            href="/products"
+                            href="/suppliers"
                         >
                             Back
                         </Link>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <h1>{product.name}</h1>
-                    <p>{product.description}</p>
-                    <p> ${product.price}</p>
+                    <h1>{supplier.name}</h1>
+                    <p>{supplier.description}</p>
+                    {/* <p> ${supplier.price}</p> */}
                     <img
-                    src={product.image}
+                    src={supplier.image}
                     alt=""
                     />
                 </CardContent>
@@ -41,4 +41,4 @@ async function ProductDetailPage({ params }: { params: { id: string } }) {
     );
 }
 
-export default ProductDetailPage
+export default SupplierDetailPage

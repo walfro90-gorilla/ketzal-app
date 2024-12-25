@@ -13,6 +13,8 @@ import {
   Settings2,
   Sparkles,
   Trash2,
+  Plane,
+  Handshake,
 } from "lucide-react"
 
 import { NavFavorites } from "@/components/nav-favorites"
@@ -49,27 +51,32 @@ const data = {
   navMain: [
     {
       title: "Home",
-      url: "#",
+      url: "/",
       icon: Home,
       isActive: true,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: Search,
+      title: "Suppliers",
+      url: "/suppliers",
+      icon: Handshake,
+      badge: "10",
     },
-    // {
-    //   title: "Ask AI",
-    //   url: "#",
-    //   icon: Sparkles,
-    // },
+    {
+      title: "Services & Tours",
+      url: "/services",
+      icon: Plane,
+    },
+    {
+      title: "Users",
+      url: "/users",
+      icon: Settings2,
+    },
+    {
+      title: "Products",
+      url: "/products",
+      icon: Sparkles,
+    },
 
-    // {
-    //   title: "Inbox",
-    //   url: "#",
-    //   icon: Inbox,
-    //   badge: "10",
-    // },
   ],
   navSecondary: [
     // {

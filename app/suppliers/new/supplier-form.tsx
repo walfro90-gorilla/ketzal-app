@@ -5,22 +5,24 @@ import { Label } from "@radix-ui/react-label"
 import { on } from "events"
 import { useForm } from "react-hook-form"
 
-import { createProduct, updateProduct } from "../products.api"
+import { createSupplier, updateSupplier } from "@/app/suppliers/suppliers.api"
 import { useParams, useRouter } from "next/navigation"
 
 
-export function ProductForm({ product }: any) {
+export function SupplierForm({ supplier }: any) {
 
-    console.log(product)
+    console.log(supplier)
 
     const { register, handleSubmit } = useForm(
         {
             defaultValues: {
-                name: product?.name,
-                description: product?.description,
-                price: product?.price,
-                stock: product?.stock,
-                image: product?.image,
+                name: supplier?.name,
+                description: supplier?.description,
+                contactEmail: supplier?.contactEmail,
+                phoneNumber: supplier?.phoneNumber,
+                address: supplier?.address,
+
+                imgLogo: supplier?.imgLogo,
             }
         }
     )
@@ -31,57 +33,52 @@ export function ProductForm({ product }: any) {
     const onSubmit = handleSubmit(async (data) => {
 
         if (params?.id) {
-            await updateProduct(params.id, {
-                ...data,
-                price: parseFloat(data.price),
-                stock: parseInt(data.stock),
-            })
+            await updateSupplier(params.id, data)
             console.log('update')
         } else {
             console.log(data)
-            await createProduct({
-                ...data,
-                price: parseFloat(data.price),
-                stock: parseInt(data.stock),
-            })
+            await createSupplier(data)
         }
 
 
-        router.push("/products")
+        router.push("/suppliers")
         router.refresh()
     })
 
     return (
         <form onSubmit={onSubmit}>
-            <Label>Product Name</Label>
+            <Label>supplier Name</Label>
             <Input
                 {...register("name")}
             />
-
             <Label>Description:</Label>
             <Input
                 {...register("description")}
             />
 
-            <Label>Price:</Label>
-            <Input
-                {...register("price")}
-            />
 
-            <Label>Stock:</Label>
+            <Label>Contact Email:</Label>
             <Input
-                {...register("stock")}
+                {...register("contactEmail")}
+            />
+            <Label>Phone Number:</Label>
+            <Input
+                {...register("phoneNumber")}
+            />
+            <Label>Address:</Label>
+            <Input
+                {...register("address")}
             />
 
             <Label>Image:</Label>
 
             <Input
-                {...register("image")}
+                {...register("imgLogo")}
             />
 
             <Button>
                 {
-                    params.id ? "Update Product" : "Create Product"
+                    params.id ? "Update supplier" : "Create supplier"
                 }
             </Button>
         </form>

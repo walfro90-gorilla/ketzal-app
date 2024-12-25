@@ -9,13 +9,13 @@ import {Dashboard } from "@/app/dashboard/page"
 async function HomePage() {
 
   const products = await getProducts()
-  console.log(products)
+  // console.log(products)
 
   return (
     <>
-    
+    hello
              {/* <ProductCard product={product} key={product.id} />  */}
-            <Dashboard products={products}  />
+            {/* <Dashboard products={products}  /> */}
          
     </>
   )
