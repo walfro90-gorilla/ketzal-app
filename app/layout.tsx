@@ -5,6 +5,8 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Dashboard } from "./dashboard/page";
 
+import { SupplierProvider } from "@/context/SupplierContext";
+
 
 
 // FONTS  -  Geist and Geist Mono
@@ -58,8 +60,10 @@ export default function RootLayout({
           </li>
         </nav> */}
         <main className="container mx-auto pt-4">
-          <Dashboard children={children} />
+          <SupplierProvider>
+            <Dashboard children={children} />
           {/* {children} */}
+          </SupplierProvider>
         </main>
 
       </body>
