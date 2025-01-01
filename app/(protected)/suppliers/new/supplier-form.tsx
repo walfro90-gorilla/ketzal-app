@@ -5,7 +5,7 @@ import { Label } from "@radix-ui/react-label"
 import { on } from "events"
 import { useForm } from "react-hook-form"
 
-import { createSupplier, updateSupplier } from "@/app/suppliers/suppliers.api"
+import { createSupplier, updateSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { useParams, useRouter } from "next/navigation"
 
 

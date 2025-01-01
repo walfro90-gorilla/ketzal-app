@@ -1,6 +1,6 @@
 import { ProductCard } from "@/components/product-card"
-import { SidebarLeft } from "../../components/sidebar-left"
-import { SidebarRight } from "../../components/sidebar-right"
+import { SidebarLeft } from "../sidebar-left"
+import { SidebarRight } from "../sidebar-right"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { getProducts } from "../products/products.api"
+import { getProducts } from "../../app/(protected)/products/products.api"
 
 
 

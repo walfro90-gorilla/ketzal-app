@@ -10,7 +10,7 @@ import { useSuppliers } from "@/context/SupplierContext"
 // API services import
 import { createService, updateService } from "../services.api"
 import { DatePickerWithRange } from "@/components/date-picker-with-range"
-import { getSuppliers } from "@/app/suppliers/suppliers.api"
+import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 import { use, useEffect, useState } from "react"
 
 export function ServiceForm({ service }: any) {

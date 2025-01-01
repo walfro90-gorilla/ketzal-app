@@ -36,33 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <div className="flex justify-between items-center">
-          <h1
-            className="text-4xl font-bold"
-          >
-            Ketzal app
-          </h1>
-          <Link
-            href='/products/new'
-            className={buttonVariants()}
-          >
-            Create Producto
-          </Link>
-
-        </div>
-
-        <nav>
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/suppliers">Suppliers</Link>
-          </li>
-        </nav> */}
         <main className="container mx-auto pt-4">
           <SupplierProvider>
-            <Dashboard children={children} />
-          {/* {children} */}
+            {/* <Dashboard children={children} /> */}
+            
+          {children}
           </SupplierProvider>
         </main>
 

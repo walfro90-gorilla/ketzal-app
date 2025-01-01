@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SupplierForm } from "./supplier-form"
-import { getSupplier } from "@/app/suppliers/suppliers.api"
+import { ServiceForm } from "./service-form"
+import { getService } from "@/app/(protected)/services/services.api"
 
-async function SuppliersNewPage({ params }: { params: { id: string } }) {
+async function ServicesNewPage({ params }: { params: { id: string } }) {
 
     const resolvedParams = await params
-    const supplier = await getSupplier(resolvedParams.id)
-    // console.log(supplier)
+    const service = await getService(resolvedParams.id)
+    // console.log(service)
 
     return (
         <div className="flex justify-center items-center h-screen">
@@ -14,16 +14,16 @@ async function SuppliersNewPage({ params }: { params: { id: string } }) {
                 <CardHeader>
                     <CardTitle>
                         {
-                            supplier ? "Edit Supplier" : "Create New Supplier"
+                            service ? "Edit service" : "Create New service"
                         }
                         
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <SupplierForm supplier={supplier} />
+                    <ServiceForm service={service} />
                 </CardContent>
             </Card>
         </div>
     )
 }
-export default SuppliersNewPage
+export default ServicesNewPage

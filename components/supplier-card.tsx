@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "./ui/button"
-import { deleteSupplier } from "@/app/suppliers/suppliers.api"
+import { deleteSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { useRouter } from "next/navigation";
 
 interface Supplier {

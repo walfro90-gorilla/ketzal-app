@@ -3,12 +3,31 @@ import { getProducts } from "./products.api"
 import { ProductCard } from "@/components/product-card"
 import { buttonVariants } from "@/components/ui/button"
 
+// IMPORTING AUTH
+import { auth } from "@/auth"
+import LogoutButton from "@/components/logout-button"
+
+
 export default async function Products() {
 
+
+  // AUTHENTICATION
+  const session = await auth()
+  if (!session) {
+    return <div> Not authenticated </div>
+  }
+
+  // GETTING PRODUCTS
   const products = await getProducts()
+
 
   return (
     <div>
+
+      <div className="container">
+        <pre>{JSON.stringify(session, null, 2)}</pre>
+        <LogoutButton />
+      </div>
 
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-4xl font-bold">Products</h1>

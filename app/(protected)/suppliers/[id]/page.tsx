@@ -1,19 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getSupplier} from "@/app/(protected)/suppliers/suppliers.api";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-// API Service
-import {getService} from "@/app/services/services.api";
-
-
-
-async function ServiceDetailPage({ params }: { params: { id: string } }) {
+async function SupplierDetailPage({ params }: { params: { id: string } }) {
     // console.log(params);
 
     const resolvedParams = await params
 
-    const service = await getService(resolvedParams.id)
-    console.log(service)
+    const supplier = await getSupplier(resolvedParams.id)
+    console.log(supplier)
 
     return (
         <div
@@ -22,24 +18,27 @@ async function ServiceDetailPage({ params }: { params: { id: string } }) {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex justify-between" >
-                        Service Details: {service.id}
+                        Supplier Details: {supplier.id}
                         <Link
                             className={buttonVariants()}
-                            href="/services"
+                            href="/suppliers"
                         >
                             Back
                         </Link>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <h1>{service.name}</h1>
-                    <p>{service.description}</p>
-                    <p> ${service.price}</p>
-                    
+                    <h1>{supplier.name}</h1>
+                    <p>{supplier.description}</p>
+                    {/* <p> ${supplier.price}</p> */}
+                    <img
+                    src={supplier.image}
+                    alt=""
+                    />
                 </CardContent>
             </Card>
         </div>
     );
 }
 
-export default ServiceDetailPage
+export default SupplierDetailPage

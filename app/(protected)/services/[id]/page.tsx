@@ -1,15 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupplier} from "@/app/suppliers/suppliers.api";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-async function SupplierDetailPage({ params }: { params: { id: string } }) {
+// API Service
+import {getService} from "@/app/(protected)/services/services.api";
+
+
+
+async function ServiceDetailPage({ params }: { params: { id: string } }) {
     // console.log(params);
 
     const resolvedParams = await params
 
-    const supplier = await getSupplier(resolvedParams.id)
-    console.log(supplier)
+    const service = await getService(resolvedParams.id)
+    console.log(service)
 
     return (
         <div
@@ -18,27 +22,24 @@ async function SupplierDetailPage({ params }: { params: { id: string } }) {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex justify-between" >
-                        Supplier Details: {supplier.id}
+                        Service Details: {service.id}
                         <Link
                             className={buttonVariants()}
-                            href="/suppliers"
+                            href="/services"
                         >
                             Back
                         </Link>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <h1>{supplier.name}</h1>
-                    <p>{supplier.description}</p>
-                    {/* <p> ${supplier.price}</p> */}
-                    <img
-                    src={supplier.image}
-                    alt=""
-                    />
+                    <h1>{service.name}</h1>
+                    <p>{service.description}</p>
+                    <p> ${service.price}</p>
+                    
                 </CardContent>
             </Card>
         </div>
     );
 }
 
-export default SupplierDetailPage
+export default ServiceDetailPage
