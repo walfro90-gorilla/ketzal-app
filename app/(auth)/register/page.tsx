@@ -4,7 +4,6 @@ import React from 'react'
 const RegisterPAge = () => {
   return (
     <div>
-      Register Page
       <RegisterForm />
     </div>
   )

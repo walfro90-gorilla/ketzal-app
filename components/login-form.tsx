@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -22,13 +22,24 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { signIn } from '@/auth'
 import { loginAction } from '@/actions/auth-action'
+import { start } from 'repl'
+import { useRouter } from 'next/navigation'
+import { set } from 'date-fns'
+
+
 
 
 
 // FORM VALIDATION
-export function LoginForm() {
+export function LoginForm({
+  isVerified,
+}: {
+  isVerified: boolean
+}) {
 
-
+  const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   // 1. Define your form. 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -41,16 +52,24 @@ export function LoginForm() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signInSchema>) {
-  
-   const response =  await loginAction(values)
-   console.log(response)
 
+    setError(null)
+    startTransition(async () => {
+
+      const response = await loginAction(values)
+      if (response.error) {
+        setError(response.error)
+      } else {
+        router.push("/home")
+      }
+    })
   }
 
   return (
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>Login</CardTitle>
+        {isVerified && <CardDescription>Your email has been verified.</CardDescription>}
         <CardDescription>Enter your credentials to access your account.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -100,8 +119,11 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
+            {
+              error && <FormMessage>{error}</FormMessage>
+            }
 
-            <Button type="submit">Submit</Button>
+            <Button disabled={isPending} type="submit">Submit</Button>
           </form>
         </Form>
 

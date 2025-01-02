@@ -14,8 +14,12 @@ const ProtectedLayout = async ({
 
   // AUTHENTICATION
   const session = await auth()
-  if (!session) {
-    return <div> Not authenticated </div>
+  if (session?.user?.role !== "admin") {
+    return <div>
+      You are not an admin authenticated
+      <LogoutButton />
+    </div>
+
   }
 
 

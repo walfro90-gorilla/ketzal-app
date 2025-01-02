@@ -1,9 +1,13 @@
+import Header from "@/components/header"
+import { Navbar } from "@/components/navbar"
+
 // Code: Home Page
 async function HomePage() {
 
 
   return (
     <>
+      <Header/>
       <div className="container mx-auto p-4">
         <h1 className="text-4xl font-bold mb-4">Traveling Basics</h1>
         <p className="mb-4">Welcome to the Traveling Basics page. Here you will find essential information to make your travel experience smooth and enjoyable.</p>

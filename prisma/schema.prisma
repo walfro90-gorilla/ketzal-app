@@ -1,10 +1,60 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
 generator client {
     provider = "prisma-client-js"
 }
 
-datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+// Roles for the user model ketal app
+enum Role {
+    user
+    admin
+    superadmin
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String    @unique
+    password      String?
+    emailVerified DateTime?
+    image         String?
+    role          Role      @default(admin)
+    accounts      Account[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Account {
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([provider, providerAccountId])
+}
+
+model VerificationToken {
+    identifier String   @unique
+    token      String
+    expires    DateTime
+
+    @@id([identifier])
 }
 
 model Product {
@@ -18,36 +68,6 @@ model Product {
     updatedAt   DateTime @updatedAt
 }
 
-model User {
-    id             Int      @id @default(autoincrement())
-    name           String
-    email          String   @unique
-    password       String
-    role           String
-    profilePicture String?
-    bio            String?
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
-
-    influencers      Influencer[]
-    messagesSent     Message[]    @relation("MessageSender")
-    messagesReceived Message[]    @relation("MessageReceiver")
-    reviews          Review[]
-    activities       Activity[]
-    bookings         Booking[]
-}
-
-model Influencer {
-    id               Int      @id @default(autoincrement())
-    userId           Int
-    socialMediaLinks String?
-    niche            String?
-    followersCount   Int?
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
-
-    user User @relation(fields: [userId], references: [id])
-}
 
 model Supplier {
     id           Int      @id @default(autoincrement())
@@ -74,62 +94,7 @@ model Service {
     createdAt     DateTime  @default(now())
 
     supplier Supplier  @relation(fields: [supplierId], references: [id])
-    bookings Booking[]
-    reviews  Review[]
+    // bookings Booking[]
+    // reviews  Review[]
 }
 
-model Booking {
-    id          Int      @id @default(autoincrement())
-    userId      Int
-    serviceId   Int
-    bookingDate DateTime @default(now())
-    status      String
-    totalPrice  Float
-    createdAt   DateTime @default(now())
-
-    user    User    @relation(fields: [userId], references: [id])
-    service Service @relation(fields: [serviceId], references: [id])
-}
-
-model Review {
-    id        Int      @id @default(autoincrement())
-    userId    Int
-    serviceId Int
-    rating    Int
-    comment   String?
-    createdAt DateTime @default(now())
-
-    user    User    @relation(fields: [userId], references: [id])
-    service Service @relation(fields: [serviceId], references: [id])
-}
-
-model Location {
-    id        Int     @id @default(autoincrement())
-    name      String
-    latitude  Float?
-    longitude Float?
-    country   String?
-    state     String?
-    city      String?
-}
-
-model Message {
-    id         Int      @id @default(autoincrement())
-    senderId   Int
-    receiverId Int
-    content    String
-    createdAt  DateTime @default(now())
-
-    sender   User @relation("MessageSender", fields: [senderId], references: [id])
-    receiver User @relation("MessageReceiver", fields: [receiverId], references: [id])
-}
-
-model Activity {
-    id           Int      @id @default(autoincrement())
-    userId       Int
-    activityType String
-    targetId     Int
-    createdAt    DateTime @default(now())
-
-    user User @relation(fields: [userId], references: [id])
-}
