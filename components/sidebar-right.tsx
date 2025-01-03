@@ -1,9 +1,9 @@
-import * as React from "react"
-import { Plus } from "lucide-react"
+import * as React from "react";
+import { Plus } from "lucide-react";
 
-import { Calendars } from "@/components/calendars"
-import { DatePicker } from "@/components/date-picker"
-import { NavUser } from "@/components/nav-user"
+import { Calendars } from "@/components/calendars";
+import { DatePicker } from "@/components/date-picker";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -14,34 +14,24 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import ProfileCard from "./profile-card";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "Wal",
-    email: "wal@gorillabs.dev",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  calendars: [
-    {
-      name: "My Calendars",
-      items: ["Work"],
-    },
-    // {
-    //   name: "Favorites",
-    //   items: ["Holidays", "Birthdays"],
-    // },
-    // {
-    //   name: "Other",
-    //   items: ["Travel", "Reminders", "Deadlines"],
-    // },
-  ],
-}
+type SidebarRightProps = React.ComponentProps<typeof Sidebar> & {
+  session: {
+    user: {
+      name: string;
+      email: string;
+      avatar: string;
+    };
+    calendars: Array<{
+      name: string;
+      items: string[];
+    }>;
+  };
+};
 
-export function SidebarRight({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function SidebarRight({ session, ...props }: SidebarRightProps) {
   return (
     <Sidebar
       collapsible="none"
@@ -49,23 +39,25 @@ export function SidebarRight({
       {...props}
     >
       <SidebarHeader className="h-16 border-b border-sidebar-border">
-        <NavUser user={data.user} />
+        <NavUser user={session.user} />
       </SidebarHeader>
       <SidebarContent>
+        <ProfileCard email="wal@gmail.com" name="wal" avatarUrl="https://firebasestorage.googleapis.com/v0/b/gorilla-labs-960a2.appspot.com/o/wanderLogo.svg?alt=media&token=e4e14aca-db48-4ad5-b0a0-95e07cbef02b"/>
+        <SidebarSeparator/>
         <DatePicker />
         <SidebarSeparator className="mx-0" />
-        <Calendars calendars={data.calendars} />
+        {/* <Calendars calendars={session.calendars} /> */}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton>
-              <Plus />
-              <span>New Calendar</span>
+              {/* <Plus />
+              <span>New Calendar</span> */}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

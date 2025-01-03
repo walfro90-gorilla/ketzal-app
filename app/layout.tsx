@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import { Dashboard } from "./dashboard/page";
+
 
 import { SupplierProvider } from "@/context/SupplierContext";
+import { UserProvider } from "@/context/UserContext";
+
+
+
 
 
 
@@ -19,6 +21,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 // SEO metadata
 export const metadata: Metadata = {
   title: "Ketzal app - Conoce Mexico",
@@ -26,25 +29,34 @@ export const metadata: Metadata = {
   keywords: ["viajes", "mexico", "red social", "viajeros"],
 };
 
+
+
+
+
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
+
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <main className="container mx-auto pt-4">
-          <SupplierProvider>
-            {/* <Dashboard children={children} /> */}
-            
-          {children}
-          </SupplierProvider>
+          <UserProvider>
+            <SupplierProvider>
+              {/* <Dashboard children={children} /> */}
+              {children}
+            </SupplierProvider>
+          </UserProvider>
         </main>
-
       </body>
     </html>
+
   );
 }

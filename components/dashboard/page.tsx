@@ -1,4 +1,3 @@
-import { ProductCard } from "@/components/product-card"
 import { SidebarLeft } from "../sidebar-left"
 import { SidebarRight } from "../sidebar-right"
 import {
@@ -14,19 +13,18 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { getProducts } from "../../app/(protected)/products/products.api"
 
 
 
 
 
-export async function Dashboard({children}) {
-  const products = await getProducts()
+export async function Dashboard({ session, children }) {
+
 
 
   return (
     <SidebarProvider>
-      <SidebarLeft />
+      <SidebarLeft role={session.user.role} />
       <SidebarInset>
         <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
           <div className="flex flex-1 items-center gap-2 px-3">
@@ -36,7 +34,7 @@ export async function Dashboard({children}) {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="line-clamp-1">
-                    Dashboard - Panel de control
+                    Ketzal admin - Hola, {session.user.name} 👋🏻
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -44,19 +42,19 @@ export async function Dashboard({children}) {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
-         
-         {
-          children
-         }
-            {/* {
+
+          {
+            children
+          }
+          {/* {
               products.map((product) => (
                 <ProductCard product={product} key={product.id} />
               ))
             } */}
-          
+
         </div>
       </SidebarInset>
-      <SidebarRight />
+      <SidebarRight session={session} />
     </SidebarProvider>
   )
 }

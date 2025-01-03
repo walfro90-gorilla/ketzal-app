@@ -5,7 +5,6 @@ import { buttonVariants } from "@/components/ui/button"
 
 // IMPORTING AUTH
 import { auth } from "@/auth"
-import LogoutButton from "@/components/logout-button"
 
 
 export default async function Products() {
@@ -24,10 +23,7 @@ export default async function Products() {
   return (
     <div>
 
-      <div className="container">
-        <pre>{JSON.stringify(session, null, 2)}</pre>
-        <LogoutButton />
-      </div>
+      
 
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-4xl font-bold">Products</h1>

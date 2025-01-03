@@ -1,8 +1,12 @@
+
 import { Dashboard } from "@/components/dashboard/page";
 
 // IMPORTING AUTH
 import { auth } from "@/auth"
 import LogoutButton from "@/components/logout-button"
+import { Button } from "@/components/ui/button";
+import HomeButton from "@/components/home-button";
+
 
 
 const ProtectedLayout = async ({
@@ -14,10 +18,18 @@ const ProtectedLayout = async ({
 
   // AUTHENTICATION
   const session = await auth()
-  if (session?.user?.role !== "admin") {
+
+
+
+  if (session?.user?.role === "user") {
     return <div>
       You are not an admin authenticated
-      <LogoutButton />
+      <div className="flex space-x-4">
+
+        <LogoutButton />
+        <HomeButton />
+      </div>
+
     </div>
 
   }
@@ -25,11 +37,8 @@ const ProtectedLayout = async ({
 
   return (
     <div className="container flex justify-center items-center min-h-screen">
-      <div className="container">
-        <pre>{JSON.stringify(session, null, 2)}</pre>
-        <LogoutButton />
-      </div>
-      <Dashboard>{children}</Dashboard>
+
+      <Dashboard session={session}>{children}</Dashboard>
     </div>
   )
 }

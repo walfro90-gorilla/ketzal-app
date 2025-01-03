@@ -1,5 +1,4 @@
 import Header from "@/components/header"
-import { Navbar } from "@/components/navbar"
 
 // Code: Home Page
 async function HomePage() {

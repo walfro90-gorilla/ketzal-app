@@ -29,11 +29,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
+// This is SUPERADMIN data.
 const data = {
   teams: [
     {
-      name: "Ketzal app admin",
+      name: "Ketzal app",
       logo: Command,
       plan: "Enterprise",
     },
@@ -266,21 +266,45 @@ const data = {
     // },
 
   ],
+}
 
+// This is ADMIN data.
+const dataAdmin = {
+  navMain: [
+    {
+      title: "Home",
+      url: "/home",
+      icon: Home,
+      isActive: true,
+    },
+    {
+      title: "Services & Tours",
+      url: "/services",
+      icon: Plane,
+    },
+
+  ],
 }
 
 export function SidebarLeft({
+  role,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: React.ComponentProps<typeof Sidebar> & { role: "admin" | "superadmin" }) {
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
-        <NavMain items={data.navMain} />
+
+        {role === "superadmin" ? (
+          <NavMain items={data.navMain} />
+        ) : (
+          <NavMain items={dataAdmin.navMain} />
+        )}
+
       </SidebarHeader>
       <SidebarContent>
-        <NavWorkspaces workspaces={data.workspaces} />
-        <NavFavorites favorites={data.favorites} />
+        {/* <NavWorkspaces workspaces={data.workspaces} /> */}
+        {/* <NavFavorites favorites={data.favorites} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />

@@ -1,11 +1,15 @@
 "use client"
 
+
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
+import { useUser } from '@/context/UserContext'
+
+
 
 const Logo = () => (
   <div className="logo-box">
@@ -60,6 +64,9 @@ const LanguageSelector = () => (
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const values = useUser()
+  console.log("USe user", values)
 
   useEffect(() => {
     const handleScroll = () => {
