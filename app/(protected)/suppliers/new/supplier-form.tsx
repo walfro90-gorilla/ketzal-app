@@ -11,7 +11,7 @@ import { useParams, useRouter } from "next/navigation"
 
 export function SupplierForm({ supplier }: any) {
 
-    console.log(supplier)
+    // console.log(supplier)
 
     const { register, handleSubmit } = useForm(
         {
@@ -28,7 +28,7 @@ export function SupplierForm({ supplier }: any) {
     )
     const router = useRouter()
     const params = useParams<{ id: string }>()
-    console.log("Params:", params)
+
 
     const onSubmit = handleSubmit(async (data) => {
 
