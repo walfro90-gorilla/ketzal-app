@@ -13,17 +13,24 @@ import { DatePickerWithRange } from "@/components/date-picker-with-range"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 import { use, useEffect, useState } from "react"
 
-export function ServiceForm({ service }: any) {
 
+
+
+
+export function ServiceForm({ service, session }) {
 
     const values = useSuppliers()
-    console.log("Supplier context:", values.idSupplier)
-    console.log("Value sobject:", values)
 
     const { getIdSupplier } = useSuppliers()
 
+
     // STATE FOR suppliers
-    const [suppliers, setSuppliers] = useState([])
+    const [suppliers, setSuppliers] = useState<{ id: number, name: string }[]>([])
+
+    const [selectedSupplier, setSelectedSupplier] = useState<{ id: number, name: string } | undefined>(undefined)
+
+
+
 
     // USE EFFECT TO FETCH suppliers
     useEffect(() => {
@@ -31,6 +38,9 @@ export function ServiceForm({ service }: any) {
             try {
                 const suppliersData = await getSuppliers()
                 setSuppliers(suppliersData)
+                // Find the supplier by session.user.supplierId
+                const selected = suppliersData.find(supplier => supplier.id === session.user.supplierId);
+                setSelectedSupplier(selected)
 
             } catch (error) {
                 console.log("Failed to fetch suppliers", error)
@@ -56,15 +66,15 @@ export function ServiceForm({ service }: any) {
     const params = useParams<{ id: string }>()
     // const { idSupplier } = SupplierProvider()
     // console.log("Params:", params)
-    console.log("Suppliers from DB", suppliers)
-    console.log("ID Supplier:", values.idSupplier)
+    // console.log("Suppliers from DB", suppliers)
+    // console.log("ID Supplier:", values.idSupplier)
 
     const onSubmit = async (data: any) => {
         try {
             if (!service) {
                 await updateService(service.id, { ...data, supplierId: values.idSupplier })
             } else {
-                await createService({ ...data, supplierId: values.idSupplier })
+                await createService({ ...data, supplierId: session.user.supplierId })
             }
             // Handle successful form submission
         } catch (error) {
@@ -74,20 +84,28 @@ export function ServiceForm({ service }: any) {
         router.refresh()
     }
 
+
+
+
+    console.log("SelectedSupplier:", selectedSupplier)
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 3fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="flex space-x-4 items-center mb-4"> 
+
                 <Label>Supplier:</Label>
                 <Input
-                    value={values.idSupplier? values.idSupplier : ""}
+                    value={values.idSupplier ? values.idSupplier : session.user.supplierId}
                     {...register("supplierId")}
                     disabled
+                    className="w-1/4"
                 />
-            </div>
-                <ComboBox suppliers={suppliers} />
+                <Label>{selectedSupplier?.name}</Label>
 
-          
+            </div>
+
+            <ComboBox suppliers={suppliers} option={selectedSupplier?.name} />
 
             <br />
 

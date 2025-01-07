@@ -46,12 +46,12 @@ const fireworks = [
   },
 ]
 
-export  function ComboBox({suppliers}: any) {
+export  function ComboBox({suppliers, selectedSupplier}: any) {
 
   const {getIdSupplier} = useSuppliers() // OBJECT DESTRUCTURING
 
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+  const [value, setValue] = React.useState(selectedSupplier ? selectedSupplier.name : "")
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

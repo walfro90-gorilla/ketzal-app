@@ -29,6 +29,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
+
+
 // This is SUPERADMIN data.
 const data = {
   teams: [
@@ -37,16 +39,7 @@ const data = {
       logo: Command,
       plan: "Enterprise",
     },
-    // {
-    //   name: "Acme Corp.",
-    //   logo: AudioWaveform,
-    //   plan: "Startup",
-    // },
-    // {
-    //   name: "Evil Corp.",
-    //   logo: Command,
-    //   plan: "Free",
-    // },
+
   ],
   navMain: [
     {
@@ -62,7 +55,7 @@ const data = {
       badge: "10",
     },
     {
-      title: "Services & Tours",
+      title: "Services",
       url: "/services",
       icon: Plane,
     },
@@ -79,26 +72,6 @@ const data = {
 
   ],
   navSecondary: [
-    // {
-    //   title: "Calendar",
-    //   url: "#",
-    //   icon: Calendar,
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    // },
-    // {
-    //   title: "Templates",
-    //   url: "#",
-    //   icon: Blocks,
-    // },
-    // {
-    //   title: "Trash",
-    //   url: "#",
-    //   icon: Trash2,
-    // },
     {
       title: "Help",
       url: "#",
@@ -107,7 +80,7 @@ const data = {
   ],
   workspaces: [
     {
-      name: "Services & Tours",
+      name: "Services",
       emoji: "🧳",
       pages: [
         {
@@ -127,90 +100,7 @@ const data = {
         },
       ],
     },
-    // {
-    //   name: "Personal Life Management",
-    //   emoji: "🏠",
-    //   pages: [
-    //     {
-    //       name: "Daily Journal & Reflection",
-    //       url: "#",
-    //       emoji: "📔",
-    //     },
-    //     {
-    //       name: "Health & Wellness Tracker",
-    //       url: "#",
-    //       emoji: "🍏",
-    //     },
-    //     {
-    //       name: "Personal Growth & Learning Goals",
-    //       url: "#",
-    //       emoji: "🌟",
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Professional Development",
-    //   emoji: "💼",
-    //   pages: [
-    //     {
-    //       name: "Career Objectives & Milestones",
-    //       url: "#",
-    //       emoji: "🎯",
-    //     },
-    //     {
-    //       name: "Skill Acquisition & Training Log",
-    //       url: "#",
-    //       emoji: "🧠",
-    //     },
-    //     {
-    //       name: "Networking Contacts & Events",
-    //       url: "#",
-    //       emoji: "🤝",
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Creative Projects",
-    //   emoji: "🎨",
-    //   pages: [
-    //     {
-    //       name: "Writing Ideas & Story Outlines",
-    //       url: "#",
-    //       emoji: "✍️",
-    //     },
-    //     {
-    //       name: "Art & Design Portfolio",
-    //       url: "#",
-    //       emoji: "🖼️",
-    //     },
-    //     {
-    //       name: "Music Composition & Practice Log",
-    //       url: "#",
-    //       emoji: "🎵",
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Home Management",
-    //   emoji: "🏡",
-    //   pages: [
-    //     {
-    //       name: "Household Budget & Expense Tracking",
-    //       url: "#",
-    //       emoji: "💰",
-    //     },
-    //     {
-    //       name: "Home Maintenance Schedule & Tasks",
-    //       url: "#",
-    //       emoji: "🔧",
-    //     },
-    //     {
-    //       name: "Family Calendar & Event Planning",
-    //       url: "#",
-    //       emoji: "📅",
-    //     },
-    //   ],
-    // },
+
 
   ],
   favorites: [
@@ -224,46 +114,7 @@ const data = {
       url: "#",
       emoji: "✅",
     },
-    // {
-    //   name: "Family Recipe Collection & Meal Planning",
-    //   url: "#",
-    //   emoji: "🍳",
-    // },
-    // {
-    //   name: "Fitness Tracker & Workout Routines",
-    //   url: "#",
-    //   emoji: "💪",
-    // },
-    // {
-    //   name: "Book Notes & Reading List",
-    //   url: "#",
-    //   emoji: "📚",
-    // },
-    // {
-    //   name: "Sustainable Gardening Tips & Plant Care",
-    //   url: "#",
-    //   emoji: "🌱",
-    // },
-    // {
-    //   name: "Language Learning Progress & Resources",
-    //   url: "#",
-    //   emoji: "🗣️",
-    // },
-    // {
-    //   name: "Home Renovation Ideas & Budget Tracker",
-    //   url: "#",
-    //   emoji: "🏠",
-    // },
-    // {
-    //   name: "Personal Finance & Investment Portfolio",
-    //   url: "#",
-    //   emoji: "💰",
-    // },
-    // {
-    //   name: "Movie & TV Show Watchlist with Reviews",
-    //   url: "#",
-    //   emoji: "🎬",
-    // },
+
 
   ],
 }
@@ -278,27 +129,48 @@ const dataAdmin = {
       isActive: true,
     },
     {
-      title: "Services & Tours",
+      title: "Services",
       url: "/services",
       icon: Plane,
     },
 
   ],
 }
+// This is ADMIN data.
+const dataAdminSup = {
+  navMain: [
+    {
+      title: "Home",
+      url: "/home",
+      icon: Home,
+      isActive: true,
+    },
+
+  ],
+}
 
 export function SidebarLeft({
-  role,
+  user,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { role: "admin" | "superadmin" }) {
+}: React.ComponentProps<typeof Sidebar> & {
+  user: {
+    role: "superadmin" | "admin" | "adminsup"
+    supplierId: string
+  }
+}) {
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
 
-        {role === "superadmin" ? (
+        {user.role === "superadmin" ? (
           <NavMain items={data.navMain} />
         ) : (
-          <NavMain items={dataAdmin.navMain} />
+          user.supplierId === null ? (
+            <NavMain items={dataAdminSup.navMain} />
+          ) : (
+            <NavMain items={dataAdmin.navMain} />
+          )
         )}
 
       </SidebarHeader>

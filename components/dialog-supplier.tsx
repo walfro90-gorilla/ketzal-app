@@ -1,0 +1,43 @@
+import React, { createContext, useContext, useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+
+import { SupplierFormUser } from "@/app/(protected)/suppliers/new/supplier-form-user"
+
+const DialogContext = createContext({ isOpen: false, setIsOpen: (open: boolean) => {} });
+
+export function DialogSupplier() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <DialogContext.Provider value={{ isOpen, setIsOpen }}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Label onClick={() => setIsOpen(true)}>+ Supplier</Label>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>+ New Supplier</DialogTitle>
+            <DialogDescription>
+              Add all information about your travel team.
+            </DialogDescription>
+          </DialogHeader>
+          <SupplierFormUser />
+        </DialogContent>
+      </Dialog>
+    </DialogContext.Provider>
+  )
+}
+
+export function useDialog() {
+  return useContext(DialogContext);
+}
+

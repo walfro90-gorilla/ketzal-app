@@ -1,7 +1,7 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
 
 // CREATE supplier
-export async function createSupplier(supplierData: any){
+export async function createSupplier(supplierData: any) {
 
     const res = await fetch(`${BACKEND_URL}/api/suppliers`, {
         method: 'POST',
@@ -11,7 +11,8 @@ export async function createSupplier(supplierData: any){
         body: JSON.stringify(supplierData),
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
+    return data
 }
 
 // READ supplierS
@@ -21,14 +22,14 @@ export async function getSuppliers() {
     return data
 }
 // READ supplier
-export async function getSupplier(id:string) {
+export async function getSupplier(id: string) {
     const res = await fetch(`${BACKEND_URL}/api/suppliers/${id}`)
     const data = await res.json()
-    return await data
+    return  data
 }
 
 // UPDATE supplier
-export async function updateSupplier(id: string, supplierData: any){
+export async function updateSupplier(id: string, supplierData: any) {
     const res = await fetch(`${BACKEND_URL}/api/suppliers/${id}`, {
         method: 'PATCH',
         headers: {
@@ -37,15 +38,15 @@ export async function updateSupplier(id: string, supplierData: any){
         body: JSON.stringify(supplierData),
     })
     return await res.json()
-    
+
 }
 
 // DELETE supplier
-export async function deleteSupplier(id: string){
+export async function deleteSupplier(id: string) {
     const res = await fetch(`${BACKEND_URL}/api/suppliers/${id}`, {
         method: 'DELETE',
     })
     const data = await res.json()
     console.log(data)
-    
+
 }

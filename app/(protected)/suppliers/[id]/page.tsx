@@ -4,12 +4,10 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
 async function SupplierDetailPage({ params }: { params: { id: string } }) {
-    // console.log(params);
 
     const resolvedParams = await params
 
     const supplier = await getSupplier(resolvedParams.id)
-    console.log(supplier)
 
     return (
         <div

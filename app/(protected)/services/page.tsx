@@ -4,10 +4,12 @@ import { getServices } from "@/app/(protected)/services/services.api";
 import { ServiceCard } from "@/components/service-card";
 
 import { buttonVariants } from "@/components/ui/button";
+import { auth } from "@/auth";
 
 export default async function Service() {
 
     const service = await getServices();
+    const session = await auth()
 
     return (
         <div>
@@ -24,7 +26,7 @@ export default async function Service() {
 
 
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 mt-4">
-                {service.map((service) => (
+                {service.filter(service => service.supplierId === session?.user.supplierId).map((service) => (
                     <ServiceCard service={service} key={service.id} />
                 ))}
             </div>

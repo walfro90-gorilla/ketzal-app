@@ -16,22 +16,48 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import ProfileCard from "./profile-card";
+import ProfileCardNew from "./profile-card-new";
+import { get } from "http";
+import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api";
+import { useEffect, useState } from "react";
+import { set } from "date-fns";
 
+// SidebarRight component
 type SidebarRightProps = React.ComponentProps<typeof Sidebar> & {
   session: {
     user: {
       name: string;
       email: string;
       avatar: string;
+      supplierId: string;
     };
     calendars: Array<{
       name: string;
       items: string[];
     }>;
   };
+  supplierData: {
+    name: string;
+    imgLogo: string;
+  }
 };
 
-export function SidebarRight({ session, ...props }: SidebarRightProps) {
+export function SidebarRight({ session, supplierData, ...props }: SidebarRightProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (supplierData) {
+      setIsLoading(false);
+    }
+    if (session) {
+      setIsLoading(false);
+    }
+  }, [supplierData]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Sidebar
       collapsible="none"
@@ -42,8 +68,16 @@ export function SidebarRight({ session, ...props }: SidebarRightProps) {
         <NavUser user={session.user} />
       </SidebarHeader>
       <SidebarContent>
-        <ProfileCard email="wal@gmail.com" name="wal" avatarUrl="https://firebasestorage.googleapis.com/v0/b/gorilla-labs-960a2.appspot.com/o/wanderLogo.svg?alt=media&token=e4e14aca-db48-4ad5-b0a0-95e07cbef02b"/>
-        <SidebarSeparator/>
+
+        {
+          supplierData ? (
+            <ProfileCard email="wal@gmail.com" name={supplierData.name} avatarUrl={supplierData.imgLogo} />
+          ) : (
+            <ProfileCardNew />
+          )
+        }
+
+        <SidebarSeparator />
         <DatePicker />
         <SidebarSeparator className="mx-0" />
         {/* <Calendars calendars={session.calendars} /> */}

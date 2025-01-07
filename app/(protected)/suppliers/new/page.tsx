@@ -6,7 +6,6 @@ async function SuppliersNewPage({ params }: { params: { id: string } }) {
 
     const resolvedParams = await params
     const supplier = await getSupplier(resolvedParams.id)
-    // console.log(supplier)
 
     return (
         <div className="flex justify-center items-center h-screen">

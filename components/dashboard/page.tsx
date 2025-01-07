@@ -1,3 +1,7 @@
+"use client"
+
+
+import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { SidebarLeft } from "../sidebar-left"
 import { SidebarRight } from "../sidebar-right"
 import {
@@ -13,18 +17,45 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
+import { useUser } from "@/context/UserContext"
+import { useEffect, useState } from "react"
+import { set } from "date-fns"
 
 
 
 
 
-export async function Dashboard({ session, children }) {
 
+export function Dashboard({ session, children }) {
+
+  const { user, setUser } = useUser()
+  const [supplier, setSupplier] = useState(null)
+  const [supplierData, setSupplierData] = useState(null)
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      setUser(session.user)
+      setSupplier(session.user)
+
+
+      if (session.user.supplierId === null) {
+        return
+      } else {
+        const supplierDataDB = await getSupplier(session.user.supplierId)
+        setSupplierData(supplierDataDB)
+      }
+
+
+
+
+    }
+    fetchSession()
+  }, [session.user, setUser])
 
 
   return (
     <SidebarProvider>
-      <SidebarLeft role={session.user.role} />
+      <SidebarLeft user={session.user} />
       <SidebarInset>
         <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
           <div className="flex flex-1 items-center gap-2 px-3">
@@ -42,19 +73,12 @@ export async function Dashboard({ session, children }) {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
-
           {
             children
           }
-          {/* {
-              products.map((product) => (
-                <ProductCard product={product} key={product.id} />
-              ))
-            } */}
-
         </div>
       </SidebarInset>
-      <SidebarRight session={session} />
+      <SidebarRight session={session} supplierData={supplierData} />
     </SidebarProvider>
   )
 }
