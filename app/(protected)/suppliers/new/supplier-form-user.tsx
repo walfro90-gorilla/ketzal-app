@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
+
 import { useForm } from "react-hook-form"
 
 import { createSupplier, updateSupplier } from "@/app/(protected)/suppliers/suppliers.api"
@@ -11,10 +12,24 @@ import { updateIdSupplier } from "@/actions/user-action"
 import { useUser } from "@/context/UserContext"
 import { signOut } from "next-auth/react"
 import { useAlertDialog } from "@/components/alert-dialog"
+import UploaderIamge from "@/components/butto-upload-image"
+import { useState } from "react"
+import { Avatar, Space } from "antd"
+
+import { UserOutlined } from '@ant-design/icons';
+
+
+
+
 
 export function SupplierFormUser({ supplier }: any) {
+
+    const [file, setFile] = useState<File | null>(null);
+    const [imgUrl, setImgUrl] = useState<string | null>(null);
+
+
     const { user } = useUser()
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, setValue } = useForm({
         defaultValues: {
             name: supplier?.name,
             description: supplier?.description,
@@ -22,7 +37,7 @@ export function SupplierFormUser({ supplier }: any) {
             phoneNumber: supplier?.phoneNumber,
             address: supplier?.address,
             id: supplier?.id,
-            imgLogo: supplier?.imgLogo,
+            imgLogo: imgUrl || supplier?.imgLogo,
         }
     })
 
@@ -31,7 +46,13 @@ export function SupplierFormUser({ supplier }: any) {
     const { setIsOpen } = useDialog()
     const { showDialog } = useAlertDialog()
 
+
+
+
+
+    // SUBMIT FORM
     const onSubmit = handleSubmit(async (data) => {
+
         const confirmed = await showDialog({
             title: "Confirma tu Seleccion ✅",
             message1: "Estas completamente segur@ en pertenecer a este Team? ",
@@ -47,6 +68,8 @@ export function SupplierFormUser({ supplier }: any) {
         if (params?.id) {
             await updateSupplier(params.id, data);
         } else {
+            console.log("DATA:", data)
+
             const dataUpdate = await createSupplier(data);
             await updateIdSupplier(dataUpdate, user);
             await signOut({
@@ -58,23 +81,70 @@ export function SupplierFormUser({ supplier }: any) {
         router.refresh();
     });
 
+
+    // UPLOAD image to cloudinary
+    const onUpload = async (file: File) => {
+
+        const formData = new FormData();
+        formData.append("image", file as Blob);
+
+        const response = await fetch("http://localhost:3000/api/upload", {
+            method: "POST",
+            body: formData,
+        })
+
+        const dataImage = await response.json();
+        setImgUrl(dataImage.url)
+        setValue("imgLogo", dataImage.url)
+
+        console.log("dataImage:", dataImage)
+        console.log("Supplier", supplier)
+    }
+
+
+
+
+
     return (
         <form onSubmit={onSubmit}>
-            <Label>Team Name</Label>
-            <Input {...register("name")} />
-            <Label>Description:</Label>
-            <Input {...register("description")} />
-            <Label>Contact Email:</Label>
-            <Input {...register("contactEmail")} />
-            <Label>Phone Number:</Label>
-            <Input {...register("phoneNumber")} />
-            <Label>Address:</Label>
-            <Input {...register("address")} />
-            <Label>Image:</Label>
-            <Input {...register("imgLogo")} />
-            <Button>
-                {params.id ? "Update supplier" : "Create supplier"}
-            </Button>
+
+            <Space direction="vertical" size={12}>
+
+                <Label>Team Name</Label>
+                <Input id="name" {...register("name")} />
+
+                <Label>Description:</Label>
+                <Input id="description" {...register("description")} />
+
+                <Label>Contact Email:</Label>
+                <Input id="contactEmail" {...register("contactEmail")} />
+
+                <Label>Phone Number:</Label>
+                <Input id="phoneNumber" {...register("phoneNumber")} />
+
+                <Label>Address:</Label>
+                <Input id="address" {...register("address")} />
+
+                <Space wrap size={16}>
+                    <Label>Logo(250x250 px):</Label>
+                    <Avatar src={imgUrl} shape="square" size={64} icon={<UserOutlined />} />
+                    <Input
+                        type="file"
+                        onChange={(e) => {
+                            if (e.target.files) {
+                                setFile(e.target.files[0]);
+                                console.log("FILE:", file)
+                                onUpload(e.target.files[0]);
+                            }
+                        }}
+                    />
+                    <input id="imgLogo" {...register("imgLogo")} hidden />
+                </Space>
+
+                <Button>
+                    {params.id ? "Update supplier" : "Create supplier"}
+                </Button>
+            </Space>
         </form>
     )
 }

@@ -19,13 +19,18 @@ export function DialogSupplier() {
 
   return (
     <DialogContext.Provider value={{ isOpen, setIsOpen }}>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog  open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Label onClick={() => setIsOpen(true)}>+ Supplier</Label>
+          <Label 
+           
+            style={{ cursor: 'pointer' }}
+          >
+            CREAR
+          </Label>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>+ New Supplier</DialogTitle>
+            <DialogTitle>+ NEW</DialogTitle>
             <DialogDescription>
               Add all information about your travel team.
             </DialogDescription>

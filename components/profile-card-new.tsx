@@ -5,12 +5,26 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { DialogSupplier } from "./dialog-supplier"
+import React, { use } from "react"
 
+import { useDialog } from '@/components/dialog-supplier'
 
 
 export default function ProfileCardNew({
 
 }: React.ComponentProps<"div">) {
+
+
+
+  const { isOpen, setIsOpen } = useDialog()
+
+  console.log("DialogContext", isOpen)
+
+  const handleClick = () => {
+    setIsOpen(true)
+    console.log(isOpen)
+  }
+
   return (
     <Card className="w-full max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <CardHeader className="flex justify-between items-center space-y-0 pb-0">
@@ -45,13 +59,12 @@ export default function ProfileCardNew({
             </div>
           </div>
         </div>
-        <h2 className="text-xl font-semibold mb-4">¡Sin Team! 😢</h2>
-        <Button
-          variant="outline"
-          className="w-full justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+        <h2 onClick={handleClick} className="text-xl font-semibold mb-4">¡Sin Team! 😢</h2>
+        <label
+          className="w-full text-center justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
         >
-          Crea o Unete a un team viajero.
-        </Button>
+          Crea o Unete a uno.
+        </label>
       </CardContent>
     </Card>
   )

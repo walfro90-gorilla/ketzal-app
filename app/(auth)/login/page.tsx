@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { LoginForm } from '@/components/login-form';
 
 const LoginPage = () => {
+    
     const searchParams = useSearchParams();
     const isVerified = searchParams?.get('verified') === 'true';
 
