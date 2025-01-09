@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
 
-import { useForm } from "react-hook-form"
+import { useForm, FieldError } from "react-hook-form"
 
 import { createSupplier, updateSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { useParams, useRouter } from "next/navigation"
@@ -12,14 +12,13 @@ import { updateIdSupplier } from "@/actions/user-action"
 import { useUser } from "@/context/UserContext"
 import { signOut } from "next-auth/react"
 import { useAlertDialog } from "@/components/alert-dialog"
-import UploaderIamge from "@/components/butto-upload-image"
 import { useState } from "react"
-import { Avatar, Space } from "antd"
+import { Alert, Avatar, Space } from "antd"
 
 import { UserOutlined } from '@ant-design/icons';
 
-
-
+import { zodResolver } from "@hookform/resolvers/zod"
+import { mappedTypes, supplierSchema } from "@/validations/supplierSchema"
 
 
 export function SupplierFormUser({ supplier }: any) {
@@ -29,7 +28,7 @@ export function SupplierFormUser({ supplier }: any) {
 
 
     const { user } = useUser()
-    const { register, handleSubmit, setValue } = useForm({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
         defaultValues: {
             name: supplier?.name,
             description: supplier?.description,
@@ -38,7 +37,9 @@ export function SupplierFormUser({ supplier }: any) {
             address: supplier?.address,
             id: supplier?.id,
             imgLogo: imgUrl || supplier?.imgLogo,
-        }
+            type: supplier?.type,
+        },
+        resolver: zodResolver(supplierSchema)
     })
 
     const router = useRouter()
@@ -101,7 +102,12 @@ export function SupplierFormUser({ supplier }: any) {
         console.log("Supplier", supplier)
     }
 
+    const typesOptions = Object.entries(mappedTypes).map(([key, value]) => (
+        <option key={key} value={key}>{value}</option>
+    ))
 
+
+    console.log("ERRORS:", errors)
 
 
 
@@ -112,18 +118,9 @@ export function SupplierFormUser({ supplier }: any) {
 
                 <Label>Team Name</Label>
                 <Input id="name" {...register("name")} />
-
-                <Label>Description:</Label>
-                <Input id="description" {...register("description")} />
-
-                <Label>Contact Email:</Label>
-                <Input id="contactEmail" {...register("contactEmail")} />
-
-                <Label>Phone Number:</Label>
-                <Input id="phoneNumber" {...register("phoneNumber")} />
-
-                <Label>Address:</Label>
-                <Input id="address" {...register("address")} />
+                {
+                    typeof errors.name?.message === 'string' && <Alert showIcon type="error" message={errors.name?.message} />
+                }
 
                 <Space wrap size={16}>
                     <Label>Logo(250x250 px):</Label>
@@ -139,11 +136,56 @@ export function SupplierFormUser({ supplier }: any) {
                         }}
                     />
                     <input id="imgLogo" {...register("imgLogo")} hidden />
+                    {
+                        typeof errors.imgLogo?.message === 'string' && <Alert showIcon type="error" message={errors.imgLogo?.message} />
+                    }
                 </Space>
+
+                <Label>Description:</Label>
+                <Input id="description" {...register("description")} />
+                {
+                    typeof errors.description?.message === 'string' && <Alert showIcon type="error" message={errors.description?.message} />
+                }
+
+
+
+                <Label>Supplier Type:</Label>
+                <select id="type" {...register("type")}>
+                    {typesOptions}
+                </select>
+                {
+                    typeof errors.type?.message === 'string' && <Alert showIcon type="error" message={errors.type?.message} />
+                }
+
+
+
+                <Label>Contact Email:</Label>
+                <Input id="contactEmail" {...register("contactEmail")} />
+                {
+                    typeof errors.contactEmail?.message === 'string' && <Alert showIcon type="error" message={errors.contactEmail?.message} />
+                }
+
+                <Label>Phone Number:</Label>
+                <Input id="phoneNumber" {...register("phoneNumber")} />
+                {
+                    typeof errors.phoneNumber?.message === 'string' && <Alert showIcon type="error" message={errors.phoneNumber?.message} />
+                }
+
+
+                <Label>Address:</Label>
+                <Input id="address" {...register("address")} />
+                {
+                    typeof errors.address?.message === 'string' && <Alert showIcon type="error" message={errors.address?.message} />
+                }
+
+
 
                 <Button>
                     {params.id ? "Update supplier" : "Create supplier"}
                 </Button>
+                {/* <div>
+                    {JSON.stringify(watch(), null, 2)}
+                </div> */}
             </Space>
         </form>
     )

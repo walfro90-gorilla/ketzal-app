@@ -25,6 +25,7 @@ import { registerAction } from '@/actions/auth-action'
 import { start } from 'repl'
 import { useRouter } from 'next/navigation'
 import { set } from 'date-fns'
+import Link from 'next/link'
 
 
 
@@ -43,6 +44,7 @@ export default function RegisterForm() {
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
       name: "",
     },
   })
@@ -137,6 +139,28 @@ export default function RegisterForm() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='password'
+                      placeholder="Confirm Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  {/* <FormDescription>
+                  This is your public display name.
+                </FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {
               error && <FormMessage>{error}</FormMessage>
             }
@@ -144,6 +168,12 @@ export default function RegisterForm() {
             <Button disabled={isPending} type="submit">Submit</Button>
           </form>
         </Form>
+
+        <div className="text-center mt-4">
+          <p>Already have an account?
+            <Link href="/login" className="text-blue-500">Login</Link>
+          </p>
+        </div>
 
       </CardContent>
 

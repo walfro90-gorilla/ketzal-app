@@ -25,6 +25,7 @@ import { loginAction } from '@/actions/auth-action'
 import { start } from 'repl'
 import { useRouter } from 'next/navigation'
 import { set } from 'date-fns'
+import Link from 'next/link'
 
 
 
@@ -119,6 +120,7 @@ export function LoginForm({
                 </FormItem>
               )}
             />
+           
             {
               error && <FormMessage>{error}</FormMessage>
             }
@@ -126,6 +128,12 @@ export function LoginForm({
             <Button disabled={isPending} type="submit">Submit</Button>
           </form>
         </Form>
+
+        <div className="text-center mt-4">
+          <p>
+            Don`t have an account? <Link href="/register"  className="text-green-500">Register</Link>
+          </p>
+        </div>
 
       </CardContent>
 

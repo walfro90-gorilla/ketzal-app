@@ -105,7 +105,7 @@ export function ServiceForm({ service, session }) {
 
             </div>
 
-            <ComboBox suppliers={suppliers} option={selectedSupplier?.name} />
+            {/* <ComboBox suppliers={suppliers} option={selectedSupplier?.name} /> */}
 
             <br />
 

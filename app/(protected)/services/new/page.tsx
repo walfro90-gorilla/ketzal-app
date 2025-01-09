@@ -8,8 +8,10 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
 
     const resolvedParams = await params
     const service = await getService(resolvedParams.id)
-   
+
     const session = await auth()
+
+    // console.log("SERVICE:", service.statusCode)
 
 
     return (
@@ -18,7 +20,7 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
                 <CardHeader>
                     <CardTitle>
                         {
-                            service ? "Edit service" : "Create New service"
+                            !service.statusCode ? "Edit service" : "Create New service"
                         }
 
                     </CardTitle>

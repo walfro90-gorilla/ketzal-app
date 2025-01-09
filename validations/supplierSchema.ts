@@ -1,6 +1,20 @@
 import { z } from 'zod';
 
-const supplierSchema = z.object({
+const types = ["agencia_tours", "agencia_local", "traslados", "guia", "hotel"] as const;
+
+export type Types = typeof types[number];
+
+export const mappedTypes: {
+    [key in Types]: string;
+} = {
+    agencia_tours: "Agencia Tours",
+    agencia_local: "Agencia Local",
+    traslados: "Traslados y rentas",
+    guia: "Guia",
+    hotel: "Hotel"
+}
+
+export const supplierSchema = z.object({
     name: z
         .string()
         .min(3, {
@@ -23,7 +37,7 @@ const supplierSchema = z.object({
     phoneNumber: z
         .string()
         .regex(/^\d{10}$/, {
-            message: "Número de teléfono debe tener 10 dígitos y solo contener números"
+            message: "Número de teléfono debe tener 10 dígitos y solo contener números sin espacios"
         }),
     address: z
         .string()
@@ -32,11 +46,12 @@ const supplierSchema = z.object({
         }).max(255, {
             message: "Dirección muy larga"
         }),
-    id: z
-        .string()
-        .uuid({
-            message: "ID inválido"
-        }),
+
+
+    type: z.enum(types, {
+        errorMap: () => ({ message: "Seleccione un tipo" })
+    }),
+
     imgLogo: z
         .string()
         .url({

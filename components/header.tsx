@@ -1,151 +1,116 @@
-"use client"
+'use client'
 
-
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
-import { useUser } from '@/context/UserContext'
-
-
-
-const Logo = () => (
-  <div className="logo-box">
-    <div className="logo">
-      <Link href="">
-        <Image src="https://firebasestorage.googleapis.com/v0/b/gorilla-labs-960a2.appspot.com/o/Ketzal.app-logo.svg?alt=media&token=cf6d2de8-39c7-4ba8-92dc-b6fbe9aef228" alt="logo" width={90} height={350} />
-      </Link>
-    </div>
-  </div>
-)
-
-const NavItem = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <NavigationMenuItem>
-    <Link href={href} legacyBehavior passHref>
-      <NavigationMenuLink className="block py-2 px-4 text-sm hover:bg-gray-100">
-        {children}
-      </NavigationMenuLink>
-    </Link>
-  </NavigationMenuItem>
-)
-
-const LanguageSelector = () => (
-  <div className="language">
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>
-            <i className="fa-thin fa-globe"></i>
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="p-2 w-48">
-              <li>
-                <Link href="" className="flex items-center p-2 hover:bg-gray-100">
-                  <Image src="" alt="English" width={20} height={20} className="mr-2" />
-                  <span>English</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="" className="flex items-center p-2 hover:bg-gray-100">
-                  <Image src="" alt="Spanish" width={20} height={20} className="mr-2" />
-                  <span>Spanish</span>
-                </Link>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  </div>
-)
+import { Input } from "@/components/ui/input"
+import { Search, Menu, ChevronDown } from 'lucide-react'
+import TopBar from './TopBar'
+import { useScrollDirection } from '@/hooks/useScrollDirection'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const Header = () => {
+  const scrollDirection = useScrollDirection()
+  const [showTopBar, setShowTopBar] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  const values = useUser()
-  console.log("USe user", values)
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100)
+      setIsScrolled(window.scrollY > 0)
+      setShowTopBar(window.scrollY < 100)
     }
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navItems = [
-    { href: "", label: "Home" },
-    { href: "/about-us", label: "About Us" },
-    { href: "/destinations", label: "Destinations" },
-    { href: "/packages", label: "Packages" },
-    { href: "/faqs", label: "Faqs" },
-    { href: "/contact", label: "Contact" },
-  ]
-
   return (
-    <header className={`main-header header-style-two bg-green-700/80 backdrop-blur-sm ${isScrolled ? 'fixed-header' : ''}`}>
-      <div className={`header-lower ${isScrolled ? 'sticky-header animated slideInDown bg-transparent' : ''}`}>
-        <div className="custom-container mx-auto px-4">
-          <div className="inner-container flex items-center justify-between py-4">
-            <div className="left-column">
-              <Logo />
-            </div>
-            <div className="middle-column hidden lg:flex items-center">
-              <nav className="main-menu">
-                <NavigationMenu>
-                  <NavigationMenuList>
-                    {navItems.map((item) => (
-                      <NavItem key={item.href} href={item.href}>{item.label}</NavItem>
-                    ))}
-                  </NavigationMenuList>
-                </NavigationMenu>
-              </nav>
-            </div>
-            <div className="right-column flex items-center">
-              <LanguageSelector />
-              <div className="sign-up ml-4 flex">
-                <Button asChild variant="outline" className="mr-2">
-                  <Link href="/register">Sign Up</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/login">Sign In</Link>
-                </Button>
+    <div className="fixed top-0 left-0 right-0 z-50">
+      {/* TopBar */}
+      <div
+        className={`transform transition-transform duration-300 ${
+          showTopBar ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
+        <TopBar />
+      </div>
+
+      {/* Main Navigation */}
+      <div 
+        className={`bg-white shadow-md transition-all duration-300 ${
+          isScrolled ? 'py-2' : 'py-4'
+        }`}
+        style={{
+          transform: showTopBar ? 'translateY(0)' : 'translateY(-40px)'
+        }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="relative w-16 h-8">
+                <Image
+                  src="https://firebasestorage.googleapis.com/v0/b/gorilla-labs-960a2.appspot.com/o/Ketzal.app-logo.svg?alt=media&token=cf6d2de8-39c7-4ba8-92dc-b6fbe9aef228"
+                  alt="BookPro Logo"
+                  layout="fill"
+                  className="object-contain"
+                />
               </div>
-              <div className="lg:hidden ml-4">
-                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Image src="" alt="Menu" width={24} height={24} />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                    <nav className="flex flex-col">
-                      {navItems.map((item) => (
-                        <Link key={item.href} href={item.href} className="py-2 px-4 hover:bg-gray-100">
-                          {item.label}
-                        </Link>
-                      ))}
-                    </nav>
-                    <div className="mt-auto pt-6">
-                      <div className="social-links flex justify-center space-x-4">
-                        <a href="#" className="text-white hover:text-gray-900"><i className="fab fa-twitter"></i></a>
-                        <a href="#" className="text-white hover:text-gray-900"><i className="fab fa-facebook-square"></i></a>
-                        <a href="#" className="text-white hover:text-gray-900"><i className="fab fa-linkedin-in"></i></a>
-                        <a href="#" className="text-white hover:text-gray-900"><i className="fab fa-instagram"></i></a>
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
+              {/* <span className="text-2xl font-bold text-green-600">Ketzal app</span> */}
+            </Link>
+
+            {/* Main Navigation Links - Desktop */}
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link href="/" className="text-green-600 font-medium">Home</Link>
+              <Link href="/tours" className="text-gray-600 hover:text-green-600">Tours</Link>
+              <Link href="/hotels" className="text-gray-600 hover:text-green-600">Hotels</Link>
+              <Link href="/space" className="text-gray-600 hover:text-green-600">Space</Link>
+              <Link href="/cars" className="text-gray-600 hover:text-green-600">Cars</Link>
+              <Link href="/blogs" className="text-gray-600 hover:text-green-600">Blogs</Link>
+              
+              {/* Pages Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-gray-600 hover:text-green-600">
+                    Pages
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Link href="/about">About Us</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/services">Services</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/faq">FAQ</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Link href="/contact" className="text-gray-600 hover:text-green-600">Contact</Link>
+            </nav>
+
+            {/* Search and Mobile Menu */}
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon">
+                <Search className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+              </Button>
             </div>
           </div>
         </div>
       </div>
-    </header>
+    </div>
   )
 }
 
