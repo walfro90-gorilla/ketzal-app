@@ -1,0 +1,69 @@
+.gallery-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.gallery-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-options {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.gallery-option {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.gallery-option.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.gallery-thumbnails {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.gallery-thumbnail {
+  position: relative;
+  padding-bottom: 66.67%;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gallery-thumbnail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.gallery-thumbnail:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-thumbnail.active {
+  border: 2px solid #2563eb;
+}
+

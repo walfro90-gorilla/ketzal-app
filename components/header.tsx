@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const Header = () => {
+const Header = ({session}) => {
   const scrollDirection = useScrollDirection()
   const [showTopBar, setShowTopBar] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -24,6 +24,7 @@ const Header = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0)
       setShowTopBar(window.scrollY < 100)
+      // console.log("SEsion for navbar: ", session)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -38,7 +39,7 @@ const Header = () => {
           showTopBar ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <TopBar />
+        <TopBar session={session} />
       </div>
 
       {/* Main Navigation */}
@@ -47,7 +48,7 @@ const Header = () => {
           isScrolled ? 'py-2' : 'py-4'
         }`}
         style={{
-          transform: showTopBar ? 'translateY(0)' : 'translateY(-40px)'
+          transform: showTopBar ? 'translateY(0)' : 'translateY(-50px)'
         }}
       >
         <div className="container mx-auto px-4">
@@ -69,16 +70,16 @@ const Header = () => {
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="/" className="text-green-600 font-medium">Home</Link>
               <Link href="/tours" className="text-gray-600 hover:text-green-600">Tours</Link>
-              <Link href="/hotels" className="text-gray-600 hover:text-green-600">Hotels</Link>
-              <Link href="/space" className="text-gray-600 hover:text-green-600">Space</Link>
-              <Link href="/cars" className="text-gray-600 hover:text-green-600">Cars</Link>
+           
               <Link href="/blogs" className="text-gray-600 hover:text-green-600">Blogs</Link>
               
+              <Link href="/contact" className="text-gray-600 hover:text-green-600">Contact</Link>
+
               {/* Pages Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="text-gray-600 hover:text-green-600">
-                    Pages
+                    More
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -86,16 +87,13 @@ const Header = () => {
                   <DropdownMenuItem>
                     <Link href="/about">About Us</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/services">Services</Link>
-                  </DropdownMenuItem>
+         
                   <DropdownMenuItem>
                     <Link href="/faq">FAQ</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link href="/contact" className="text-gray-600 hover:text-green-600">Contact</Link>
             </nav>
 
             {/* Search and Mobile Menu */}

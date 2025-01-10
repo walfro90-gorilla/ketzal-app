@@ -4,10 +4,12 @@ import { ChartRadialText } from '@/components/chart-radial-text'
 import React from 'react'
 import styles from './HomePageAdmin.module.css'
 import { ChartRadialStacked } from '@/components/chart-radial-stacked'
+import Header from '@/components/header'
 
 const HomePageAdmin = () => {
   return (
     <>
+
       <div className={styles.gridContainer}>
         <ChartPieDonut />
         <ChartRadialText />

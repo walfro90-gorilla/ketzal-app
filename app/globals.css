@@ -90,4 +90,16 @@
   main {
     flex-grow: 1;
   }
+  
+  .layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .main-content {
+    flex-grow: 1;
+    padding-top: 4rem; /* Ensure enough space for the header */
+  }
 }
+
+

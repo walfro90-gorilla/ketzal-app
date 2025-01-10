@@ -54,32 +54,35 @@ export function Dashboard({ session, children }) {
 
 
   return (
-    <SidebarProvider>
-      <SidebarLeft user={session.user} />
-      <SidebarInset>
-        <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
-          <div className="flex flex-1 items-center gap-2 px-3">
-            <SidebarTrigger />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="line-clamp-1">
-                    Ketzal admin - Hola, {session.user.name} 👋🏻
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+    <div className="mt-24 flex flex-col h-screen">
+
+      <SidebarProvider className="mt-12">
+        <SidebarLeft user={session.user} />
+        <SidebarInset>
+          <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
+            <div className="flex flex-1 items-center gap-2 px-3">
+              <SidebarTrigger />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="line-clamp-1">
+                      Ketzal admin - Hola, {session.user.name} 👋🏻
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+          </header>
+          <div >
+            {
+              children
+            }
           </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {
-            children
-          }
-        </div>
-      </SidebarInset>
-      <SidebarRight session={session} supplierData={supplierData} />
-    </SidebarProvider>
+        </SidebarInset>
+        <SidebarRight session={session} supplierData={supplierData} />
+      </SidebarProvider>
+    </div>
   )
 }
 

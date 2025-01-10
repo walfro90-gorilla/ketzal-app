@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import HomeButton from "@/components/home-button";
 import { AlertDialogProvider } from "@/components/alert-dialog"
 
-import {useUser } from "@/context/UserContext"
+import { useUser } from "@/context/UserContext"
 
 const ProtectedLayout = async ({
   children,
@@ -31,11 +31,15 @@ const ProtectedLayout = async ({
   }
 
   return (
-    <AlertDialogProvider>
-      <div className="container flex justify-center items-center min-h-screen">
-        <Dashboard session={session}>{children}</Dashboard>
-      </div>
-    </AlertDialogProvider>
+    
+      <main className="flex-grow w-full flex flex-col">
+      <AlertDialogProvider>
+        <div >
+          <Dashboard session={session}>{children}</Dashboard>
+        </div>
+      </AlertDialogProvider>
+      </main>
+
   )
 }
 
