@@ -8,8 +8,9 @@ import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      <main className="flex-grow w-full flex flex-col">
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow">
         <HeroSection />
         <PopularCategories />
         <PopularDestinations />

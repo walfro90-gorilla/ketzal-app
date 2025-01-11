@@ -5,8 +5,6 @@ import "./globals.css";
 import { SupplierProvider } from "@/context/SupplierContext";
 import { UserProvider } from "@/context/UserContext";
 import Header from "@/components/header";
-import { auth } from "@/auth";
-import Footer from "@/components/Footer";
 
 // FONTS  -  Geist and Geist Mono
 const geistSans = Geist({
@@ -25,14 +23,11 @@ export const metadata: Metadata = {
   keywords: ["viajes", "méxico", "red social", "viajeros"],
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const session = await auth()
-
   return (
     <html lang="en">
       <body
@@ -40,19 +35,16 @@ export default async function RootLayout({
       >
         <UserProvider>
           <SupplierProvider>
-            <div className="layout flex flex-col min-h-screen">
-              <Header session={session} />
-              {/* Ensure Header is sticky and above other content */}
-              <main > {/* Add padding-top to prevent overlap */}
+            <div className="layout">
+              <Header />
+
+                <main className="main-content">
                 {children}
-              </main>
-              {/* <Footer /> */}
+                </main>
             </div>
           </SupplierProvider>
         </UserProvider>
       </body>
-
-
     </html>
   );
 }

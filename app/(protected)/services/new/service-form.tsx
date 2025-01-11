@@ -13,7 +13,11 @@ import { DatePickerWithRange } from "@/components/date-picker-with-range"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 import { use, useEffect, useState } from "react"
 
+// Validation schema with zod and zodResolver from react-hook-form to validate the form
+import {zodResolver} from "@hookform/resolvers/zod"
+import {serviceSchema} from "@/validations/serviceSchema"
 
+import { Alert, Avatar, Space } from "antd"
 
 
 
@@ -49,7 +53,9 @@ export function ServiceForm({ service, session }) {
         fetchSuppliers()
     }, [])
 
-    const { control, register, handleSubmit, setValue } = useForm(
+
+    // USE FORM HOOK: useForm, zodResolver, register, handleSubmit and setValue from react-hook-form
+    const { control, register, handleSubmit, setValue, formState: {errors} } = useForm(
         {
             defaultValues: {
                 supplierId: service?.supplierId,
@@ -59,7 +65,9 @@ export function ServiceForm({ service, session }) {
                 location: service?.location,
                 availableFrom: service?.availableFrom,
                 availableTo: service?.availableTo,
-            }
+            },
+            // add zod resolver to the form with the schema created
+            resolver: zodResolver(serviceSchema)
         }
     )
     const router = useRouter()
@@ -68,7 +76,8 @@ export function ServiceForm({ service, session }) {
     // console.log("Params:", params)
     // console.log("Suppliers from DB", suppliers)
     // console.log("ID Supplier:", values.idSupplier)
-
+    
+  
     const onSubmit = async (data: any) => {
         try {
             if (!service) {
@@ -84,10 +93,8 @@ export function ServiceForm({ service, session }) {
         router.refresh()
     }
 
+console.log("SelectedSupplier:", selectedSupplier)
 
-
-
-    console.log("SelectedSupplier:", selectedSupplier)
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -113,10 +120,17 @@ export function ServiceForm({ service, session }) {
             <Input
                 {...register("name")}
             />
+            {
+                typeof errors.name?.message === 'string' && <Alert showIcon type="error" message={errors.name?.message} />
+            }
+
             <Label>Description:</Label>
             <Input
                 {...register("description")}
             />
+              {
+                typeof errors.description?.message === 'string' && <Alert showIcon type="error" message={errors.description?.message} />
+            }
 
             <Label>Price:</Label>
             <Input
@@ -124,10 +138,18 @@ export function ServiceForm({ service, session }) {
                     setValueAs: value => parseFloat(value, 10)
                 })}
             />
+             {
+                typeof errors.price?.message === 'string' && <Alert showIcon type="error" message={errors.price?.message} />
+            }
+
             <Label>Location:</Label>
             <Input
                 {...register("location")}
             />
+ {
+                typeof errors.location?.message === 'string' && <Alert showIcon type="error" message={errors.location?.message} />
+            }
+
 
             <Label>Available From:</Label>
             <Controller
@@ -140,6 +162,9 @@ export function ServiceForm({ service, session }) {
                     />
                 )}
             />
+            {
+                typeof errors.availableFrom?.message === 'string' && <Alert showIcon type="error" message={errors.availableFrom?.message} />
+            }
             <br />
             <Label>Available To:</Label>
             <Controller
@@ -152,6 +177,9 @@ export function ServiceForm({ service, session }) {
                     />
                 )}
             />
+            {
+                typeof errors.availableTo?.message === 'string' && <Alert showIcon type="error" message={errors.availableTo?.message} />
+            }
 
             <Button>
                 {
