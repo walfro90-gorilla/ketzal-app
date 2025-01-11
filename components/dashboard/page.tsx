@@ -34,9 +34,9 @@ export function Dashboard({ session, children }) {
 
   useEffect(() => {
     const fetchSession = async () => {
+
       setUser(session.user)
       setSupplier(session.user)
-
 
       if (session.user.supplierId === null) {
         return
@@ -44,9 +44,6 @@ export function Dashboard({ session, children }) {
         const supplierDataDB = await getSupplier(session.user.supplierId)
         setSupplierData(supplierDataDB)
       }
-
-
-
 
     }
     fetchSession()

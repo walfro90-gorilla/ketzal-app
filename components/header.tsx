@@ -1,21 +1,31 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Search, Menu, ChevronDown } from 'lucide-react'
+import { useScrollDirection } from '@/hooks/useScrollDirection'
+
+// Import Link from 'next/link'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Menu, ChevronDown } from 'lucide-react'
-import TopBar from './TopBar'
-import { useScrollDirection } from '@/hooks/useScrollDirection'
+
+// Import components
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import TopBar from './TopBar'
 
-const Header = ({session}) => {
+
+
+
+
+
+const Header = ({ session }) => {
+  
   const scrollDirection = useScrollDirection()
   const [showTopBar, setShowTopBar] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -35,18 +45,16 @@ const Header = ({session}) => {
     <div className="fixed top-0 left-0 right-0 z-50">
       {/* TopBar */}
       <div
-        className={`transform transition-transform duration-300 ${
-          showTopBar ? 'translate-y-0' : '-translate-y-full'
-        }`}
+        className={`transform transition-transform duration-300 ${showTopBar ? 'translate-y-0' : '-translate-y-full'
+          }`}
       >
         <TopBar session={session} />
       </div>
 
       {/* Main Navigation */}
-      <div 
-        className={`bg-white shadow-md transition-all duration-300 ${
-          isScrolled ? 'py-2' : 'py-4'
-        }`}
+      <div
+        className={`bg-white shadow-md transition-all duration-300 ${isScrolled ? 'py-2' : 'py-4'
+          }`}
         style={{
           transform: showTopBar ? 'translateY(0)' : 'translateY(-50px)'
         }}
@@ -70,9 +78,9 @@ const Header = ({session}) => {
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="/" className="text-green-600 font-medium">Home</Link>
               <Link href="/tours" className="text-gray-600 hover:text-green-600">Tours</Link>
-           
+
               <Link href="/blogs" className="text-gray-600 hover:text-green-600">Blogs</Link>
-              
+
               <Link href="/contact" className="text-gray-600 hover:text-green-600">Contact</Link>
 
               {/* Pages Dropdown */}
@@ -87,7 +95,7 @@ const Header = ({session}) => {
                   <DropdownMenuItem>
                     <Link href="/about">About Us</Link>
                   </DropdownMenuItem>
-         
+
                   <DropdownMenuItem>
                     <Link href="/faq">FAQ</Link>
                   </DropdownMenuItem>

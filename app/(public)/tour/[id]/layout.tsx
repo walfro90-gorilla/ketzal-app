@@ -1,7 +1,16 @@
+import { auth } from '@/auth';
 import Footer from '@/components/Footer';
 import React from 'react';
 
-const TourLayout: React.FC = ({ children }) => {
+const TourLayout = async ({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) => {
+
+  // AUTHENTICATION
+  const session = await auth()
+
   return (
     <div>
       <header>
@@ -9,7 +18,7 @@ const TourLayout: React.FC = ({ children }) => {
       </header>
       <main>{children}</main>
       <footer>
-        <Footer/>
+        <Footer />
       </footer>
     </div>
   );

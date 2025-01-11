@@ -5,6 +5,7 @@ import "./globals.css";
 import { SupplierProvider } from "@/context/SupplierContext";
 import { UserProvider } from "@/context/UserContext";
 import Header from "@/components/header";
+import { auth } from "@/auth";
 
 // FONTS  -  Geist and Geist Mono
 const geistSans = Geist({
@@ -23,11 +24,15 @@ export const metadata: Metadata = {
   keywords: ["viajes", "méxico", "red social", "viajeros"],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  // AUTHENTICATION
+  const session = await auth()
+ 
   return (
     <html lang="en">
       <body
@@ -36,11 +41,11 @@ export default function RootLayout({
         <UserProvider>
           <SupplierProvider>
             <div className="layout">
-              <Header />
+              <Header session={session} />
 
-                <main className="main-content">
+              <main className="main-content">
                 {children}
-                </main>
+              </main>
             </div>
           </SupplierProvider>
         </UserProvider>
