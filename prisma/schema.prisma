@@ -14,14 +14,6 @@ enum Role {
     superadmin
 }
 
-// enum Type {
-//     agencia_tours
-//     agencia_local
-//     traslados
-//     guia
-//     hotel
-// }
-
 model User {
     id            String    @id @default(cuid())
     name          String?
@@ -92,9 +84,6 @@ model Supplier {
 
     services Service[]
     users    User[]
-
-    type     String? 
-    
 }
 
 model Service {

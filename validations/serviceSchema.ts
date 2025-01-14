@@ -16,7 +16,11 @@ export const serviceSchema = z.object({
   price: z
     .number()
     .positive("El precio debe ser un número positivo"),
-    
+
+  // packages: z
+  //   .string()
+  //   .nonempty("Debe haber al menos un paquete"),
+
   location: z
     .string()
     .nonempty("La ubicación es obligatoria")
@@ -26,14 +30,14 @@ export const serviceSchema = z.object({
     // .nonempty("La Fecha inicio del servicio es obligatorio"),
 
     .date({ message: "La fecha debe tener un formato válido (ISO 8601)" }),
-    
+
   availableTo: z
 
-  .date({ message: "La fecha debe tener un formato válido (ISO 8601)" }),
-    
-    // .nonempty("La fecha llegada del servicio es obligatorio"),
-    
-    // .datetime({ message: "La fecha debe tener un formato válido (ISO 8601)" }),
-    
-  
+    .date({ message: "La fecha debe tener un formato válido (ISO 8601)" }),
+
+  // .nonempty("La fecha llegada del servicio es obligatorio"),
+
+  // .datetime({ message: "La fecha debe tener un formato válido (ISO 8601)" }),
+
+
 });

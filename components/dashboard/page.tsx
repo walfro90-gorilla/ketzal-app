@@ -51,7 +51,7 @@ export function Dashboard({ session, children }) {
 
 
   return (
-    <div className="mt-24 flex flex-col h-screen">
+    <div className="mt-12 flex flex-col h-screen">
 
       <SidebarProvider className="mt-12">
         <SidebarLeft user={session.user} />
