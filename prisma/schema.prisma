@@ -24,8 +24,8 @@ model User {
     role          Role      @default(admin)
     accounts      Account[]
 
-    supplierId    Int?
-    supplier      Supplier? @relation(fields: [supplierId], references: [id])
+    supplierId Int?
+    supplier   Supplier? @relation(fields: [supplierId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -71,7 +71,6 @@ model Product {
     updatedAt   DateTime @updatedAt
 }
 
-
 model Supplier {
     id           Int      @id @default(autoincrement())
     name         String   @unique
@@ -96,9 +95,9 @@ model Service {
     availableFrom DateTime?
     availableTo   DateTime?
     createdAt     DateTime  @default(now())
+    packs         Json? // {packs:
 
-    supplier Supplier  @relation(fields: [supplierId], references: [id])
+    supplier Supplier @relation(fields: [supplierId], references: [id])
     // bookings Booking[]
     // reviews  Review[]
 }
-

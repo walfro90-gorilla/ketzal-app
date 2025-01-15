@@ -3,7 +3,8 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
 // API Service
-import {getService} from "@/app/(protected)/services/services.api";
+import { getService } from "@/app/(protected)/services/services.api";
+import { Row } from "antd";
 
 
 
@@ -11,6 +12,9 @@ async function ServiceDetailPage({ params }: { params: { id: string } }) {
     // console.log(params);
 
     const resolvedParams = await params
+
+
+
 
     const service = await getService(resolvedParams.id)
     console.log(service)
@@ -35,7 +39,20 @@ async function ServiceDetailPage({ params }: { params: { id: string } }) {
                     <h1>{service.name}</h1>
                     <p>{service.description}</p>
                     <p> ${service.price}</p>
-                    
+
+                    {service.packs.data.map((pack) =>
+                        <Row key={pack.id}>
+                            <div >
+                                <h1>{pack.name}</h1>
+                                <p>{pack.description}</p>
+                                <p> ${pack.price}</p>
+                                <p> {pack.qty}</p>
+                            </div>
+                        </Row>
+                    )
+
+                    }
+
                 </CardContent>
             </Card>
         </div>

@@ -21,6 +21,7 @@ import { serviceSchema } from "@/validations/serviceSchema"
 import { Alert, Avatar, Space, Card, Col, Row, Table, message } from "antd"
 
 import Marquee from 'react-fast-marquee';
+import ImageUploader from "@/components/images-uploader"
 
 
 export function ServiceForm({ service, session }) {
@@ -34,14 +35,14 @@ export function ServiceForm({ service, session }) {
     const params = useParams<{ id: string }>()
 
     // STATEs for packages
-    const [pack, setPack] = useState<{ name: string, description: string, price: number }>({ name: '', description: '', qty: 0, price: 0 })
-    const [packs, setPacks] = useState<{ data: { name: string, description: string, price: number }[] }>({ data: [] })
+    const [pack, setPack] = useState<{ name: string, description: string, qty: number, price: number }>({ name: '', description: '', qty: 0, price: 0 })
+    const [packs, setPacks] = useState<{ data: { name: string, description: string, qty: number, price: number }[] }>({ data: [] })
 
     // STATE FOR suppliers
     const [suppliers, setSuppliers] = useState<{ id: number, name: string }[]>([])
     const [selectedSupplier, setSelectedSupplier] = useState<{ id: number, name: string } | undefined>(undefined)
 
-    // MESSAGE API from antd
+    // // // MESSAGE API from antd
     const [messageApi, contextHolder] = message.useMessage();
     // WARNING message 
     const warning = ({ content }: { content: string }) => {
@@ -68,6 +69,7 @@ export function ServiceForm({ service, session }) {
 
     // USE EFFECT TO FETCH suppliers
     useEffect(() => {
+        
         if (errors.name) {
             warning({ content: "Se necesitan todos los campos" })
         }
@@ -88,7 +90,7 @@ export function ServiceForm({ service, session }) {
     }, [])
 
     // USE FORM HOOK: useForm, zodResolver, register, handleSubmit and setValue from react-hook-form
-    const { control, register, handleSubmit, setValue, formState: { errors } } = useForm(
+    const { control, register, handleSubmit, setValue,getValues, formState: { errors } } = useForm(
         {
             defaultValues: {
                 supplierId: service?.supplierId,
@@ -98,7 +100,7 @@ export function ServiceForm({ service, session }) {
                 location: service?.location,
                 availableFrom: service?.availableFrom,
                 availableTo: service?.availableTo,
-                packages: service?.packages
+                packs: service?.packs
             },
             // add zod resolver to the form with the schema created
             resolver: zodResolver(serviceSchema)
@@ -123,17 +125,21 @@ export function ServiceForm({ service, session }) {
     }
 
     // Handle submit for add packages //
-    const handleSbmitPcks = (e: any) => {
+    const handleSbmitPcks = async (e: any) => {
         e.preventDefault() // Prevent the form from submitting
-        if (!pack.name || !pack.description || !pack.price) { // Check if the package has all the required fields
+        if (!pack.name || !pack.description || !pack.price || !pack.qty) { // Check if the package has all the required fields
             warning({ content: 'Ingresa todos los datos del paquete' }) // Show a warning message
             return; // Stop the function
         }
 
-        setPacks({ data: [...packs.data, pack] })  // Add the new package to the list of packages
-        setPack({ name: '', description: '', price: 0 }) // Reset the package state
-        setValue("packages", JSON.stringify(packs.data, null, 2)) // Set the value of the packages field to the updated list of packages
-        console.log("PACKS:", packs.data)
+        const updatedPacks = {data: [...packs.data, pack]} // Create a new list of packages with the new package
+
+        setPacks(updatedPacks )  // Add the new package to the list of packages
+        setPack({ name: '', description: '', qty: 0, price: 0 }) // Reset the package state
+         setValue("packs", updatedPacks) // Set the value of the packages field to the updated list of packages
+
+        console.log("PACKS:", updatedPacks)
+         console.log("Form Packs:", getValues ("packs"));
 
 
     }
@@ -200,32 +206,44 @@ export function ServiceForm({ service, session }) {
                         typeof errors.price?.message === 'string' && <Alert showIcon type="error" message={errors.price?.message} />
                     }
 
+
+                    <Label>Photos:</Label>
+                    {/* <ImageUploader /> */}
+
                     <Label> Paquetes:</Label>
                     <Row >
                         <Col span={7}>
+                            <Label>Paquete</Label>
                             <Input
                                 value={pack.name}
                                 onChange={(e) => setPack({ ...pack, name: e.target.value })}
+                                placeholder="Package Name"
                             />
                         </Col>
                         <Col span={7}>
+                            <Label>Descripción</Label>
                             <Input
                                 value={pack.description}
                                 onChange={(e) => setPack({ ...pack, description: e.target.value })}
+                                placeholder="Description"
                             />
                         </Col>
                         <Col span={7}>
+                            <Label>Precio</Label>
                             <Input
                                 value={pack.price}
+                                placeholder="Price"
                                 type="number"
                                 onChange={(e) => setPack({ ...pack, price: parseFloat(e.target.value) })}
                             />
                         </Col>
                         <Col span={3}>
+                            <Label>Cantidad</Label>
                             <Input
                                 value={pack.qty}
                                 type="number"
                                 onChange={(e) => setPack({ ...pack, qty: parseFloat(e.target.value) })}
+                                placeholder="Qty"
                             />
                         </Col>
                         <Col span={3}> <Button onClick={handleSbmitPcks} >+</Button></Col>
@@ -236,32 +254,32 @@ export function ServiceForm({ service, session }) {
                                 dataSource={packs?.data.map((pack, index) => ({ ...pack, key: index + 1 }))}
                                 columns={[
                                     {
-                                        title: 'ID',
+                                        title: <b>ID</b>,
                                         dataIndex: 'key',
                                         key: 'key',
                                     },
                                     {
-                                        title: 'Package Name',
+                                        title: <b>Package Name</b>,
                                         dataIndex: 'name',
                                         key: 'name',
                                     },
                                     {
-                                        title: 'Description',
+                                        title: <b>Description</b>,
                                         dataIndex: 'description',
                                         key: 'description',
                                     },
                                     {
-                                        title: 'Qty',
+                                        title: <b>Qty</b>,
                                         dataIndex: 'qty',
                                         key: 'qty',
                                     },
                                     {
-                                        title: 'Price',
+                                        title: <b>Price</b>,
                                         dataIndex: 'price',
                                         key: 'price',
                                     },
                                     {
-                                        title: 'Delete',
+                                        title: <b>Delete</b>,
                                         key: 'action',
                                         render: (_, record) => (
                                             <Label
@@ -280,9 +298,11 @@ export function ServiceForm({ service, session }) {
 
                     <Label>Current Packages:</Label>
 
-                    <Label>{JSON.stringify(packs, null, 2)}</Label>
+                    <Label
+                    >{JSON.stringify(packs, null, 2)}</Label>
+
                     {
-                        typeof errors.packages?.message === 'string' && <Alert showIcon type="error" message={errors.packages?.message} />
+                        typeof errors.packs?.message === 'string' && <Alert showIcon type="error" message={errors.packs?.message} />
                     }
 
                     <Label>Location:</Label>

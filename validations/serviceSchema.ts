@@ -39,5 +39,15 @@ export const serviceSchema = z.object({
 
   // .datetime({ message: "La fecha debe tener un formato válido (ISO 8601)" }),
 
+  packs: z.object({
+    data: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        qty: z.number(),
+        price: z.number(),
+      })
+    ).nonempty("Debe haber al menos un paquete"),
+  })
 
 });
