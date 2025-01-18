@@ -128,9 +128,10 @@ export function SupplierFormUser({ supplier }: any) {
                     <Input
                         type="file"
                         onChange={(e) => {
+                            
                             if (e.target.files) {
                                 setFile(e.target.files[0]);
-                                console.log("FILE:", file)
+                                console.log("FILE:", e.target.files)
                                 onUpload(e.target.files[0]);
                             }
                         }}

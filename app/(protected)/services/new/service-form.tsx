@@ -208,7 +208,9 @@ export function ServiceForm({ service, session }) {
 
 
                     <Label>Photos:</Label>
-                    {/* <ImageUploader /> */}
+                    <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        <ImageUploader />
+                    </div>
 
                     <Label> Paquetes:</Label>
                     <Row >
