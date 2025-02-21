@@ -5,8 +5,14 @@ import PopularDestinations from '@/components/PopularDestinations'
 import SpecialOffers from '@/components/SpecialOffers'
 import Testimonials from '@/components/Testimonials'
 import Footer from '@/components/Footer'
+// import Services data
+import { getServices } from './(protected)/services/services.api'
 
-export default function Home() {
+export default async function Home() {
+
+  // Fetch services
+  const services = await getServices();
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* <Header /> */}
@@ -14,7 +20,7 @@ export default function Home() {
         <HeroSection />
         <PopularCategories />
         <PopularDestinations />
-        <SpecialOffers />
+        <SpecialOffers services={services} />
         <Testimonials />
       </main>
       <Footer />

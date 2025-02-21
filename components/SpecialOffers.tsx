@@ -45,14 +45,16 @@ const offers = [
   },
 ]
 
-const SpecialOffers = () => {
+const SpecialOffers = ({ services }) => {
+
+  console.log("SERVICES", services)
   return (
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8">Trending Tour</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {offers.map((offer) => (
-            <TourCard key={offer.name} {...offer} />
+          {services.map((service) => (
+            <TourCard key={service.name} {...service} />
           ))}
         </div>
       </div>
@@ -61,45 +63,61 @@ const SpecialOffers = () => {
 }
 
 interface TourCardProps {
+  // name: string
+  // location: string
+  // image: string
+  // oldPrice: number
+  // newPrice: number
+  // discount: number
+  // reviews: number
+  // rating: number
+  // featured: boolean
+  // link: string
+
+
+
   name: string
   location: string
-  image: string
-  oldPrice: number
-  newPrice: number
-  discount: number
-  reviews: number
-  rating: number
-  featured: boolean
-  link: string
+  images: { imgAlbum: Array<string>, imgBanner: string }
+  availableFrom: string
+  availableTo: string
+  createdAt: string
+  description: string
+  id: string
+  packs: { data: Array<{ description: string, name: string, price: number, qty: number }> }
+  price: number
+  supplierId: string
+
 }
 
 const TourCard = ({
   name,
   location,
-  image,
-  oldPrice,
-  newPrice,
-  discount,
-  reviews,
-  rating,
-  featured,
-  link
+  images,
+  availableFrom,
+  availableTo,
+  createdAt,
+  description,
+  id,
+  packs,
+  price,
+  supplierId
 }: TourCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false)
 
   return (
     <Card className="group overflow-hidden">
-      <Link href={link}>
+      <Link href={`/tour/${id}`}>
         <CardContent className="p-0 relative">
           {/* Discount Badge */}
           <div className="absolute left-0 top-0 z-10">
             <div className="bg-green-500 text-white px-4 py-1 rounded-br-lg">
-              {discount}%
+              {price}%
             </div>
           </div>
 
           {/* Featured Badge */}
-          {featured && (
+          {price && (
             <div className="absolute right-4 top-4 z-10">
               <div className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm">
                 Featured
@@ -110,7 +128,7 @@ const TourCard = ({
           {/* Image Container */}
           <div className="relative aspect-[4/3] overflow-hidden">
             <Image
-              src={image}
+              src={images.imgBanner}
               alt={name}
               layout="fill"
               objectFit="cover"
@@ -127,9 +145,8 @@ const TourCard = ({
             className="absolute bottom-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg transition-transform hover:scale-110"
           >
             <Heart
-              className={`h-5 w-5 ${
-                isFavorite ? 'fill-red-500 stroke-red-500' : 'stroke-gray-500'
-              }`}
+              className={`h-5 w-5 ${isFavorite ? 'fill-red-500 stroke-red-500' : 'stroke-gray-500'
+                }`}
             />
           </button>
 
@@ -150,26 +167,25 @@ const TourCard = ({
                 {[...Array(5)].map((_, i) => (
                   <span
                     key={i}
-                    className={`text-lg ${
-                      i < rating ? 'text-yellow-400' : 'text-gray-300'
-                    }`}
+                    className={`text-lg ${i < price ? 'text-yellow-400' : 'text-gray-300'
+                      }`}
                   >
                     ★
                   </span>
                 ))}
               </div>
-              <span className="text-gray-500 text-sm">
-                {reviews} {reviews === 1 ? 'Review' : 'Reviews'}
-              </span>
+              {/* <span className="text-gray-500 text-sm">
+                {price} {[price] === 1 ? 'Review' : 'Reviews'}
+              </span> */}
             </div>
 
             {/* Price */}
             <div className="flex items-center gap-2">
               <span className="text-gray-400 line-through text-sm">
-                ${oldPrice.toFixed(2)}
+                ${price.toFixed(2)}
               </span>
               <span className="text-green-600 font-semibold">
-                ${newPrice.toFixed(2)}
+                ${price.toFixed(2)}
               </span>
             </div>
           </div>

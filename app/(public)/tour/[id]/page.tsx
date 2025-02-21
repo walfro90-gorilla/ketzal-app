@@ -6,51 +6,69 @@ import { TourLocation } from '@/components/tour-location'
 import { TourBookingForm } from '@/components/tour-booking-form'
 import { LocalHighlights } from '@/components/local-highlights'
 import { OrganizedBy } from '@/components/organized-by'
+import { getService } from '@/app/(protected)/services/services.api'
+import { getSupplier } from '@/app/(protected)/suppliers/suppliers.api'
+import { TourIncludeExclude } from '@/components/tour-include-exclude'
 
-export default function TourPage({ params }: { params: { id: string } }) {
+export default async function TourPage({ params }: { params: { id: string } }) {
+
+  //  // Fetch services
+  const resolvedParams = await params
+
+  const service = await getService(resolvedParams.id)
+  console.log("Service data: ", service)
+
+  const provider = await getSupplier(service.supplierId)
+  console.log("Provider data: ", provider)
+
+  const availableFrom = new Date(service.availableFrom);
+  const availableTo = new Date(service.availableTo);
+  const durationInMilliseconds = availableTo.getTime() - availableFrom.getTime();
+  const durationInDays = durationInMilliseconds / (1000 * 60 * 60 * 24);
+
   const tourData = {
+
+
+
     id: params.id,
-    name: "Ketzal Eco-Adventure Tour",
-    bannerImage: "/placeholder.svg?height=800&width=1600&text=Tour+Banner",
-    images: [
-      "/placeholder.svg?height=600&width=800&text=Ketzal+Rainforest",
-      "/placeholder.svg?height=600&width=800&text=Local+Wildlife",
-      "/placeholder.svg?height=600&width=800&text=Mayan+Ruins",
-    ],
+    name: service.name,
+    bannerImage: service.images.imgBanner,
+
+    itinerary: service.itinerary,
+
+    images: service.images.imgAlbum.map((img) => img),
+
+
+    fromCity: service.cityFrom,
+    toCity: service.cityTo,
+
     location: {
-      title: "UK,London,State-23",
-      address: "London, UK",
+      title: service.title,
+      address: service.cityTo + ", " + service.stateTo,
       coordinates: {
         lat: 51.5074,
         lng: -0.1278
       }
     },
-    included: [
-      "Open Place",
-      "Guide Facility",
-      "Food",
-      "Car Facility"
-    ],
-    excluded: [
-      "Sea Food",
-      "Only Guide for Mountain",
-      "4 seat Car",
-      "No Tent"
-    ],
-    description: "Embark on an unforgettable journey through the lush rainforests of Central America. Our Ketzal Eco-Adventure Tour offers a unique blend of nature exploration, cultural immersion, and thrilling activities.",
-    duration: "5 days",
-    tourType: "Nature & Adventure",
-    groupSize: "6 to 12 people",
+    included: service.includes.map((include) => include), 
+    excluded: service.excludes.map((exclude) => exclude),
+    description: service.description,
+    duration: durationInDays + " days",
+    tourType: service.serviceCategory,
+    groupSize: service.sizeTour + " people",
     //location: "Central America",
     language: "English, Spanish",
     price: 5.88,
-    originalPrice: 6.03,
+    originalPrice: service.price,
     rating: 5,
+    availableFrom: service.availableFrom,
+    availableTo: service.availableTo,
+    packs: service.packs.data,
     reviewCount: 1,
     organizer: {
-      name: "showrav Hasan",
-      memberSince: "2021",
-      avatar: "/placeholder.svg?height=100&width=100"
+      name: provider.name,
+      memberSince: provider.createdAt,
+      avatar: provider.imgLogo,
     },
     localInfo: {
       climate: "Tropical, with average temperatures of 25°C (77°F)",
@@ -76,7 +94,7 @@ export default function TourPage({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      <TourHeader 
+      <TourHeader
         title={tourData.name}
         bannerImage={tourData.bannerImage}
         duration={tourData.duration}
@@ -86,7 +104,7 @@ export default function TourPage({ params }: { params: { id: string } }) {
         rating={tourData.rating}
         reviewCount={tourData.reviewCount}
       />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -94,11 +112,15 @@ export default function TourPage({ params }: { params: { id: string } }) {
               <TourGallery images={tourData.images} />
             </div>
             <div className="lg:col-span-4 space-y-6">
-              <TourPricing 
-                price={tourData.price} 
+              <TourPricing
+                packs={tourData.packs}
+                availableFrom={tourData.availableFrom}
+                availableTo={tourData.availableTo}
+                price={tourData.price}
                 originalPrice={tourData.originalPrice}
               />
               <OrganizedBy
+
                 name={tourData.organizer.name}
                 memberSince={tourData.organizer.memberSince}
                 avatar={tourData.organizer.avatar}
@@ -111,11 +133,17 @@ export default function TourPage({ params }: { params: { id: string } }) {
               <div className="lg:col-span-2">
                 <TourInfo tour={tourData} />
                 <div className="mt-8">
-                  <TourLocation 
+                  <TourLocation
+                    itinerary={tourData.itinerary}
                     location={tourData.location}
                     included={tourData.included}
                     excluded={tourData.excluded}
                   />
+                  {/* <TourIncludeExclude
+                    location={tourData.location}
+                    included={tourData.included}
+                    excluded={tourData.excluded}
+                  /> */}
                 </div>
                 <div className="mt-8">
                   <LocalHighlights localInfo={tourData.localInfo} highlights={tourData.highlights} />

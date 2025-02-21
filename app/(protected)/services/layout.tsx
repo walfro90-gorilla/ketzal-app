@@ -22,7 +22,7 @@ const ProtectedLayout = async ({
 
 
     return (
-        <div className="container flex justify-center items-center min-h-screen">
+        <div className="container flex justify-center items-center h-full mx-auto">
 
             {children}
         </div>

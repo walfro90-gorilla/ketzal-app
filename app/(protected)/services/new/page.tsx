@@ -15,21 +15,25 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
 
 
     return (
-        <div className="flex justify-center items-center h-screen">
-            <Card>
-                <CardHeader>
-                    <CardTitle>
-                        {
-                            !service.statusCode ? "Edit service" : "Create New service"
-                        }
+        <div>
 
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ServiceForm service={service} session={session} />
-                </CardContent>
-            </Card>
+            <div className="flex justify-center items-center h-full">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
+                            {
+                                !service.statusCode ? "Edit service" : "Create New service"
+                            }
+
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ServiceForm service={service} session={session} />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
+
     )
 }
 

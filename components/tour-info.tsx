@@ -2,6 +2,10 @@ import { Star, Clock, Users, Globe, Thermometer, Calendar } from 'lucide-react'
 
 interface TourInfoProps {
   tour: {
+    availableFrom: string
+    availableTo: string 
+    fromCity: string
+    toCity: string
     description: string
     duration: string
     groupSize: string
@@ -20,6 +24,10 @@ export function TourInfo({ tour }: TourInfoProps) {
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
       <div className="flex items-center mb-4">
         <Star className="text-yellow-400 mr-1" />
+        <Star className="text-yellow-400 mr-1" />
+        <Star className="text-yellow-400 mr-1" />
+        <Star className="text-yellow-400 mr-1" />
+        <Star className="text-yellow-400 mr-1" />
         <span className="font-bold mr-2">{tour.rating}</span>
         <span className="text-gray-600">({tour.reviewCount} reviews)</span>
       </div>
@@ -35,7 +43,7 @@ export function TourInfo({ tour }: TourInfoProps) {
         </div>
         <div className="flex items-center">
           <Globe className="mr-2" />
-          <span>{tour.language}</span>
+          <span>{tour.fromCity} to {tour.toCity} </span>
         </div>
         <div className="flex items-center">
           <Thermometer className="mr-2" />
@@ -43,7 +51,23 @@ export function TourInfo({ tour }: TourInfoProps) {
         </div>
         <div className="flex items-center">
           <Calendar className="mr-2" />
-          <span>Best time to visit: {tour.localInfo.bestTimeToVisit}</span>
+          <span>
+            {
+              new Date(tour.availableFrom).toLocaleDateString("es", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })
+            }
+             - 
+            {
+              new Date(tour.availableTo ).toLocaleDateString("es", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })
+            }
+          </span>
         </div>
       </div>
     </div>

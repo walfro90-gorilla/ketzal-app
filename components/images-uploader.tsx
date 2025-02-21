@@ -2,34 +2,32 @@ import React from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Space, Upload, UploadProps, message } from "antd";
 
-
+// Import the context and the hook  to use the context  from the ServiceContext
+import { useServices } from "@/context/ServiceContext";
 
 
 
 const ImageUploader = () => {
 
-    const [imgUrl, setImgUrl] = React.useState<string | null>(null);
-    const [isUploading, setIsUploading] = React.useState(false); // Controla el estado de subida
-    const [prevFileListLength, setPrevFileListLength] = React.useState(0); // Estado para la longitud previa del fileList
+    // Use the hook to get the context
+    const { images, setImages } = useServices();
+
+    const [isUploading, setIsUploading] = React.useState(false);
+    const [prevFileListLength, setPrevFileListLength] = React.useState(0);
 
     // Message API for notifications
     const [messageApi, contextHolder] = message.useMessage();
 
     const props: UploadProps = {
         beforeUpload: (file) => {
-            console.log("FIIILE:", file);
-            // Verificar si el archivo es una imagen
-            const isPNG = file.type === 'image/png'; // Verificar si el archivo es PNG
-            const isJPG = file.type === 'image/jpeg'; // Verificar si el archivo es JPG
-            const sizeFile = file.size <= 5 * 1024 * 1024; // Verificar el tamaño del archivo 
+            const isPNG = file.type === "image/png";
+            const isJPG = file.type === "image/jpeg";
+            const sizeFile = file.size <= 5 * 1024 * 1024; // Límite de 5MB
 
             if (!isPNG && !isJPG && sizeFile) {
                 messageApi.error(`File is not a valid image file`);
             }
-            // if (!sizeFile) { // 5MB limit
-            //     messageApi.error(`File size exceeds the 5MB limit.`);
-            // }
-            return isPNG || isJPG || sizeFile ||  Upload.LIST_IGNORE;
+            return isPNG || isJPG || sizeFile || Upload.LIST_IGNORE;
         },
         onChange: (info) => {
             console.log(info.fileList);
@@ -37,43 +35,45 @@ const ImageUploader = () => {
     };
 
     // UPLOAD image to cloudinary
-    const onUpload = async (file: File) => {
-
+    const onUpload = async (file: File, type: "banner" | "album") => {
         try {
-            // Verify the size of the file in formData
             const fileSize = file.size;
-            if (fileSize > 5 * 1024 * 1024) { // 5MB limit
+            if (fileSize > 5 * 1024 * 1024) {
                 throw new Error("File size exceeds the 5MB limit.");
             }
 
-            setIsUploading(true); // Indicar que la subida está en progreso
+            setIsUploading(true);
 
             const formData = new FormData();
             formData.append("image", file);
 
-
-
-
             const response = await fetch("http://localhost:3000/api/upload", {
                 method: "POST",
                 body: formData,
-
             });
-            console.log("RESPPONSE:", response) // Verificar la respuesta
+
             if (response.status === 200) {
                 const dataImage = await response.json();
-                await messageApi.success("Uploaded Image:");
                 if (dataImage.url) {
-                    setImgUrl(dataImage.url);
+                    if (type === "banner") {
+                        setImages((prev) => ({
+                            ...prev,
+                            imgBanner: dataImage.url,
+                        }));
+                    } else if (type === "album") {
+                        setImages((prev) => ({
+                            ...prev,
+                            imgAlbum: [...prev.imgAlbum, dataImage.url],
+                        }));
+                    }
+                    messageApi.success("Image uploaded successfully!");
+                    console.log("IMAGES:", images);
                 }
             }
-
         } catch (error) {
-
-            messageApi.warning("Upload failed: " + error); // Mostrar mensaje de error
-            console.log("Upload failed:", error);
+            messageApi.error("Upload failed: " + error);
         } finally {
-            setIsUploading(false); // Restablecer el estado
+            setIsUploading(false);
         }
     };
 
@@ -81,6 +81,7 @@ const ImageUploader = () => {
         <>
             {contextHolder}
             <Space direction="vertical" style={{ width: "100%" }} size="large">
+                {/* Upload para el banner */}
                 <Upload
                     {...props}
                     listType="picture"
@@ -88,36 +89,40 @@ const ImageUploader = () => {
                     onChange={(info) => {
                         const file = info.fileList[0]?.originFileObj;
                         if (file && !isUploading) {
-                            onUpload(file); // Llamar a la función de subida
+                            onUpload(file, "banner");
                         }
+                    }}
+                    onRemove={() => {
+                        setImages((prev) => ({ ...prev, imgBanner: null }));
                     }}
                 >
                     <Button icon={<UploadOutlined />}>Banner (Max: 1)</Button>
                 </Upload>
 
+                {/* Upload para el álbum */}
                 <Upload
                     {...props}
-                    onRemove={() => {
-                        setImgUrl(null); // Eliminar la imagen al eliminar un archivo
-                    }}
                     listType="picture"
                     maxCount={9}
                     multiple
-                    onChange={async (info) => {
-                        // Verificar si la acción fue eliminar un archivo
+                    onChange={(info) => {
                         if (info.fileList.length < prevFileListLength) {
                             setPrevFileListLength(info.fileList.length);
-                            return; // Evitar ejecutar `onUpload` si la acción fue eliminar
+                            return;
                         }
-
-                        setPrevFileListLength(info.fileList.length); // Actualizar longitud previa
-
-                        // Subir el último archivo añadido
+                        setPrevFileListLength(info.fileList.length);
                         const lastFile = info.fileList[info.fileList.length - 1];
                         if (lastFile?.originFileObj && !isUploading) {
-                            await onUpload(lastFile.originFileObj as File);
-                            console.log("URL:", imgUrl);
+                            onUpload(lastFile.originFileObj as File, "album");
                         }
+                    }}
+                    onRemove={(file) => {
+                        setImages((prev) => ({
+                            ...prev,
+                            imgAlbum: prev.imgAlbum.filter(
+                                (url) => url !== file.url
+                            ),
+                        }));
                     }}
                 >
                     <Button icon={<UploadOutlined />}>Album (Max: 9)</Button>

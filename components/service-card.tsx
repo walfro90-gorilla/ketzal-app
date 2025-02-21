@@ -12,6 +12,10 @@ interface Service {
     location: string;
     availableFrom: string;
     availableTo: string;
+    images: {
+        imgBanner: string;
+        imgAlbum: string[];
+    };
     
 }
 
@@ -36,7 +40,7 @@ export function ServiceCard({ service }: { service: Service }) {
                 </CardTitle>
             </CardHeader>
 
-            <img alt="" src={service.imgLogo} />
+            <img alt="" src={service.images.imgBanner} />
             <CardContent>
                 <p>{service.description}</p>
 

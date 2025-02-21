@@ -5,6 +5,7 @@ import { ServiceCard } from "@/components/service-card";
 
 import { buttonVariants } from "@/components/ui/button";
 import { auth } from "@/auth";
+import { Card } from "antd";
 
 export default async function Service() {
 
@@ -12,7 +13,7 @@ export default async function Service() {
     const session = await auth()
 
     return (
-        <div>
+      <Card>
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-4xl font-bold">Services</h1>
                 <Link
@@ -30,6 +31,6 @@ export default async function Service() {
                     <ServiceCard service={service} key={service.id} />
                 ))}
             </div>
-        </div>
+        </Card>
     )
 }

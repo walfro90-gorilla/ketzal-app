@@ -15,7 +15,6 @@ async function ServiceDetailPage({ params }: { params: { id: string } }) {
 
 
 
-
     const service = await getService(resolvedParams.id)
     console.log(service)
 

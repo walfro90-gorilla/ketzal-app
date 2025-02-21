@@ -86,18 +86,31 @@ model Supplier {
 }
 
 model Service {
-    id            Int       @id @default(autoincrement())
-    supplierId    Int
-    name          String
-    description   String?
-    price         Float
-    location      String?
-    availableFrom DateTime?
-    availableTo   DateTime?
-    createdAt     DateTime  @default(now())
-    packs         Json? // {packs:
-
-    supplier Supplier @relation(fields: [supplierId], references: [id])
+    id              Int       @id @default(autoincrement())
+    supplierId      Int
+    name            String
+    description     String?
+    price           Float
+    location        String?
+    availableFrom   DateTime?
+    availableTo     DateTime?
+    createdAt       DateTime  @default(now())
+    packs           Json? // {packs:
+    images          Json? // {images: [url1, url2, url3]}
+    ytLink          String?
+    sizeTour        Float?
+    serviceType     String?
+    serviceCategory String?
+    stateFrom       String?
+    cityFrom        String?
+    stateTo         String?
+    cityTo          String?
+    includes        Json?
+    excludes        Json?
+    faqs            Json?
+    itinerary       Json?
+    
+    supplier        Supplier  @relation(fields: [supplierId], references: [id])
     // bookings Booking[]
     // reviews  Review[]
 }

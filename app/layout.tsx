@@ -4,6 +4,8 @@ import "./globals.css";
 
 import { SupplierProvider } from "@/context/SupplierContext";
 import { UserProvider } from "@/context/UserContext";
+import { ServiceProvider } from "@/context/ServiceContext";
+
 import Header from "@/components/header";
 import { auth } from "@/auth";
 
@@ -32,21 +34,24 @@ export default async function RootLayout({
 
   // AUTHENTICATION
   const session = await auth()
- 
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+
         <UserProvider>
           <SupplierProvider>
-            <div className="layout">
-              <Header session={session} />
+            <ServiceProvider>
+              <div className="layout">
+                <Header session={session} />
 
-              <main className="main-content">
-                {children}
-              </main>
-            </div>
+                <main className="main-content">
+                  {children}
+                </main>
+              </div>
+            </ServiceProvider>
           </SupplierProvider>
         </UserProvider>
       </body>

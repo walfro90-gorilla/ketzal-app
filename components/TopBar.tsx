@@ -46,13 +46,13 @@ const TopBar = ({ session }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-green-700">
                 <Globe className="h-4 w-4 mr-1" />
-                Español
+                Latino
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>English</DropdownMenuItem>
-              <DropdownMenuItem>Español</DropdownMenuItem>
+              <DropdownMenuItem>Latino</DropdownMenuItem>
               <DropdownMenuItem>Français</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
