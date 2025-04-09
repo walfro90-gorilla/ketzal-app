@@ -3,7 +3,7 @@ import { Star, Clock, Users, Globe, Thermometer, Calendar } from 'lucide-react'
 interface TourInfoProps {
   tour: {
     availableFrom: string
-    availableTo: string 
+    availableTo: string
     fromCity: string
     toCity: string
     description: string
@@ -23,11 +23,13 @@ export function TourInfo({ tour }: TourInfoProps) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
       <div className="flex items-center mb-4">
-        <Star className="text-yellow-400 mr-1" />
-        <Star className="text-yellow-400 mr-1" />
-        <Star className="text-yellow-400 mr-1" />
-        <Star className="text-yellow-400 mr-1" />
-        <Star className="text-yellow-400 mr-1" />
+        {[...Array(5)].map((_, index) => (
+          <Star
+            key={index}
+            className={`mr-1 ${index < tour.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+            fill='yellow'
+          />
+        ))}
         <span className="font-bold mr-2">{tour.rating}</span>
         <span className="text-gray-600">({tour.reviewCount} reviews)</span>
       </div>
@@ -55,15 +57,15 @@ export function TourInfo({ tour }: TourInfoProps) {
             {
               new Date(tour.availableFrom).toLocaleDateString("es", {
                 year: "numeric",
-                month: "2-digit",
+                month: "short",
                 day: "2-digit",
               })
             }
-             - 
+            -
             {
-              new Date(tour.availableTo ).toLocaleDateString("es", {
+              new Date(tour.availableTo).toLocaleDateString("es", {
                 year: "numeric",
-                month: "2-digit",
+                month: "short",
                 day: "2-digit",
               })
             }

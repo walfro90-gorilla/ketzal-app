@@ -1,9 +1,11 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { MapPin } from "lucide-react"
 
 type ItineraryItem = {
   id: number
+  title: string
   date: string
   time: string
   location: string
@@ -61,7 +63,7 @@ export default function Itinerary({ itineraryData }: { itineraryData: ItineraryI
           {Object.entries(groupedData).map(([date, items]) => (
             <div key={date} className="mb-4 sm:mb-6">
               <h2 className="text-lg sm:text-xl font-semibold mb-2">
-                {new Date(date).toLocaleDateString("en-US", {
+                {new Date(date).toLocaleDateString("es-MX", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
@@ -73,8 +75,12 @@ export default function Itinerary({ itineraryData }: { itineraryData: ItineraryI
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-grow">
-                        <h3 className="font-semibold text-sm sm:text-base">{item.location}</h3>
+                        <h3 className="font-semibold text-sm sm:text-base">{item.title}</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground">{item.description}</p>
+                        <div className="flex items-center text-xs sm:text-sm text-gray-500 mt-1">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          {item.location}
+                        </div>
                       </div>
                       <span className="text-xs sm:text-sm font-medium ml-2">{item.time}</span>
                     </div>

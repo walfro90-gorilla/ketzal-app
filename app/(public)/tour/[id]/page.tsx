@@ -50,12 +50,12 @@ export default async function TourPage({ params }: { params: { id: string } }) {
         lng: -0.1278
       }
     },
-    included: service.includes.map((include) => include), 
+    included: service.includes.map((include) => include),
     excluded: service.excludes.map((exclude) => exclude),
     description: service.description,
-    duration: durationInDays + " days",
+    duration: durationInDays + " dias",
     tourType: service.serviceCategory,
-    groupSize: service.sizeTour + " people",
+    groupSize: service.sizeTour + "  viajeros",
     //location: "Central America",
     language: "English, Spanish",
     price: 5.88,
@@ -70,6 +70,7 @@ export default async function TourPage({ params }: { params: { id: string } }) {
       memberSince: provider.createdAt,
       avatar: provider.imgLogo,
     },
+    faqs: service.faqs,
     localInfo: {
       climate: "Tropical, with average temperatures of 25°C (77°F)",
       bestTimeToVisit: "December to April (dry season)",
@@ -77,18 +78,6 @@ export default async function TourPage({ params }: { params: { id: string } }) {
       wildlife: ["Ketzal birds", "Howler monkeys", "Jaguars", "Toucans"],
     },
     highlights: [
-      {
-        title: "Rainforest Canopy Tour",
-        description: "Zip-line through the treetops for a bird's-eye view of the rainforest.",
-      },
-      {
-        title: "Ancient Mayan Ruins",
-        description: "Explore well-preserved Mayan temples and learn about the ancient civilization.",
-      },
-      {
-        title: "Night Wildlife Safari",
-        description: "Spot nocturnal animals on a guided night tour through the jungle.",
-      },
     ],
   }
 
@@ -146,7 +135,7 @@ export default async function TourPage({ params }: { params: { id: string } }) {
                   /> */}
                 </div>
                 <div className="mt-8">
-                  <LocalHighlights localInfo={tourData.localInfo} highlights={tourData.highlights} />
+                  <LocalHighlights faqs={tourData.faqs} localInfo={tourData.localInfo} highlights={tourData.highlights} />
                 </div>
               </div>
               <div className="lg:col-span-1">

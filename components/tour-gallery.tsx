@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import '../styles/tour-gallery.css'
+import { Carousel } from 'antd'
 
 type ViewOption = 'photos' | 'video' | 'map'
 
@@ -50,22 +51,24 @@ export function TourGallery({ images }: { images: string[] }) {
         </button>
       </div>
 
-      <div className="gallery-thumbnails">
+
+      <Carousel autoplay className="gallery-thumbnails" dots={true} slidesToShow={4} slidesToScroll={1}>
         {images.map((image, index) => (
-          <div
-            key={index}
-            className={`gallery-thumbnail ${mainImage === image ? 'active' : ''}`}
-            onClick={() => setMainImage(image)}
-          >
-            <Image
-              src={image}
-              alt={`Tour image ${index + 1}`}
-              fill
-              className="object-cover"
-            />
-          </div>
+              <div
+              key={index}
+              className={`gallery-thumbnail ${mainImage === image ? 'active' : ''}`}
+              onClick={() => setMainImage(image)}
+              style={{ margin: '0 5px', width: '80px', height: '80px' }}
+              >
+              <Image
+                src={image}
+                alt={`Tour image ${index + 1}`}
+                fill
+                className="object-cover"
+              />
+              </div>
         ))}
-      </div>
+      </Carousel>
     </div>
   )
 }

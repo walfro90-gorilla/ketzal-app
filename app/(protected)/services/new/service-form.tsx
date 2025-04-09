@@ -48,6 +48,8 @@ import { FAQList } from "@/components/FAQList"
 import { useFAQs } from "@/hooks/useFAQs"
 import type { FAQ } from "@/types/faq"
 import VirtualItinerary from "@/components/virtual-itinerary-custom"
+import HotelSearch from "@/hotel-search"
+import TransportProviderSearch from "@/transport-provider-search"
 
 
 
@@ -88,7 +90,7 @@ const statesCitiesData: StatesCitiesData =
     "Coahuila": ["Abasolo", "Acuna", "Allende", "Arteaga", "Candela", "Castanos", "Cuatro Cienegas", "Escobedo", "Francisco I. Madero", "Frontera", "General Cepeda", "Guerrero", "Hidalgo", "Jimenez", "Juarez", "Lamadrid", "Matamoros", "Monclova", "Morelos", "Muzquiz", "Nadadores", "Nava", "Ocampo", "Parras", "Piedras Negras", "Progreso", "Ramos Arizpe", "Sabinas", "Sacramento", "Saltillo", "San Buenaventura", "San Juan de Sabinas", "San Pedro", "Sierra Mojada", "Torreon", "Viesca", "Villa Union", "Zaragoza"],
     "Colima": ["Armeria", "Colima", "Comala", "Coquimatlan", "Cuauhtemoc", "Ixtlahuacan", "Manzanillo", "Minatitlan", "Tecoman", "Villa de Alvarez"],
     "Chiapas": ["Acacoyagua", "Acala", "Acapetahua", "Aldama", "Altamirano", "Amatenango de la Frontera", "Amatenango del Valle", "Amatan", "Angel Albino Corzo", "Arriaga", "Bejucal de Ocampo", "Bella Vista", "Benemerito de las Americas", "Berriozabal", "Bochil", "Cacahoatan", "Capitan Luis Angel Vidal", "Catazaja", "Chalchihuitan", "Chamula", "Chanal", "Chapultenango", "Chenalho", "Chiapa de Corzo", "Chiapilla", "Chicoasen", "Chicomuselo", "Chilon", "Cintalapa", "Coapilla", "Comitan de Dominguez", "Copainala", "El Bosque", "El Parral", "El Porvenir", "Emiliano Zapata", "Escuintla", "Francisco Leon", "Frontera Comalapa", "Frontera Hidalgo", "Huehuetan", "Huitiupan", "Huixtla", "Huixtan", "Ixhuatan", "Ixtacomitan", "Ixtapa", "Ixtapangajoya", "Jiquipilas", "Jitotol", "Juarez", "La Concordia", "La Grandeza", "La Independencia", "La Libertad", "La Trinitaria", "Larrainzar", "Las Margaritas", "Las Rosas", "Mapastepec", "Maravilla Tenejapa", "Marques de Comillas", "Mazapa de Madero", "Mazatan", "Metapa", "Mezcalapa", "Mitontic", "Montecristo de Guerrero", "Motozintla", "Nicolas Ruiz", "Ocosingo", "Ocotepec", "Ocozocoautla de Espinosa", "Ostuacan", "Osumacinta", "Oxchuc", "Palenque", "Pantelho", "Pantepec", "Pichucalco", "Pijijiapan", "Pueblo Nuevo Solistahuacan", "Rayon", "Reforma", "Rincon Chamula San Pedro", "Sabanilla", "Salto de Agua", "San Andres Duraznal", "San Cristobal de las Casas", "San Fernando", "San Juan Cancuc", "San Lucas", "Santiago el Pinar", "Siltepec", "Simojovel", "Sitala", "Socoltenango", "Solosuchiapa", "Soyalo", "Suchiapa", "Suchiate", "Sunuapa", "Tapachula", "Tapalapa", "Tapilula", "Tecpatan", "Tenejapa", "Teopisca", "Tila", "Tonala", "Totolapa", "Tumbala", "Tuxtla Chico", "Tuxtla Gutierrez", "Tuzantan", "Tzimol", "Union Juarez", "Venustiano Carranza", "Villa Comaltitlan", "Villa Corzo", "Villaflores", "Yajalon", "Zinacantan"],
-    "Chihuahua": ["Ahumada", "Aldama", "Allende", "Aquiles Serdan", "Ascension", "Bachiniva", "Balleza", "Batopilas de Manuel Gomez Morin", "Bocoyna", "Buenaventura", "Camargo", "Carichi", "Casas Grandes", "Chihuahua", "Chinipas", "Coronado", "Coyame del Sotol", "Cuauhtemoc", "Cusihuiriachi", "Delicias", "Dr. Belisario Dominguez", "El Tule", "Galeana", "Gran Morelos", "Guachochi", "Guadalupe y Calvo", "Guadalupe", "Guazapares", "Guerrero", "Gomez Farias", "Hidalgo del Parral", "Huejotitan", "Ignacio Zaragoza", "Janos", "Jimenez", "Julimes", "Juarez", "La Cruz", "Lopez", "Madera", "Maguarichi", "Manuel Benavides", "Matachi", "Matamoros", "Meoqui", "Morelos", "Moris", "Namiquipa", "Nonoava", "Nuevo Casas Grandes", "Ocampo", "Ojinaga", "Praxedis G. Guerrero", "Riva Palacio", "Rosales", "Rosario", "San Francisco de Borja", "San Francisco de Conchos", "San Francisco del Oro", "Santa Barbara", "Santa Isabel", "Satevo", "Saucillo", "Temosachic", "Urique", "Uruachi", "Valle de Zaragoza"],
+    "Chihuahua": ["Ahumada", "Aldama", "Allende", "Aquiles Serdan", "Ascension", "Bachiniva", "Balleza", "Batopilas de Manuel Gomez Morin", "Bocoyna", "Buenaventura", "Camargo", "Carichi", "Casas Grandes", "Chihuahua", "Chinipas", "Coronado", "Coyame del Sotol", "Cuauhtemoc", "Cusihuiriachi", "Delicias", "Dr. Belisario Dominguez", "El Tule", "Galeana", "Gran Morelos", "Guachochi", "Guadalupe y Calvo", "Guadalupe", "Guazapares", "Guerrero", "Gomez Farias", "Hidalgo del Parral", "Huejotitan", "Ignacio Zaragoza", "Janos", "Jimenez", "Julimes", "Juarez", "La Cruz", "Lopez", "Madera", "Maguarichi", "Manuel Benavides", "Matachi", "Matamoros", "Meoqui", "Morelos", "Moris", "Namiquipa", "Nonoava", "Nuevo Casas Grandes", "Ocampo", "Ojinaga", "Praxedis G. Guerrero", "Riva Palacio", "Rosales", "Rosario", "Samalayuka", "San Francisco de Borja", "San Francisco de Conchos", "San Francisco del Oro", "Santa Barbara", "Santa Isabel", "Satevo", "Saucillo", "Temosachic", "Urique", "Uruachi", "Valle de Zaragoza"],
     "Ciudad de Mexico": ["Alvaro Obregon", "Azcapotzalco", "Benito Juarez", "Coyoacan", "Cuajimalpa de Morelos", "Cuauhtemoc", "Gustavo A. Madero", "Iztacalco", "Iztapalapa", "La Magdalena Contreras", "Miguel Hidalgo", "Milpa Alta", "Tlalpan", "Tlahuac", "Venustiano Carranza", "Xochimilco"],
     "Durango": ["Canatlan", "Canelas", "Coneto de Comonfort", "Cuencame", "Durango", "El Oro", "General Simon Bolivar", "Gomez Palacio", "Guadalupe Victoria", "Guanacevi", "Hidalgo", "Inde", "Lerdo", "Mapimi", "Mezquital", "Nazas", "Nombre de Dios", "Nuevo Ideal", "Ocampo", "Otaez", "Panuco de Coronado", "Penon Blanco", "Poanas", "Pueblo Nuevo", "Rodeo", "San Bernardo", "San Dimas", "San Juan de Guadalupe", "San Juan del Rio", "San Luis del Cordero", "San Pedro del Gallo", "Santa Clara", "Santiago Papasquiaro", "Suchil", "Tamazula", "Tepehuanes", "Tlahualilo", "Topia", "Vicente Guerrero"],
     "Guanajuato": ["Abasolo", "Acambaro", "Apaseo el Alto", "Apaseo el Grande", "Atarjea", "Celaya", "Comonfort", "Coroneo", "Cortazar", "Cueramaro", "Doctor Mora", "Dolores Hidalgo Cuna de la Independencia Nacional", "Guanajuato", "Huanimaro", "Irapuato", "Jaral del Progreso", "Jerecuaro", "Leon", "Manuel Doblado", "Moroleon", "Ocampo", "Penjamo", "Pueblo Nuevo", "Purisima del Rincon", "Romita", "Salamanca", "Salvatierra", "San Diego de la Union", "San Felipe", "San Francisco del Rincon", "San Jose Iturbide", "San Luis de la Paz", "San Miguel de Allende", "Santa Catarina", "Santa Cruz de Juventino Rosas", "Santiago Maravatio", "Silao de la Victoria", "Tarandacuao", "Tarimoro", "Tierra Blanca", "Uriangato", "Valle de Santiago", "Victoria", "Villagran", "Xichu", "Yuriria"],
@@ -210,7 +212,7 @@ export function ServiceForm({ service, session }) {
 
 
     // Use the hook to get the context
-    const { images, setImages, activities, setActivities } = useServices()
+    const { images, setImages, activities, setActivities, transportProviderID, setTransportProviderID } = useServices()
 
 
     const values = useSuppliers()
@@ -264,6 +266,7 @@ export function ServiceForm({ service, session }) {
         console.log("images", images)
         console.log("Errors: ", errors);
         setValue("itinerary", activities)
+        setValue("transportProviderID", transportProviderID)
 
         if (images) {
             setValue("images", {
@@ -333,6 +336,7 @@ export function ServiceForm({ service, session }) {
                 excludes: service?.excludes,
                 faqs: service?.faqs,
                 itinerary: service?.activities,
+                transportProviderID: service?.transportProviderID,
             },
             // add zod resolver to the form with the schema created
             resolver: zodResolver(serviceSchema)
@@ -482,7 +486,7 @@ export function ServiceForm({ service, session }) {
 
                     <Row className="mb-4">
                         <Col span={10}>
-                            <Label>Supplier:</Label>
+                            <Label>Proveedor::</Label>
                             <h1> {selectedSupplier?.name} </h1>
                             <div hidden>
                                 <Input
@@ -497,7 +501,7 @@ export function ServiceForm({ service, session }) {
 
                         <Col span={4}>
                             <Label>
-                                <h1>Service:</h1>
+                                <h1>Servicio:</h1>
                             </Label>
                             <Select
                                 // {...register("serviceType")}
@@ -519,7 +523,7 @@ export function ServiceForm({ service, session }) {
 
                         <Col span={4}>
                             <Label>
-                                <h1>Type:</h1>
+                                <h1>Tipo:</h1>
                             </Label>
                             <Select
                                 // {...register("serviceCategory")}
@@ -541,7 +545,7 @@ export function ServiceForm({ service, session }) {
 
                         <Col span={4}>
                             <Label>
-                                <h1>Size Tour:</h1>
+                                <h1>Tamaño:</h1>
                             </Label>
                             <Input
                                 {...register("sizeTour", {
@@ -558,9 +562,10 @@ export function ServiceForm({ service, session }) {
                     </Row>
 
                     <Row className="mb-4">
-                        <Label>Photos:</Label>
+                        <Label>Fotos:</Label>
 
                         <Col span={24}>
+
                             <ImageUploader />
 
                             {errors.images?.imgBanner && (
@@ -588,7 +593,7 @@ export function ServiceForm({ service, session }) {
 
                         <Col span={8}>
 
-                            <Label>Service Name:</Label>
+                            <Label>Nombre del Servicio:</Label>
                             <Input
                                 {...register("name")}
                             />
@@ -608,7 +613,7 @@ export function ServiceForm({ service, session }) {
                             )}
                         </Col>
                         <Col span={3} >
-                            <Label>Regular Price:</Label>
+                            <Label>Precio Regular:</Label>
                             <Input
                                 {...register("price", {
                                     setValueAs: value => parseFloat(value, 10)
@@ -623,7 +628,7 @@ export function ServiceForm({ service, session }) {
                     </Row>
                     <Row className="mb-4">
                         <Col span={24}>
-                            <Label>Description:</Label>
+                            <Label>Descripcion:</Label>
                             <Textarea
                                 {...register("description")}
                             />
@@ -655,7 +660,7 @@ export function ServiceForm({ service, session }) {
 
                     <Row className="mb-4 mt-4">
                         <Col span={12} className="mb-4">
-                            <Label className="mr-4">Available From:</Label>
+                            <Label className="mr-4">Desde:</Label>
                             <Controller
                                 name="availableFrom"
                                 control={control}
@@ -672,7 +677,7 @@ export function ServiceForm({ service, session }) {
                         </Col>
 
                         <Col span={12} className="mb-4">
-                            <Label className="mr-4">Available To:</Label>
+                            <Label className="mr-4">Hasta:</Label>
                             <Controller
                                 name="availableTo"
                                 control={control}
@@ -699,7 +704,7 @@ export function ServiceForm({ service, session }) {
                                 <Label>Origen:</Label>
                                 <Select
                                     className="w-full sm:w-1/2"
-                                    placeholder="Select a state"
+                                    placeholder="Selecciona el estado"
                                     onChange={handleStateChange}
                                     value={selectedState}
                                     options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
@@ -711,12 +716,12 @@ export function ServiceForm({ service, session }) {
 
                                 <Select
                                     className="w-full sm:w-1/2"
-                                    placeholder="Select a city"
+                                    placeholder="Seleciona la Ciudad"
                                     onChange={handleCityChange}
                                     value={selectedCity}
                                     disabled={!selectedState}
                                     options={cities.map((city) => ({ value: city, label: city }))}
-                                    notFoundContent={<div className="text-gray-500">No cities available</div>}
+                                    notFoundContent={<div className="text-gray-500">No hay ciudades disponibles</div>}
                                     showSearch
                                     filterOption={(input, option) =>
                                         option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -734,7 +739,7 @@ export function ServiceForm({ service, session }) {
                                 <Label>Destino:</Label>
                                 <Select
                                     className="w-full sm:w-1/2"
-                                    placeholder="Select a state"
+                                    placeholder="Selecciona el Estado"
                                     onChange={handleStateToChange}
                                     value={selectedStateTo}
                                     options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
@@ -746,7 +751,7 @@ export function ServiceForm({ service, session }) {
 
                                 <Select
                                     className="w-full sm:w-1/2"
-                                    placeholder="Select a city"
+                                    placeholder="Seleccciona la Ciudad"
                                     onChange={handleCityToChange}
                                     value={selectedCityTo}
                                     disabled={!selectedStateTo}
@@ -794,13 +799,38 @@ export function ServiceForm({ service, session }) {
                         </Col>
                     </Row>
 
+                    <Row>
+                        <Col span={24}>
+                            <Label>Transporte:</Label>
+                        </Col>
+                        <Col>
+                            <TransportProviderSearch />
+                        </Col>
+                        <Col>
+                            {typeof errors.transportProviderID?.message === 'string' && (
+                                <Alert showIcon type="error" message={errors.transportProviderID.message} />
+                            )}
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col span={24}>
+                            <Label>Hotel:</Label>
+                        </Col>
+                        <Col>
+                            <HotelSearch />
+                        </Col>
+                    </Row>
+
+
+
                     <Row >
                         <Col span={7}>
                             <Label>Tipo </Label>
                             <Input
                                 value={pack.name}
                                 onChange={(e) => setPack({ ...pack, name: e.target.value })}
-                                placeholder="Package Type"
+                                placeholder="Tipo de Paquete"
                             />
                         </Col>
                         <Col span={7}>
@@ -808,7 +838,7 @@ export function ServiceForm({ service, session }) {
                             <Input
                                 value={pack.description}
                                 onChange={(e) => setPack({ ...pack, description: e.target.value })}
-                                placeholder="Description"
+                                placeholder="Descripción"
                             />
                         </Col>
                         <Col span={3}>
@@ -913,14 +943,18 @@ export function ServiceForm({ service, session }) {
 
                         <Card className="w-full max-w-1xl mx-auto ">
                             <CardHeader>
-                                <CardTitle>Tour Inclusions</CardTitle>
+                                <CardTitle>
+                                    <Title level={4}>
+                                        Servicios Inlcuidos
+                                    </Title>
+                                </CardTitle>
                             </CardHeader>
                             <CardContent style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                 <Row className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <Col span={12}>
-                                        <Title level={4} className="mb-4 flex items-center">
+                                        <Title level={3} className="mb-4 flex items-center">
                                             <CheckCircle2 className="mr-2 text-green-500" />
-                                            Includes
+                                            Incluido
                                         </Title>
                                         {
                                             typeof errors.includes?.message === 'string' && <Alert showIcon type="error" message={errors.includes?.message} />
@@ -940,9 +974,9 @@ export function ServiceForm({ service, session }) {
                                         />
                                     </Col>
                                     <Col span={12}>
-                                        <Title level={4} className="mb-4 flex items-center">
+                                        <Title level={3} className="mb-4 flex items-center">
                                             <XCircle className="mr-2 text-red-500" />
-                                            Not Includes
+                                            No Incluido
                                         </Title>
                                         {
                                             typeof errors.excludes?.message === 'string' && <Alert showIcon type="error" message={errors.excludes?.message} />

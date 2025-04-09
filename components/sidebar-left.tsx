@@ -43,7 +43,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "Home",
+      title: "Inicio",
       url: "/home",
       icon: Home,
       isActive: true,
@@ -123,13 +123,13 @@ const data = {
 const dataAdmin = {
   navMain: [
     {
-      title: "Home",
+      title: "Inicio",
       url: "/home",
       icon: Home,
       isActive: true,
     },
     {
-      title: "Services",
+      title: "Servicios",
       url: "/services",
       icon: Plane,
     },

@@ -88,31 +88,31 @@ export default function VirtualItinerary() {
 
     <div className="container mx-auto px-4 py-8">
       <Title level={2} className="mb-8">
-        Virtual Itinerary
+         Itinerario virtual 🗺️
       </Title>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card title="Add Activity" className="mb-8">
+        <Card title="🆕 Actividad" className="mb-8">
           <div className="space-y-4">
             <div>
               <label htmlFor="title" className="block mb-1">
-                Title *
+                Titulo *
               </label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter activity title"
+                placeholder="Ingrese titulo de la actividad"
               />
             </div>
             <div>
               <label htmlFor="date" className="block mb-1">
-                Date *
+                Fecha: *
               </label>
               <DatePicker id="date" value={date} onChange={(value) => setDate(value)} className="w-full" />
             </div>
             <div>
               <label htmlFor="time" className="block mb-1">
-                Time *
+                Hora *
               </label>
               <TimePicker
                 id="time"
@@ -124,36 +124,36 @@ export default function VirtualItinerary() {
             </div>
             <div>
               <label htmlFor="description" className="block mb-1">
-                Description
+                Descripcion
               </label>
               <TextArea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
-                placeholder="Enter activity description"
+                placeholder="Ingresa descripcion de la actividad."
               />
             </div>
             <div>
               <label htmlFor="location" className="block mb-1">
-                Location *
+                Lugar *
               </label>
               <Input
                 id="location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Enter activity location"
+                placeholder="Ingresa lugar de actividad."
               />
             </div>
             <Button type="primary" onClick={handleSubmit} className="w-full">
-              Add Activity
+              ➕ Actividad
             </Button>
           </div>
         </Card>
 
-        <Card title="Itinerary Timeline" className="mb-8">
+        <Card title="Itinerario - Timeline" className="mb-8">
           {activities.length === 0 ? (
-            <Text>No activities added yet.</Text>
+            <Text>No se han agregado actividades.</Text>
           ) : (
             <Timeline mode="left">
               {activities.map((activity) => (

@@ -86,10 +86,11 @@ export const serviceSchema = z.object({
         .max(500, "La respuesta no debe superar los 500 caracteres"),
     })
   ).nonempty("Debe haber al menos una pregunta en las FAQs"), // Se requiere al menos una FAQ
-  
+
   itinerary: z.array(
     z.object({
-      id: z.number() ,
+      id: z.number(),
+      title: z.string().nonempty("El título es obligatorio"),
       time: z.string().nonempty("La hora es obligatoria"),
       date: z
         .string()
@@ -105,4 +106,9 @@ export const serviceSchema = z.object({
         .max(200, "La ubicación no debe superar los 200 caracteres"),
     })
   ).nonempty("Debe haber al menos un elemento en 'Itinerary'"), // Se requiere al menos un elemento en Itinerary
+
+  transportProviderID: z
+    .string()
+    .nonempty("Debe seleccionar almenos un proveedor de transporte"),
+
 });

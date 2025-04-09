@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export function TourBookingForm({ tourId }: { tourId: string }) {
   const [date, setDate] = useState('')
   const [guests, setGuests] = useState(1)
-  const [language, setLanguage] = useState('english')
+  const [language, setLanguage] = useState('español')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,12 +21,12 @@ export function TourBookingForm({ tourId }: { tourId: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Book This Tour</CardTitle>
+        <CardTitle>Reservar este Tour</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="date">Date</Label>
+            <Label htmlFor="date">Fecha</Label>
             <Input
               id="date"
               type="date"
@@ -36,7 +36,7 @@ export function TourBookingForm({ tourId }: { tourId: string }) {
             />
           </div>
           <div>
-            <Label htmlFor="guests">Number of Guests</Label>
+            <Label htmlFor="guests">Numero de Viajeros</Label>
             <Input
               id="guests"
               type="number"
@@ -47,18 +47,18 @@ export function TourBookingForm({ tourId }: { tourId: string }) {
             />
           </div>
           <div>
-            <Label htmlFor="language">Preferred Language</Label>
+            <Label htmlFor="language">Lenguaje preferido:</Label>
             <Select value={language} onValueChange={setLanguage}>
               <SelectTrigger>
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="español">Español</SelectItem>
                 <SelectItem value="english">English</SelectItem>
-                <SelectItem value="spanish">Spanish</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" className="w-full">Book Now</Button>
+          <Button type="submit" className="w-full">Reservar ya</Button>
         </form>
       </CardContent>
     </Card>

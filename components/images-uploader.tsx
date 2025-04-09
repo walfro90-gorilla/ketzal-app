@@ -5,7 +5,7 @@ import { Button, Space, Upload, UploadProps, message } from "antd";
 // Import the context and the hook  to use the context  from the ServiceContext
 import { useServices } from "@/context/ServiceContext";
 
-
+import ImgCrop from 'antd-img-crop';
 
 const ImageUploader = () => {
 
@@ -82,52 +82,66 @@ const ImageUploader = () => {
             {contextHolder}
             <Space direction="vertical" style={{ width: "100%" }} size="large">
                 {/* Upload para el banner */}
-                <Upload
-                    {...props}
-                    listType="picture"
-                    maxCount={1}
-                    onChange={(info) => {
-                        const file = info.fileList[0]?.originFileObj;
-                        if (file && !isUploading) {
-                            onUpload(file, "banner");
-                        }
-                    }}
-                    onRemove={() => {
-                        setImages((prev) => ({ ...prev, imgBanner: null }));
-                    }}
+                <ImgCrop
+                    aspect={16/ 9}
                 >
-                    <Button icon={<UploadOutlined />}>Banner (Max: 1)</Button>
-                </Upload>
+
+                    <Upload
+                        {...props}
+                        listType="picture"
+                        maxCount={1}
+                        onChange={(info) => {
+                            const file = info.fileList[0]?.originFileObj;
+                            if (file && !isUploading) {
+                                onUpload(file, "banner");
+                            }
+                        }}
+                        onRemove={() => {
+                            setImages((prev) => ({ ...prev, imgBanner: null }));
+                        }}
+                    >
+
+                        <Button icon={<UploadOutlined />}>Banner (Max: 1)</Button>
+                    </Upload>
+                </ImgCrop>
 
                 {/* Upload para el álbum */}
-                <Upload
-                    {...props}
-                    listType="picture"
-                    maxCount={9}
-                    multiple
-                    onChange={(info) => {
-                        if (info.fileList.length < prevFileListLength) {
-                            setPrevFileListLength(info.fileList.length);
-                            return;
-                        }
-                        setPrevFileListLength(info.fileList.length);
-                        const lastFile = info.fileList[info.fileList.length - 1];
-                        if (lastFile?.originFileObj && !isUploading) {
-                            onUpload(lastFile.originFileObj as File, "album");
-                        }
-                    }}
-                    onRemove={(file) => {
-                        setImages((prev) => ({
-                            ...prev,
-                            imgAlbum: prev.imgAlbum.filter(
-                                (url) => url !== file.url
-                            ),
-                        }));
-                    }}
+                <ImgCrop
+                    aspect={16/ 9}
                 >
-                    <Button icon={<UploadOutlined />}>Album (Max: 9)</Button>
-                </Upload>
-            </Space>
+                    <Upload
+                        {...props}
+                        listType="picture"
+                        maxCount={9}
+                        // multiple
+                        onChange={(info) => {
+                            if (info.fileList.length < prevFileListLength) {
+                                setPrevFileListLength(info.fileList.length);
+                                return;
+                            }
+                            setPrevFileListLength(info.fileList.length);
+
+                            const newFiles = info.fileList.filter((file) => file.originFileObj && !file.uploaded);
+
+                            newFiles.forEach(async (file) => {
+                                if (!isUploading) {
+                                    file.uploaded = true; // Marcar como subido para evitar duplicación
+                                    await onUpload(file.originFileObj as File, "album");
+                                }
+                            });
+                        }}
+                        onRemove={(file) => {
+                            setImages((prev) => ({
+                                ...prev,
+                                imgAlbum: prev.imgAlbum.filter((url) => url !== file.url),
+                            }));
+                        }}
+                    >
+                        <Button icon={<UploadOutlined />}>Album (Max: 9)</Button>
+                    </Upload>
+                </ImgCrop>
+
+            </Space >
         </>
     );
 };

@@ -44,6 +44,8 @@ export const ServiceProvider = ({ children }: { children: React.ReactNode }) => 
     
     const [activities, setActivities] = useState<Activity[]>([])
 
+    const [transportProviderID, setTransportProviderID] = useState<number | null>(null);
+
 
 
     return (
@@ -53,6 +55,8 @@ export const ServiceProvider = ({ children }: { children: React.ReactNode }) => 
                 setImages,
                 activities,
                 setActivities,
+                transportProviderID,
+                setTransportProviderID,
             }}
         >
             {children}

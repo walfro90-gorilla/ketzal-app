@@ -22,7 +22,7 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
                     <CardHeader>
                         <CardTitle>
                             {
-                                !service.statusCode ? "Edit service" : "Create New service"
+                                !service.statusCode ? "Editar Servicio 🖍️" : "Crear Nuevo Servicio ➕"
                             }
 
                         </CardTitle>

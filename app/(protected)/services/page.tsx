@@ -15,12 +15,12 @@ export default async function Service() {
     return (
       <Card>
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-4xl font-bold">Services</h1>
+                <h1 className="text-4xl font-bold">Servicios</h1>
                 <Link
                     href='/services/new'
                     className={buttonVariants()}
                 >
-                    + Service
+                    + Servicio
                 </Link>
             </div>
             <hr />

@@ -53,7 +53,7 @@ export function ServiceCard({ service }: { service: Service }) {
                         router.push(`/services/${service.id}/edit`)
                     }}
                 >
-                    Edit
+                    Editar
                 </Button>
                 <Button
                     className="mt-5"

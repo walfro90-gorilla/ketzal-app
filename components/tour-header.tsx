@@ -47,28 +47,28 @@ export function TourHeader({
             <div className="flex items-center gap-3">
               <Clock className="w-6 h-6 shrink-0 text-white" />
               <div>
-                <div className="text-sm font-medium text-white/90">Duration</div>
+                <div className="text-sm font-medium text-white/90">Duracion</div>
                 <div className="text-white">{duration}</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Building2 className="w-6 h-6 shrink-0 text-white" />
               <div>
-                <div className="text-sm font-medium text-white/90">Tour Type</div>
+                <div className="text-sm font-medium text-white/90">Tipo</div>
                 <div className="text-white">{tourType}</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Users className="w-6 h-6 shrink-0 text-white" />
               <div>
-                <div className="text-sm font-medium text-white/90">Group Size</div>
+                <div className="text-sm font-medium text-white/90">Tamaño</div>
                 <div className="text-white">{groupSize}</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <MapPin className="w-6 h-6 shrink-0 text-white" />
               <div>
-                <div className="text-sm font-medium text-white/90">Location</div>
+                <div className="text-sm font-medium text-white/90">Lugar</div>
                 <div className="text-white">{location}</div>
               </div>
             </div>

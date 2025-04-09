@@ -59,7 +59,7 @@ export function ItineraryBuilder() {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Travel Itinerary Builder</h1>
+      <h1 className="text-3xl font-bold mb-6">Itinerario - Constructor</h1>
       <Tabs
         defaultActiveKey="1"
         items={[

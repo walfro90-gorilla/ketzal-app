@@ -76,24 +76,24 @@ const Header = ({ session }) => {
 
             {/* Main Navigation Links - Desktop */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="text-green-600 font-medium">Home</Link>
+              <Link href="/" className="text-green-600 font-medium">Inicio</Link>
               <Link href="/tours" className="text-gray-600 hover:text-green-600">Tours</Link>
 
-              <Link href="/blogs" className="text-gray-600 hover:text-green-600">Blogs</Link>
+              <Link href="/blogs" className="text-gray-600 hover:text-green-600">Blog</Link>
 
-              <Link href="/contact" className="text-gray-600 hover:text-green-600">Contact</Link>
+              <Link href="/contact" className="text-gray-600 hover:text-green-600">Contacto</Link>
 
               {/* Pages Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="text-gray-600 hover:text-green-600">
-                    More
+                    Mas
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
-                    <Link href="/about">About Us</Link>
+                    <Link href="/about">Quienes somos</Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem>

@@ -70,8 +70,8 @@ export function LoginForm({
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>Login</CardTitle>
-        {isVerified && <CardDescription>Your email has been verified.</CardDescription>}
-        <CardDescription>Enter your credentials to access your account.</CardDescription>
+        {isVerified && <CardDescription>Tu email a sido confirmado.</CardDescription>}
+        <CardDescription>Ingresa tus credendciales para acceder a tu cuenta.</CardDescription>
       </CardHeader>
       <CardContent>
 
@@ -93,7 +93,7 @@ export function LoginForm({
                     />
                   </FormControl>
                   <FormDescription>
-                    This is your public display name.
+                    Este sera tu email definitivo.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -105,11 +105,11 @@ export function LoginForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <FormControl>
                     <Input
                       type='password'
-                      placeholder="password"
+                      placeholder="Contraseña"
                       {...field}
                     />
                   </FormControl>
@@ -125,13 +125,13 @@ export function LoginForm({
               error && <FormMessage>{error}</FormMessage>
             }
 
-            <Button disabled={isPending} type="submit">Submit</Button>
+            <Button disabled={isPending} type="submit">Ingresar</Button>
           </form>
         </Form>
 
         <div className="text-center mt-4">
           <p>
-            Don`t have an account? <Link href="/register"  className="text-green-500">Register</Link>
+           Aun no tienes cuenta? <Link href="/register"  className="text-green-500">Registrar</Link>
           </p>
         </div>
 

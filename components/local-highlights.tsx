@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface LocalHighlightsProps {
+  faqs: {
+    question: string
+    answer: string
+  }[]
   localInfo: {
     localCuisine: string
     wildlife: string[]
@@ -11,10 +15,10 @@ interface LocalHighlightsProps {
   }[]
 }
 
-export function LocalHighlights({ localInfo, highlights }: LocalHighlightsProps) {
+export function LocalHighlights({ faqs, localInfo, highlights }: LocalHighlightsProps) {
   return (
     <div className="space-y-8">
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Local Information</CardTitle>
         </CardHeader>
@@ -28,16 +32,16 @@ export function LocalHighlights({ localInfo, highlights }: LocalHighlightsProps)
             ))}
           </ul>
         </CardContent>
-      </Card>
+      </Card> */}
       <Card>
         <CardHeader>
-          <CardTitle>Tour Highlights</CardTitle>
+          <CardTitle>Preguntas Frecuantes</CardTitle>
         </CardHeader>
         <CardContent>
-          {highlights.map((highlight, index) => (
+          {faqs.map((faq, index) => (
             <div key={index} className="mb-4 last:mb-0">
-              <h3 className="font-semibold mb-1">{highlight.title}</h3>
-              <p>{highlight.description}</p>
+              <h3 className="font-semibold mb-1">{faq.question}</h3>
+              <p>{faq.answer}</p>
             </div>
           ))}
         </CardContent>

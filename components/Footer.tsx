@@ -26,16 +26,16 @@ const Footer = () => {
                   className="object-contain brightness-0 invert"
                 />
               </div>
-              <span className="text-2xl font-bold text-white"> app</span>
+              <span className="text-2xl font-bold text-white"> </span>
             </Link>
             <p className="text-gray-300 leading-relaxed">
-              Ketzal app is an Ultimate Travel Agency and Booking system based on Laravel for Travel Agency, Tour Operator, Car Booking, Space Rental Website booking system.
+              🌎✨ Ketzal App es el sistema definitivo para agencias de viajes y reservas. Ideal para agencias de viajes, operadores turísticos, alquiler de autos y reservas de espacios. 🚗🏨✈️
             </p>
           </div>
 
           {/* Address */}
           <div>
-            <h3 className="text-xl font-bold mb-6">ADDRESS</h3>
+            <h3 className="text-xl font-bold mb-6">Dirección</h3>
             <ul className="space-y-4">
               <li className="flex items-center space-x-3">
                 <Globe className="h-5 w-5 text-gray-400" />
@@ -47,7 +47,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <span className="text-gray-400">✉</span>
-                <span>Ketzal@Gorillabs.dev</span>
+                <span>Ketzal@Gorilabs.dev</span>
               </li>
             </ul>
           </div>
@@ -56,9 +56,9 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-6">NEWSLETTER</h3>
             <div className="flex mb-6">
-              <Input 
-                type="email" 
-                placeholder="Your email address..." 
+              <Input
+                type="email"
+                placeholder="Dejanos tu email..."
                 className="rounded-r-none bg-transparent border-gray-600 focus:border-green-500"
               />
               <Button className="rounded-l-none bg-green-600 hover:bg-green-700">
@@ -66,7 +66,7 @@ const Footer = () => {
               </Button>
             </div>
             <div>
-              <p className="text-gray-300 mb-4">We're social, connect with us:</p>
+              <p className="text-gray-300 mb-4">Siguenos en nuestras redes sociales:</p>
               <div className="flex space-x-3">
                 <Link href="#" className="p-2 rounded-full border border-gray-600 hover:border-green-500 hover:bg-green-500 transition-colors">
                   <Facebook className="h-5 w-5" />

@@ -1,4 +1,4 @@
-"use client"
+ "use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
@@ -13,9 +13,10 @@ import { signOut } from "next-auth/react"
 import { useAlertDialog } from "@/components/alert-dialog"
 import UploaderIamge from "@/components/butto-upload-image"
 import { useState } from "react"
-import { Avatar, Space } from "antd"
+import { Avatar, Space, Upload } from "antd"
 
 import { UserOutlined } from '@ant-design/icons';
+import ImgCrop from "antd-img-crop"
 
 
 
@@ -125,17 +126,21 @@ export function SupplierFormUser({ supplier }: any) {
                     <Label>Logo(250x250 px):</Label>
 
                     <Avatar src={imgUrl} shape="square" size={64} icon={<UserOutlined />} />
-                    <Input
-                        type="file"
-                        onChange={(e) => {
-                            
-                            if (e.target.files) {
-                                setFile(e.target.files[0]);
-                                console.log("FILE:", e.target.files)
-                                onUpload(e.target.files[0]);
-                            }
-                        }}
-                    />
+
+                    <ImgCrop rotate aspect={1}>
+                        <Upload
+                            listType="picture-card"
+                            showUploadList={false}
+                            beforeUpload={(file) => {
+                                setFile(file);
+                                onUpload(file);
+                                return false;
+                            }}
+                        >
+                            {imgUrl ? <img src={imgUrl} alt="avatar" style={{ width: '100%' }} /> : 'Upload'}
+                        </Upload>
+                    </ImgCrop>
+
                     <input id="logoUrl" {...register("imgLogo")} hidden />
                 </Space>
                 <Button>

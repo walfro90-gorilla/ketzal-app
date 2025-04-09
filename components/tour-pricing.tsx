@@ -33,9 +33,17 @@ export function TourPricing({ packs, availableFrom, availableTo, price, original
           </div>
         )}
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold">${
-                selectedPacks.reduce((total, pack) => total + pack.price, 0).toFixed(2)
-              }</span>
+          <span className="text-3xl font-bold">
+            {
+              selectedPacks.reduce((total, pack) => total + pack.price, 0).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            }
+          </span>
+
           {originalPrice && (
             <span className="text-gray-200 line-through text-sm">${originalPrice.toFixed(2)}</span>
           )}
@@ -45,16 +53,16 @@ export function TourPricing({ packs, availableFrom, availableTo, price, original
       <CardContent className="p-4">
         <div className="space-y-4">
           <div>
-            <h3 className="font-medium text-base mb-3">Book A Reservation</h3>
+            <h3 className="font-medium text-base mb-3">Haz tu reservas aqui 👇🏻</h3>
 
             <div className="space-y-1 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-gray-600">•</span>
-                <span>Start date :
+                <span>Desde :
                   {
                     new Date(availableFrom).toLocaleDateString("es", {
                       year: "numeric",
-                      month: "2-digit",
+                      month: "short",
                       day: "2-digit",
                     })
                   }
@@ -62,11 +70,11 @@ export function TourPricing({ packs, availableFrom, availableTo, price, original
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-600">•</span>
-                <span>End date :
+                <span>Hasta :
                   {
-                    availableTo ? new Date(availableTo).toLocaleDateString("es", {
+                    availableTo ? new Date(availableTo).toLocaleDateString("es-MX", {
                       year: "numeric",
-                      month: "2-digit",
+                      month: "short",
                       day: "2-digit",
                     }) : "No end date"
                   }
@@ -75,30 +83,42 @@ export function TourPricing({ packs, availableFrom, availableTo, price, original
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm text-gray-600">Type of package :</label>
+              <label className="text-sm text-gray-600">Paquetes:</label>
 
               <select
                 className="w-full px-3 py-1.5 text-sm border rounded-md"
                 value={selectedPack}
                 onChange={(e) => setSelectedPack(e.target.value)}
               >
-                <option value="" disabled>Select a package</option>
+                <option value="" disabled>Selecccione paquete</option>
                 {packs?.map((pack, index) => (
                   <option key={index} value={pack.name}>
-                    {pack.name} - ${pack.price.toFixed(2)} ({pack.qty} available)
+                    {pack.name} - {pack.price.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                    } ({pack.qty} available)
                   </option>
                 ))}
               </select>
-              <Button className="mt-2" onClick={handleAddPack}>Add Pack</Button>
+              <Button className="mt-2" onClick={handleAddPack}>Agregar</Button>
             </div>
           </div>
-                
+
           <div className="mt-4">
-            <h4 className="font-medium text-base mb-2">Selected Packs:</h4>
+            <h4 className="font-medium text-base mb-2">Paquetes seleccionados:</h4>
             <ul className="list-disc list-inside">
               {selectedPacks.map((pack, index) => (
                 <li key={index}>
-                  {pack.name} - ${pack.price.toFixed(2)} 
+                  {pack.name} - {pack.price.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                  }
                 </li>
               ))}
             </ul>
@@ -107,12 +127,24 @@ export function TourPricing({ packs, availableFrom, availableTo, price, original
           <div className="pt-3 border-t">
             <div className="flex justify-between mb-3">
               <span className="text-gray-600">Total:</span>
-              <span className="font-medium">${
-                selectedPacks.reduce((total, pack) => total + pack.price, 0).toFixed(2)
-              }</span>
+              <span className="font-medium">
+
+
+                {
+                  selectedPacks.reduce((total, pack) => total + pack.price, 0).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                }
+
+
+
+              </span>
             </div>
             <Button className="w-full bg-blue-600 hover:bg-blue-700">
-              Book Now
+              Reservar Ahora
             </Button>
           </div>
 

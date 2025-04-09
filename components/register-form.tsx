@@ -69,8 +69,8 @@ export default function RegisterForm() {
   return (
     <Card className="w-[350px]">
       <CardHeader>
-        <CardTitle>Register</CardTitle>
-        <CardDescription>Create your account.</CardDescription>
+        <CardTitle>Registrate</CardTitle>
+        <CardDescription>Crea tu Cuenta..</CardDescription>
       </CardHeader>
       <CardContent>
 
@@ -83,7 +83,7 @@ export default function RegisterForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Name"
@@ -92,7 +92,7 @@ export default function RegisterForm() {
                     />
                   </FormControl>
                   <FormDescription>
-                    This is your public display name.
+                    Este sera tu nombre publico.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -124,11 +124,11 @@ export default function RegisterForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <FormControl>
                     <Input
                       type='password'
-                      placeholder="password"
+                      placeholder="Contraseña"
                       {...field}
                     />
                   </FormControl>
@@ -145,11 +145,11 @@ export default function RegisterForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Confirma Contraseña</FormLabel>
                   <FormControl>
                     <Input
                       type='password'
-                      placeholder="Confirm Password"
+                      placeholder="Confirma Contraseña"
                       {...field}
                     />
                   </FormControl>
@@ -165,13 +165,13 @@ export default function RegisterForm() {
               error && <FormMessage>{error}</FormMessage>
             }
 
-            <Button disabled={isPending} type="submit">Submit</Button>
+            <Button disabled={isPending} type="submit">Registrar</Button>
           </form>
         </Form>
 
         <div className="text-center mt-4">
-          <p>Already have an account?
-            <Link href="/login" className="text-blue-500">Login</Link>
+          <p>Ya tienes cuenta?
+            <Link href="/login" className="text-blue-500"> Login</Link>
           </p>
         </div>
 

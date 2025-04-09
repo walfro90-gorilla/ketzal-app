@@ -31,13 +31,13 @@ export function TourLocation({ itinerary, location, included, excluded }: TourLo
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl font-bold text-center">Travel Itinerary</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl font-bold text-center">Itinerario 🗺️</CardTitle>
       </CardHeader>
       <div className="aspect-[4/3] w-full relative">
         <Itinerary itineraryData={itinerary} />
       </div>
       <CardContent className="pt-6">
-        <h3 className="text-lg font-medium mb-4">Included/Excluded :</h3>
+        <h3 className="text-lg font-medium mb-4">Que incluye tu tour?</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
           <div className="space-y-2">
             {included.map((item, index) => (

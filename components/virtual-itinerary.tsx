@@ -49,7 +49,7 @@ export default function VirtualItinerary() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Title level={2} className="mb-8">
-        Virtual Itinerary
+        Itinerario Virtual 🗺️
       </Title>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card title="Add Activity" className="mb-8">

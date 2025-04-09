@@ -109,6 +109,7 @@ model Service {
     excludes        Json?
     faqs            Json?
     itinerary       Json?
+    transportProviderID Int?
     
     supplier        Supplier  @relation(fields: [supplierId], references: [id])
     // bookings Booking[]

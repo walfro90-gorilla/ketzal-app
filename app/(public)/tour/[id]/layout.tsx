@@ -9,12 +9,12 @@ const TourLayout = async ({
 }>) => {
 
   // AUTHENTICATION
-  const session = await auth()
+  // const session = await auth()
 
   return (
     <div>
       <header>
-        <h1>Tour Details</h1>
+        {/* <h1>Tour Details</h1> */}
       </header>
       <main>{children}</main>
       <footer>
