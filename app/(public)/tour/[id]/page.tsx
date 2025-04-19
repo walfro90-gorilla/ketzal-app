@@ -9,6 +9,10 @@ import { OrganizedBy } from '@/components/organized-by'
 import { getService } from '@/app/(protected)/services/services.api'
 import { getSupplier } from '@/app/(protected)/suppliers/suppliers.api'
 import { TourIncludeExclude } from '@/components/tour-include-exclude'
+import HotelSearch from '@/hotel-search'
+import HotelInfo from '@/components/hotel-info'
+import TransportProviderSearch from '@/transport-provider-search'
+import TransportProvider from '@/components/transport-provider'
 
 export default async function TourPage({ params }: { params: { id: string } }) {
 
@@ -20,6 +24,12 @@ export default async function TourPage({ params }: { params: { id: string } }) {
 
   const provider = await getSupplier(service.supplierId)
   console.log("Provider data: ", provider)
+
+  const hotelProvider = await getSupplier(service.hotelProviderID)
+  console.log("Hotel Provider data: ", hotelProvider)
+
+  const transportProvider = await getSupplier(service.transportProviderID)
+  console.log("Transport Provider data: ", transportProvider)
 
   const availableFrom = new Date(service.availableFrom);
   const availableTo = new Date(service.availableTo);
@@ -121,6 +131,14 @@ export default async function TourPage({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
                 <TourInfo tour={tourData} />
+            
+
+                <HotelInfo hotelProvider={hotelProvider}   />
+
+           
+
+                <TransportProvider transportProvider={transportProvider} />
+
                 <div className="mt-8">
                   <TourLocation
                     itinerary={tourData.itinerary}

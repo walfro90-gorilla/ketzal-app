@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ServiceForm } from "./service-form"
 import { getService } from "@/app/(protected)/services/services.api"
+import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
+
 import { auth } from "@/auth"
 
 
@@ -8,6 +10,7 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
 
     const resolvedParams = await params
     const service = await getService(resolvedParams.id)
+    const suppliers = await getSuppliers()
 
     const session = await auth()
 
@@ -28,7 +31,7 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <ServiceForm service={service} session={session} />
+                        <ServiceForm suppliers={suppliers} service={service} session={session} />
                     </CardContent>
                 </Card>
             </div>

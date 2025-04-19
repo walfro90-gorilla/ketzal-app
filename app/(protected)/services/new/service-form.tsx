@@ -50,8 +50,7 @@ import type { FAQ } from "@/types/faq"
 import VirtualItinerary from "@/components/virtual-itinerary-custom"
 import HotelSearch from "@/hotel-search"
 import TransportProviderSearch from "@/transport-provider-search"
-
-
+import { set } from "date-fns"
 
 
 const { Title } = Typography
@@ -130,7 +129,7 @@ interface Include {
 
 
 
-export function ServiceForm({ service, session }) {
+export function ServiceForm({ suppliers, service, session }) {
 
 
     // FAQs STATEs  
@@ -212,7 +211,7 @@ export function ServiceForm({ service, session }) {
 
 
     // Use the hook to get the context
-    const { images, setImages, activities, setActivities, transportProviderID, setTransportProviderID } = useServices()
+    const { images, setImages, activities, setActivities, transportProviderID, setTransportProviderID, hotelProviderID, setHotelProviderID } = useServices()
 
 
     const values = useSuppliers()
@@ -226,7 +225,9 @@ export function ServiceForm({ service, session }) {
     const [packs, setPacks] = useState<{ data: { name: string, description: string, qty: number, price: number }[] }>({ data: [] })
 
     // STATE FOR suppliers
-    const [suppliers, setSuppliers] = useState<{ id: number, name: string }[]>([])
+    const [suppliersState, setSuppliersState] = useState<{ id: number, name: string }[]>([])
+    const [suppliersStateTransport, setSuppliersStateTransport] = useState<{ id: number, name: string }[]>([])
+    const [suppliersStateHotel, setSuppliersStateHotel] = useState<{ id: number, name: string }[]>([])
     const [selectedSupplier, setSelectedSupplier] = useState<{ id: number, name: string } | undefined>(undefined)
 
     // // // MESSAGE API from antd
@@ -265,8 +266,11 @@ export function ServiceForm({ service, session }) {
 
         console.log("images", images)
         console.log("Errors: ", errors);
+        console.log("Suppliers", suppliersState ? suppliersState : "No hay proveedores")
+
         setValue("itinerary", activities)
         setValue("transportProviderID", transportProviderID)
+        setValue("hotelProviderID", hotelProviderID)
 
         if (images) {
             setValue("images", {
@@ -282,7 +286,9 @@ export function ServiceForm({ service, session }) {
         const fetchSuppliers = async () => {
             try {
                 const suppliersData = await getSuppliers()
-                setSuppliers(suppliersData)
+                setSuppliersState(suppliersData)
+                setSuppliersStateTransport(suppliersData.filter(supplier => supplier.supplierType === 'Transporte Terrestre'))
+                setSuppliersStateHotel(suppliersData.filter(supplier => supplier.supplierType === 'Hotel'))
                 // Find the supplier by session.user.supplierId
                 const selected = suppliersData.find(supplier => supplier.id === session.user.supplierId);
                 setSelectedSupplier(selected)
@@ -337,6 +343,7 @@ export function ServiceForm({ service, session }) {
                 faqs: service?.faqs,
                 itinerary: service?.activities,
                 transportProviderID: service?.transportProviderID,
+                hotelProviderID: service?.hotelProviderID,
             },
             // add zod resolver to the form with the schema created
             resolver: zodResolver(serviceSchema)
@@ -799,32 +806,40 @@ export function ServiceForm({ service, session }) {
                         </Col>
                     </Row>
 
-                    <Row>
-                        <Col span={24}>
+                    <Row gutter={16}>
+                        <Col span={12}>
                             <Label>Transporte:</Label>
-                        </Col>
-                        <Col>
-                            <TransportProviderSearch />
-                        </Col>
-                        <Col>
+                            <Select
+                                style={{ width: '100%' }}
+                                options={suppliersStateTransport.map((supplier) => ({
+                                    value: supplier.id,
+                                    label: supplier.name,
+                                }))}
+                                onChange={(value) => setValue("transportProviderID", value)}
+                            />
                             {typeof errors.transportProviderID?.message === 'string' && (
                                 <Alert showIcon type="error" message={errors.transportProviderID.message} />
                             )}
                         </Col>
-                    </Row>
-
-                    <Row>
-                        <Col span={24}>
+                        <Col span={12}>
                             <Label>Hotel:</Label>
-                        </Col>
-                        <Col>
-                            <HotelSearch />
+                            <Select
+                                style={{ width: '100%' }}
+                                options={suppliersStateHotel.map((supplier) => ({
+                                    value: supplier.id,
+                                    label: supplier.name,
+                                }))}
+                                onChange={(value) => setValue("hotelProviderID", value)}
+                            />
+                            {typeof errors.hotelProviderID?.message === 'string' && (
+                                <Alert showIcon type="error" message={errors.hotelProviderID.message} />
+                            )}
                         </Col>
                     </Row>
 
 
 
-                    <Row >
+                    <Row className="mb-4 mt-4">
                         <Col span={7}>
                             <Label>Tipo </Label>
                             <Input

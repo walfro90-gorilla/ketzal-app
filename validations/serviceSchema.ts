@@ -12,7 +12,10 @@ export const serviceSchema = z.object({
     .nonempty("La descripcion del servicio es obligatorio")
     .max(500, "La descripción no debe superar los 500 caracteres"),
   price: z
-    .number()
+    .number({
+      required_error: "El precio es obligatorio",
+      invalid_type_error: "El precio debe ser un número positivo",
+    })
     .positive("El precio debe ser un número positivo"),
   location: z
     .string()
@@ -48,7 +51,10 @@ export const serviceSchema = z.object({
     .optional()
     .or(z.literal('')),
   sizeTour: z
-    .number()
+    .number({
+      required_error: "El tamaño del tour es obligatorio",
+      invalid_type_error: "El tamaño del tour debe ser un número positivo",
+    })
     .positive("El tamaño del tour debe ser un número positivo"),
   serviceType: z
     .string()
@@ -108,7 +114,15 @@ export const serviceSchema = z.object({
   ).nonempty("Debe haber al menos un elemento en 'Itinerary'"), // Se requiere al menos un elemento en Itinerary
 
   transportProviderID: z
-    .string()
-    .nonempty("Debe seleccionar almenos un proveedor de transporte"),
-
+    .number({
+      required_error: "Debe seleccionar al menos un proveedor de transporte",
+      invalid_type_error: "Debe seleccionar al menos un proveedor de transporte",
+    })
+    .positive("Debe seleccionar al menos un proveedor de transporte"),
+  hotelProviderID: z
+    .number({
+      required_error: "Debe seleccionar al menos un proveedor de hotel",
+      invalid_type_error: "Debe seleccionar al menos un proveedor de hotel",
+    })
+    .positive("Debe seleccionar al menos un proveedor de hotel"),
 });

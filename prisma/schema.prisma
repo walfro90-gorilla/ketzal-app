@@ -83,6 +83,17 @@ model Supplier {
 
     services Service[]
     users    User[]
+
+    supplierType String?
+    location Json?
+    photos Json?
+    extras Json?
+    info Json?
+
+     // Relaciones inversas
+    transportServices Service[] @relation("TransportSupplier")
+    hotelServices     Service[] @relation("HotelSupplier")
+
 }
 
 model Service {
@@ -109,9 +120,16 @@ model Service {
     excludes        Json?
     faqs            Json?
     itinerary       Json?
-    transportProviderID Int?
+    transportProviderID Int? 
+    supplierTransport   Supplier? @relation("TransportSupplier", fields: [transportProviderID], references: [id])
+
+    hotelProviderID     Int?
+    supplierHotel       Supplier? @relation("HotelSupplier", fields: [hotelProviderID], references: [id])
     
     supplier        Supplier  @relation(fields: [supplierId], references: [id])
+  
+
+    
     // bookings Booking[]
     // reviews  Review[]
 }

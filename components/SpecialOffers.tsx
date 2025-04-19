@@ -53,9 +53,9 @@ const SpecialOffers = ({ services }) => {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8">Trending Tour</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {services.map((service) => (
+            {services?.length > 0 && services.map((service) => (
             <TourCard key={service.name} {...service} />
-          ))}
+            ))}
         </div>
       </div>
     </section>

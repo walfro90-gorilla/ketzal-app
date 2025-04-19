@@ -15,6 +15,7 @@ export async function createSupplier(supplierData: any) {
     return data
 }
 
+
 // READ supplierS
 export async function getSuppliers() {
     const res = await fetch(`${BACKEND_URL}/api/suppliers`)

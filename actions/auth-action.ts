@@ -6,6 +6,7 @@ import { signInSchema, signUpSchema } from "@/lib/zod";
 import { AuthError } from "next-auth";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { CloudCog } from "lucide-react";
 
 export const loginAction = async (
 
@@ -73,9 +74,11 @@ export const registerAction = async (
         return { success: true }
 
     } catch (error) {
+        console.log("first error", error)
         if (error instanceof AuthError) {
             return { error: error.cause?.err?.message }
         }
-        return { error: "Error 500" }
+        return { error: error }
     }
+
 }

@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useState, useTransition } from 'react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+import { useState, useTransition } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 import {
   Form,
@@ -14,56 +14,43 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 
-import { z } from 'zod'
-import { signUpSchema } from '@/lib/zod'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { signIn } from '@/auth'
-import { registerAction } from '@/actions/auth-action'
-import { start } from 'repl'
-import { useRouter } from 'next/navigation'
-import { set } from 'date-fns'
-import Link from 'next/link'
+import { z } from 'zod';
+import { signUpSchema } from '@/lib/zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { signIn } from '@/auth';
+import { registerAction } from '@/actions/auth-action';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-
-
-
-
-// FORM VALIDATION
 export default function RegisterForm() {
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
-  const router = useRouter()
-
-  // 1. Define your form. 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-      name: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
+      name: '',
     },
-  })
+  });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-
-    setError(null)
+    setError(null);
     startTransition(async () => {
-
-      const response = await registerAction(values)
+      const response = await registerAction(values);
       if (response.error) {
-        setError(response.error)
-        console.log(response.error)
-
+        setError(response.error.toString()); // Ensure the error is a string
+        console.log(response.error);
       } else {
-        router.push("/home")
+        router.push('/home');
       }
-    })
+    });
   }
 
   return (
@@ -73,11 +60,8 @@ export default function RegisterForm() {
         <CardDescription>Crea tu Cuenta..</CardDescription>
       </CardHeader>
       <CardContent>
-
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
             <FormField
               control={form.control}
               name="name"
@@ -111,14 +95,10 @@ export default function RegisterForm() {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>
-                    This is your public display name.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -132,14 +112,10 @@ export default function RegisterForm() {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>
-                  This is your public display name.
-                </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -153,32 +129,21 @@ export default function RegisterForm() {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>
-                  This is your public display name.
-                </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {
-              error && <FormMessage>{error}</FormMessage>
-            }
-
+            {error && <FormMessage>{error}</FormMessage>}
             <Button disabled={isPending} type="submit">Registrar</Button>
           </form>
         </Form>
-
         <div className="text-center mt-4">
           <p>Ya tienes cuenta?
             <Link href="/login" className="text-blue-500"> Login</Link>
           </p>
         </div>
-
       </CardContent>
-
-
     </Card>
-  )
+  );
 }
 

@@ -45,6 +45,7 @@ export const ServiceProvider = ({ children }: { children: React.ReactNode }) => 
     const [activities, setActivities] = useState<Activity[]>([])
 
     const [transportProviderID, setTransportProviderID] = useState<number | null>(null);
+    const [hotelProviderID, setHotelProviderID] = useState<number | null>(null);
 
 
 
@@ -57,6 +58,8 @@ export const ServiceProvider = ({ children }: { children: React.ReactNode }) => 
                 setActivities,
                 transportProviderID,
                 setTransportProviderID,
+                hotelProviderID, 
+                setHotelProviderID,
             }}
         >
             {children}

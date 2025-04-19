@@ -210,125 +210,78 @@ const serviceIcons: Record<string, React.ReactNode> = {
   spa: <Coffee className="h-3 w-3" />,
 }
 
-export default function HotelSearch() {
+export default function HotelInfo({ hotelProvider }) {
 
-  const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null)
-  const [filteredHotels, setFilteredHotels] = useState<Hotel[]>(hotels)
 
-  const handleHotelChange = (hotelId: string) => {
-    const hotel = hotels.find((h) => h.id === hotelId) || null
-    setSelectedHotel(hotel)
-    console.log("hotel:",hotel.id);
-
-  }
 
   return (
-    <div className="max-w-3xl mx-auto py-4 px-2">
-      <div className="flex items-center gap-2 mb-3">
-        <Select onValueChange={handleHotelChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a hotel" />
-          </SelectTrigger>
-          <SelectContent>
-            <div className="p-2">
-              <input
-                type="text"
-                placeholder="Search hotels..."
-                className="w-full px-2 py-1 border rounded"
-                onChange={(e) => {
-                  const searchTerm = e.target.value.toLowerCase();
-                  const filteredHotels = hotels.filter((hotel) =>
-                    hotel.name.toLowerCase().includes(searchTerm)
-                  );
-                  setFilteredHotels(filteredHotels);
-                }}
-              />
-            </div>
-
-            {filteredHotels.map((hotel) => (
-              <SelectItem key={hotel.id} value={hotel.id}>
-                {hotel.name}
-              </SelectItem>
-            ))}
-
-          </SelectContent>
-        </Select>
-
-        {selectedHotel && <div className="text-lg font-medium">{selectedHotel.name}</div>}
-      </div>
-
-      {selectedHotel ? (
-        <Card className="overflow-hidden">
-          <CardContent className="p-0">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
-              {/* Left column - Description and Photos */}
-              <div className="md:col-span-3 p-3 border-r">
-                <div className="text-xs flex items-center gap-1 text-muted-foreground mb-2">
-                  <MapPin className="h-3 w-3" />
-                  {selectedHotel.location.address}
-                </div>
-
-                <div className="mb-3">
-                  <h3 className="text-sm font-semibold mb-1">Description</h3>
-                  <p className="text-xs text-muted-foreground line-clamp-4">{selectedHotel.description}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {selectedHotel.services.map((service) => (
-                    <Badge key={service} variant="outline" className="flex items-center gap-1 px-2 py-0 text-[10px]">
-                      {serviceIcons[service]}
-                      <span className="capitalize">{service.replace("-", " ")}</span>
-                    </Badge>
-                  ))}
-                </div>
-
-                <div>
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {selectedHotel.photos.map((photo, index) => (
-                        <CarouselItem key={index}>
-                          <div className="overflow-hidden rounded">
-                            <Image
-                              src={photo || "/placeholder.svg"}
-                              alt={`${selectedHotel.name} - Photo ${index + 1}`}
-                              width={600}
-                              height={400}
-                              className="w-full object-cover h-[150px]"
-                            />
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="h-6 w-6 -left-3" />
-                    <CarouselNext className="h-6 w-6 -right-3" />
-                  </Carousel>
-                </div>
+    <div>
+      <Card className="overflow-hidden">
+        <CardContent className="p-0">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
+            {/* Left column - Description and Photos */}
+            <div className="md:col-span-3 p-3 border-r">
+              <h2 className="text-lg font-bold mb-2">{hotelProvider.name}</h2>
+              <div className="text-xs flex items-center gap-1 text-muted-foreground mb-2">
+                <MapPin className="h-3 w-3" />
+                {hotelProvider.location.address}
               </div>
 
-              {/* Right column - Map */}
-              <div className="md:col-span-2 p-0">
-                <div className="h-full min-h-[250px] relative">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0, position: "absolute", inset: 0 }}
-                    loading="lazy"
-                    allowFullScreen
-                    src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${selectedHotel.location.latitude},${selectedHotel.location.longitude}&zoom=15`}
-                  ></iframe>
-                </div>
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold mb-1">Description</h3>
+                <p className="text-xs text-muted-foreground line-clamp-4">{hotelProvider.description}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-1 mb-3">
+                {hotelProvider.extras.map((service) => (
+                  <Badge key={service} variant="outline" className="flex items-center gap-1 px-2 py-0 text-[10px]">
+                    {serviceIcons[service]}
+                    <span className="capitalize">{service.replace("-", " ")}</span>
+                  </Badge>
+                ))}
+              </div>
+
+              <div>
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {hotelProvider.photos.map((photo, index) => (
+                      <CarouselItem key={index}>
+                        <div className="overflow-hidden rounded">
+                          <Image
+                            src={photo || "/placeholder.svg"}
+                            alt={`${hotelProvider.name} - Photo ${index + 1}`}
+                            width={600}
+                            height={400}
+                            className="w-full object-cover h-[150px]"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="h-6 w-6 -left-3" />
+                  <CarouselNext className="h-6 w-6 -right-3" />
+                </Carousel>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="flex items-center justify-center p-4">
-            <p className="text-sm text-muted-foreground">Please select a hotel to view details</p>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+
+            {/* Right column - Map */}
+            <div className="md:col-span-2 p-0">
+              <div className="h-full min-h-[250px] relative">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, position: "absolute", inset: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${hotelProvider.location.latitude},${hotelProvider.location.longitude}&zoom=15`}
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+    </div >
   )
 }
 
