@@ -5,8 +5,10 @@ import PopularDestinations from '@/components/PopularDestinations'
 import SpecialOffers from '@/components/SpecialOffers'
 import Testimonials from '@/components/Testimonials'
 import Footer from '@/components/Footer'
+
+
 // import Services data
-import { getServices } from './(protected)/services/services.api'
+import { getServices } from './(public)/services/services.api'
 
 
 export default async function Home() {

@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart } from 'lucide-react'
 import { useState } from 'react'
+import "keen-slider/keen-slider.min.css"
+import { useKeenSlider } from "keen-slider/react"
 
 const offers = [
   {
@@ -45,17 +47,61 @@ const offers = [
   },
 ]
 
-const SpecialOffers = ({ services }) => {
+interface SpecialOffersProps {
+  services: any[]
+}
 
-  console.log("SERVICES", services)
+const SpecialOffers = ({ services }: SpecialOffersProps) => {
+  const [sliderRef] = useKeenSlider({
+    loop: true,
+    slides: {
+      perView: 3,
+      spacing: 16,
+    },
+    breakpoints: {
+      "(max-width: 768px)": {
+        slides: { perView: 1, spacing: 8 },
+      },
+    },
+    created(slider) {
+      let timeout: ReturnType<typeof setTimeout>;
+      let mouseOver = false;
+      function clearNextTimeout() {
+        clearTimeout(timeout);
+      }
+      function nextTimeout() {
+        clearTimeout(timeout);
+        if (mouseOver) return;
+        timeout = setTimeout(() => {
+          slider.next();
+        }, 3000);
+      }
+      slider.on("created", () => {
+        slider.container.addEventListener("mouseover", () => {
+          mouseOver = true;
+          clearNextTimeout();
+        });
+        slider.container.addEventListener("mouseout", () => {
+          mouseOver = false;
+          nextTimeout();
+        });
+        nextTimeout();
+      });
+      slider.on("dragStarted", clearNextTimeout);
+      slider.on("animationEnded", nextTimeout);
+      slider.on("updated", nextTimeout);
+    },
+  });
   return (
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8">Trending Tour</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {services?.length > 0 && services.map((service) => (
-            <TourCard key={service.name} {...service} />
-            ))}
+        <div ref={sliderRef} className="keen-slider">
+          {services?.length > 0 && services.map((service: any) => (
+            <div className="keen-slider__slide" key={service.name}>
+              <TourCard {...service} />
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -63,19 +109,6 @@ const SpecialOffers = ({ services }) => {
 }
 
 interface TourCardProps {
-  // name: string
-  // location: string
-  // image: string
-  // oldPrice: number
-  // newPrice: number
-  // discount: number
-  // reviews: number
-  // rating: number
-  // featured: boolean
-  // link: string
-
-
-
   name: string
   location: string
   images: { imgAlbum: Array<string>, imgBanner: string }
@@ -87,7 +120,6 @@ interface TourCardProps {
   packs: { data: Array<{ description: string, name: string, price: number, qty: number }> }
   price: number
   supplierId: string
-
 }
 
 const TourCard = ({
@@ -130,8 +162,9 @@ const TourCard = ({
             <Image
               src={images.imgBanner}
               alt={name}
-              layout="fill"
-              objectFit="cover"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              style={{ objectFit: 'cover' }}
               className="transition-transform duration-300 group-hover:scale-110"
             />
           </div>

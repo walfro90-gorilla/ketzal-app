@@ -9,8 +9,7 @@ import bcrypt from "bcryptjs";
 import { CloudCog } from "lucide-react";
 
 export const loginAction = async (
-
-    values: z.infer<typeof signInSchema>
+    values: z.infer<typeof signInSchema> & { callbackUrl?: string }
 ) => {
     try {
         await signIn("credentials", {
@@ -18,7 +17,7 @@ export const loginAction = async (
             password: values.password,
             redirect: false,
         })
-        return { success: true }
+        return { success: true, callbackUrl: values.callbackUrl || "/home" }
     } catch (error) {
         if (error instanceof AuthError) {
             return { error: error.cause?.err?.message }
@@ -26,7 +25,6 @@ export const loginAction = async (
         return { error: "Error 500" }
     }
 }
-
 
 export const registerAction = async (
     values: z.infer<typeof signUpSchema>

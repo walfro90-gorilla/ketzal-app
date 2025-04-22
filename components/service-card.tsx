@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "./ui/button"
-import { deleteService } from "@/app/(protected)/services/services.api"
+import { deleteService } from "@/app/(public)/services/services.api"
 import { useRouter } from "next/navigation";
 
 interface Service {

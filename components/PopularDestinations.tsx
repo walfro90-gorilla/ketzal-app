@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart, MapPin } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const destinations = [
   { 
@@ -50,14 +50,54 @@ const destinations = [
   },
 ]
 
+function useResponsiveCards() {
+  const [cardsPerView, setCardsPerView] = useState(1)
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 640) setCardsPerView(1)
+      else if (window.innerWidth < 1024) setCardsPerView(2)
+      else setCardsPerView(4)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  return cardsPerView
+}
+
 const PopularDestinations = () => {
+  const cardsPerView = useResponsiveCards()
+  const [current, setCurrent] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + cardsPerView) % destinations.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [cardsPerView, destinations.length])
+
+  // Calcular los destinos a mostrar
+  const visible = []
+  for (let i = 0; i < cardsPerView; i++) {
+    visible.push(destinations[(current + i) % destinations.length])
+  }
+
   return (
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8">Popular Destinations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {destinations.map((destination) => (
-            <DestinationCard key={destination.name} {...destination} />
+        <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6`}>
+          {visible.map((dest, idx) => (
+            <DestinationCard key={dest.name + idx} {...dest} />
+          ))}
+        </div>
+        <div className="flex justify-center mt-4 gap-2">
+          {destinations.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-3 h-3 rounded-full ${current === idx ? 'bg-blue-500' : 'bg-gray-300'}`}
+              onClick={() => setCurrent(idx)}
+              aria-label={`Destination ${idx + 1}`}
+            />
           ))}
         </div>
       </div>
@@ -106,8 +146,9 @@ const DestinationCard = ({
             <Image
               src={image}
               alt={name}
-              layout="fill"
-              objectFit="cover"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              style={{ objectFit: 'cover' }}
               className="transition-transform duration-300 group-hover:scale-110"
             />
           </div>

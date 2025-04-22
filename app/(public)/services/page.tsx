@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getServices } from "@/app/(protected)/services/services.api";
+import { getServices } from "@/app/(public)/services/services.api";
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api";
 
 import { ServiceCard } from "@/components/service-card";

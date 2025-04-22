@@ -40,8 +40,10 @@ export function LocalHighlights({ faqs, localInfo, highlights }: LocalHighlights
         <CardContent>
           {faqs.map((faq, index) => (
             <div key={index} className="mb-4 last:mb-0">
-              <h3 className="font-semibold mb-1">{faq.question}</h3>
-              <p>{faq.answer}</p>
+              <details>
+              <summary className="font-semibold cursor-pointer mb-1">{faq.question}</summary>
+              <p className="mt-2">{faq.answer}</p>
+              </details>
             </div>
           ))}
         </CardContent>

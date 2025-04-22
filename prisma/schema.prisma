@@ -29,6 +29,8 @@ model User {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    reviews    Review[]
 }
 
 model Account {
@@ -128,8 +130,20 @@ model Service {
     
     supplier        Supplier  @relation(fields: [supplierId], references: [id])
   
+    reviews  Review[]
 
     
     // bookings Booking[]
-    // reviews  Review[]
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  serviceId  Int
+  userId     String
+  rating     Int
+  comment    String
+  createdAt  DateTime @default(now())
+
+  service    Service  @relation(fields: [serviceId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }

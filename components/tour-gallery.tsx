@@ -29,7 +29,7 @@ export function TourGallery({ images }: { images: string[] }) {
           priority
         />
       </div>
-
+{/* 
       <div className="gallery-options">
         <button
           className={`gallery-option ${activeView === 'photos' ? 'active' : ''}`}
@@ -49,7 +49,7 @@ export function TourGallery({ images }: { images: string[] }) {
         >
           Map View
         </button>
-      </div>
+      </div> */}
 
 
       <Carousel autoplay className="gallery-thumbnails" dots={true} slidesToShow={4} slidesToScroll={1}>

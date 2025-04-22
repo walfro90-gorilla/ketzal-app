@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form"
 import { signIn } from '@/auth'
 import { loginAction } from '@/actions/auth-action'
 import { start } from 'repl'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { set } from 'date-fns'
 import Link from 'next/link'
 
@@ -41,6 +41,8 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/home'
 
   // 1. Define your form. 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -57,11 +59,11 @@ export function LoginForm({
     setError(null)
     startTransition(async () => {
 
-      const response = await loginAction(values)
+      const response = await loginAction({ ...values, callbackUrl })
       if (response.error) {
         setError(response.error)
       } else {
-        router.push("/home")
+        router.push(response.callbackUrl)
       }
     })
   }

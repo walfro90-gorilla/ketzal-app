@@ -20,9 +20,10 @@ const PopularCategories = () => {
                 <Image
                   src={category.image}
                   alt={category.name}
-                  layout="fill"
-                  objectFit="cover"
-                  className="transition-transform group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  style={{ objectFit: 'cover' }}
+                  className="rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <h3 className="text-white text-xl font-semibold">{category.name}</h3>

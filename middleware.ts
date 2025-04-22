@@ -9,14 +9,24 @@ const publicRoutes = [
   '/login',
   '/register',
   "/api/auth/verify-email",
+  '/tour/',
 ]
+
+function isPublicRoute(pathname: string) {
+  // Allow exact matches, any route under /public, and any dynamic /tour/[id] route
+  return (
+    publicRoutes.includes(pathname) ||
+    pathname.startsWith('/public') ||
+    pathname.startsWith('/tour/')
+  );
+}
 
 export default middleware((req) => {
   const { nextUrl, auth } = req
   const isLoggedIn = !!auth?.user
 
   // proteger rutas privadas
-  if (!publicRoutes.includes(nextUrl.pathname) && !isLoggedIn) {
+  if (!isPublicRoute(nextUrl.pathname) && !isLoggedIn) {
     return NextResponse.redirect(new URL('/login', nextUrl))
   }
 

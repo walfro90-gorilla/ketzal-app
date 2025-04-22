@@ -6,19 +6,21 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const slides = [
   {
-    image: 'https://picsum.photos/1200/1300',
-    title: 'Hotel Room',
-    subtitle: 'Book the Most Exclusive Hotel Room in the World',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054726/if2mczlahxvuce1fiili.png',
+    title: 'Tours & Viajes',
+    subtitle: 'Agenda tu próxima aventura con nosotros',
   },
   {
-    image: 'https://picsum.photos/1200/1300',
-    title: 'Beach Resort',
-    subtitle: 'Experience Paradise on Earth',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054794/kf4ebaedkpzoxq7zlci3.png',
+    title: 'Las Mejores Playas',
+    subtitle: 'Descubre el Paraíso en la Tierra',
+   
   },
   {
-    image: 'https://picsum.photos/1200/1300',
-    title: 'Mountain Retreat',
-    subtitle: 'Escape to the Heights of Luxury',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054798/rarnxbktkbcxillzavwg.png',
+    title: 'Reconecta con la Naturaleza',
+    subtitle: 'Explora los paisajes más hermosos del mundo',
+  
   }
 ]
 
@@ -55,6 +57,8 @@ const HeroSection = () => {
                 src={slide.image}
                 alt={slide.title}
                 fill
+                sizes="100vw"
+                style={{ objectFit: 'cover' }}
                 className="object-cover"
                 priority={index === 0}
               />

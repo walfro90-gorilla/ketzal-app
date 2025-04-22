@@ -6,20 +6,23 @@ import { TourLocation } from '@/components/tour-location'
 import { TourBookingForm } from '@/components/tour-booking-form'
 import { LocalHighlights } from '@/components/local-highlights'
 import { OrganizedBy } from '@/components/organized-by'
-import { getService } from '@/app/(protected)/services/services.api'
+import { getService, getServices } from '@/app/(public)/services/services.api'
 import { getSupplier } from '@/app/(protected)/suppliers/suppliers.api'
 import { TourIncludeExclude } from '@/components/tour-include-exclude'
 import HotelSearch from '@/hotel-search'
 import HotelInfo from '@/components/hotel-info'
 import TransportProviderSearch from '@/transport-provider-search'
 import TransportProvider from '@/components/transport-provider'
+import ReviewSection from '@/components/ReviewSection'
+import TourCarousel from '@/components/TourCarousel'
+import SpecialOffers from '@/components/SpecialOffers'
+import { getReviews } from '../../reviews/reviews.api'
 
-export default async function TourPage({ params }: { params: { id: string } }) {
+export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-  //  // Fetch services
-  const resolvedParams = await params
-
-  const service = await getService(resolvedParams.id)
+  // Fetch services
+  const service = await getService(id)
   console.log("Service data: ", service)
 
   const provider = await getSupplier(service.supplierId)
@@ -31,6 +34,12 @@ export default async function TourPage({ params }: { params: { id: string } }) {
   const transportProvider = await getSupplier(service.transportProviderID)
   console.log("Transport Provider data: ", transportProvider)
 
+  const tours = (await getServices()).filter(service => service.serviceType === 'tour')
+
+  // Reviews fetching
+  const reviewsService = (await getReviews()).filter(review => review.serviceId === Number(id))
+  console.log("reviews: ",reviewsService)
+
   const availableFrom = new Date(service.availableFrom);
   const availableTo = new Date(service.availableTo);
   const durationInMilliseconds = availableTo.getTime() - availableFrom.getTime();
@@ -40,7 +49,7 @@ export default async function TourPage({ params }: { params: { id: string } }) {
 
 
 
-    id: params.id,
+    id: id,
     name: service.name,
     bannerImage: service.images.imgBanner,
 
@@ -76,6 +85,7 @@ export default async function TourPage({ params }: { params: { id: string } }) {
     packs: service.packs.data,
     reviewCount: 1,
     organizer: {
+      id: provider.id,
       name: provider.name,
       memberSince: provider.createdAt,
       avatar: provider.imgLogo,
@@ -120,6 +130,7 @@ export default async function TourPage({ params }: { params: { id: string } }) {
               />
               <OrganizedBy
 
+                id={tourData.organizer.id}
                 name={tourData.organizer.name}
                 memberSince={tourData.organizer.memberSince}
                 avatar={tourData.organizer.avatar}
@@ -131,11 +142,11 @@ export default async function TourPage({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
                 <TourInfo tour={tourData} />
-            
 
-                <HotelInfo hotelProvider={hotelProvider}   />
 
-           
+                <HotelInfo hotelProvider={hotelProvider} />
+
+
 
                 <TransportProvider transportProvider={transportProvider} />
 
@@ -155,10 +166,18 @@ export default async function TourPage({ params }: { params: { id: string } }) {
                 <div className="mt-8">
                   <LocalHighlights faqs={tourData.faqs} localInfo={tourData.localInfo} highlights={tourData.highlights} />
                 </div>
+                <div className="mt-8">
+                  <ReviewSection serviceId={tourData.id} reviewsService={reviewsService} />
+                </div>
+
+                <div className="mt-8">
+                  <SpecialOffers services={tours} />
+
+                </div>
               </div>
-              <div className="lg:col-span-1">
+              {/* <div className="lg:col-span-1">
                 <TourBookingForm tourId={tourData.id} />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

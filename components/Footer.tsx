@@ -22,7 +22,9 @@ const Footer = () => {
                 <Image
                   src="https://firebasestorage.googleapis.com/v0/b/gorilla-labs-960a2.appspot.com/o/Ketzal.app-logo.svg?alt=media&token=cf6d2de8-39c7-4ba8-92dc-b6fbe9aef228"
                   alt="BookPro Logo"
-                  layout="fill"
+                  fill
+                  sizes="100vw"
+                  style={{ objectFit: 'contain' }}
                   className="object-contain brightness-0 invert"
                 />
               </div>
