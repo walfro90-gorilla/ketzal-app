@@ -17,6 +17,8 @@ import ReviewSection from '@/components/ReviewSection'
 import TourCarousel from '@/components/TourCarousel'
 import SpecialOffers from '@/components/SpecialOffers'
 import { getReviews } from '../../reviews/reviews.api'
+import { getUsers } from '@/app/(protected)/users/users.api'
+import { auth } from '@/auth'
 
 export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,7 +40,13 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
 
   // Reviews fetching
   const reviewsService = (await getReviews()).filter(review => review.serviceId === Number(id))
-  console.log("reviews: ",reviewsService)
+  console.log("reviews: ", reviewsService)
+
+  const users = (await getUsers())
+  console.log("users: ", users)
+
+  const session = await auth()
+  console.log("Session: ", session)
 
   const availableFrom = new Date(service.availableFrom);
   const availableTo = new Date(service.availableTo);
@@ -167,7 +175,7 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                   <LocalHighlights faqs={tourData.faqs} localInfo={tourData.localInfo} highlights={tourData.highlights} />
                 </div>
                 <div className="mt-8">
-                  <ReviewSection serviceId={tourData.id} reviewsService={reviewsService} />
+                  <ReviewSection serviceId={tourData.id} reviewsService={reviewsService} users={users} session={session} />
                 </div>
 
                 <div className="mt-8">

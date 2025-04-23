@@ -1,97 +1,143 @@
 'use client'
 
-import { getReviews } from '@/app/(public)/reviews/reviews.api'
-import React from 'react'
+import { createReview, getReviews } from '@/app/(public)/reviews/reviews.api'
+import { Carousel, Popconfirm } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { FaStar } from "react-icons/fa"
+import { useUser } from "@/context/UserContext";
+import { nanoid } from 'nanoid';
 
-export default function ReviewSection({ serviceId, reviewsService }: { serviceId: string, reviewsService: any[] }) {
+export default function ReviewSection({ serviceId, reviewsService, users, session }: { serviceId: string, reviewsService: any[], users: any[], session: any }) {
+  const [reviews, setReviews] = useState(reviewsService || []);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { user } = useUser();
 
+  useEffect(() => {
+    setReviews(reviewsService || []);
+  }, [serviceId, reviewsService]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const newReview = {
+      userId: session?.user?.id || user?.id,
+      comment,
+      rating,
+      serviceId: Number(serviceId),
+    };
+    console.log("New Review Submitted: ", newReview);
+    setLoading(true);
+    await createReview(newReview)
+      .then((res: { id?: string }) => {
+        console.log("Review created: ", res);
+        setReviews([...reviews, { ...newReview, id: res?.id || nanoid(), createdAt: new Date() }]);
+        setComment("");
+        setRating(5);
+      }
+      )
+      .catch((err) => {
+        console.error("Error creating review: ", err);
+        setError("Error creating review. Please try again later.");
+      }
+      )
+      .finally(() => setLoading(false));
+  };
 
   return (
-    <div className="space-y-6">
+    <section className="bg-[#181818] text-[#bfc9d1] py-8">
+      <h2 className="text-2xl font-semibold mb-2 text-white">Review</h2>
+      <div className="mb-6 text-[#bfc9d1]">Average Review : <span className="text-white font-bold">{reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : 0}</span></div>
+      {/* Reviews */}
       <div>
-        <h2 className="text-xl font-semibold">Reviews</h2>
-        <div className="space-y-4">
-          {reviewsService.map((review) => (
-            <div key={review.id} className="p-4 border rounded-md shadow-sm">
-              <p className="font-medium">{review.author}</p>
-              <p className="text-sm text-gray-600">{review.comment}</p>
-              <p className="text-sm text-gray-500">Rating: {review.rating}/5</p>
-              <p className="text-sm text-gray-500">Date: {new Date(review.createdAt).toLocaleDateString()}</p>
-
-              <p className="text-sm text-gray-500">User ID: {review.userId}</p>
-
-
+        {reviews.length === 0 && <div className="text-[#bfc9d1]">No hay reseñas aún.</div>}
+        <Carousel dots={true} autoplay className="space-y-4 mb-8">
+          {reviews.map(r => (
+            <div key={r.id} className="bg-[#232323] border border-[#2c2c2c] rounded-xl p-6 flex flex-col items-center gap-6 mx-auto w-full md:w-3/4">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 rounded-full bg-[#2c2c2c] flex items-center justify-center mb-2">
+                  {users.find((user) => user.id === r.userId)?.image ? (
+                    <img src={users.find((user) => user.id === r.userId)?.image} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
+                  ) : (
+                    <span className="text-2xl text-[#bfc9d1]">{users.find((user) => user.id === r.userId)?.name[0] || "?"}</span>
+                  )}
+                </div>
+                <span className="text-white font-semibold text-base text-center">{users.find((user) => user.id === r.userId)?.name || "Unknown"}</span>
+                <span className="text-xs text-[#bfc9d1]">{new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(/ /g, '-')}</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="flex items-center mb-2">
+                  {[1, 2, 3, 4, 5].map(n => (
+                    <FaStar key={n} className={n <= r.rating ? "text-yellow-400" : "text-[#2c2c2c]"} size={18} />
+                  ))}
+                </div>
+                <div className="text-[#bfc9d1] mb-4 text-sm md:text-base text-center">{r.comment}</div>
+                <button className="text-xs text-[#bfc9d1] underline hover:text-white transition-all">REPORTAR</button>
+              </div>
             </div>
           ))}
-        </div>
+        </Carousel>
+        {/* Formulario */}
+        {session ? (
+          <form onSubmit={handleSubmit} className="bg-[#181818] border border-[#232323] rounded-xl p-6 flex flex-col md:flex-row items-center gap-4 mb-8">
+            <div className="flex flex-col items-center md:items-start w-full md:w-1/4">
+              <div className="w-16 h-16 rounded-full bg-[#232323] flex items-center justify-center mb-2 mx-auto">
+                {session.user.image ? (
+                  <img src={session.user.image} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
+                ) : (
+                  <span className="text-2xl text-[#bfc9d1]">{session.user.name[0]}</span>
+                )}
+              </div>
+              <div className="w-16 h-16 flex items-center justify-center mb-2 mx-auto">
+
+                <span className="text-white font-semibold text-sm">{session.user.name}</span>
+              </div>
+            </div>
+            <div className="flex-1 w-full">
+              <div className="flex items-center justify-center mb-2">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <FaStar key={n} className={n <= rating ? "text-yellow-400" : "text-[#232323]"} onClick={() => setRating(n)} size={22} style={{ cursor: 'pointer' }} />
+                ))}
+              </div>
+
+
+
+              <textarea
+                value={comment}
+                onChange={e => setComment(e.target.value)}
+                required
+                placeholder="Escribe tu comentario..."
+                className="w-full bg-[#232323] border-none rounded-lg p-3 text-[#bfc9d1] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none mb-2"
+                rows={2}
+              />
+
+              <Popconfirm
+                title="¿Estás seguro de que deseas enviar esta reseña?"
+                onConfirm={() => handleSubmit(new Event('submit'))}
+                okText="Sí"
+                cancelText="No"
+                disabled={!comment.trim()}
+              >
+                <button type="button" disabled={loading || !comment.trim()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2 rounded-full mt-2 transition-all disabled:opacity-60">
+                  {loading ? "Enviando..." : "Enviar review"}
+                </button>
+              </Popconfirm>
+            </div>
+          </form>
+        ) : (
+          <div className="flex justify-center mb-8">
+            <button
+              type="button"
+              onClick={() => window.location.href = `/login?callbackUrl=/tour/${serviceId}`}
+              className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-8 py-2 rounded-full transition-all"
+            >
+              Login para agregar review
+            </button>
+          </div>
+        )}
       </div>
-      <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const formData = new FormData(e.target as HTMLFormElement);
-          const newReview = {
-            author: formData.get("author") as string,
-            comment: formData.get("comment") as string,
-            rating: Number(formData.get("rating")),
-            serviceId: Number(serviceId),
-          };
-          console.log("New Review Submitted: ", newReview);
-          // Add logic to send newReview to the backend
-        }}
-      >
-        <h3 className="text-lg font-medium">Leave a Review</h3>
-        <div>
-          <label className="block text-sm font-medium" htmlFor="author">
-            Name
-          </label>
-          <input
-            type="text"
-            id="author"
-            name="author"
-            className="w-full p-2 border rounded-md"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium" htmlFor="comment">
-            Comment
-          </label>
-          <textarea
-            id="comment"
-            name="comment"
-            className="w-full p-2 border rounded-md"
-            rows={4}
-            required
-          ></textarea>
-        </div>
-        <div>
-          <label className="block text-sm font-medium" htmlFor="rating">
-            Rating
-          </label>
-          <select
-            id="rating"
-            name="rating"
-            className="w-full p-2 border rounded-md"
-            required
-          >
-            <option value="">Select a rating</option>
-            {[1, 2, 3, 4, 5].map((rating) => (
-              <option key={rating} value={rating}>
-                {rating}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          type="submit"
-          className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-        >
-          Submit Review
-        </button>
-      </form>
-    </div>
-  )
+    </section>
+  );
 }
 

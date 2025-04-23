@@ -1,7 +1,6 @@
 "use client"
 
-
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 // Define the shape of the user data
 interface User {
@@ -19,16 +18,16 @@ interface UserContextType {
 // Create the context with a default value
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-
-
 // Create a provider component
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-
   const [user, setUser] = useState<User | null>(null);
 
- 
-
-
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -36,8 +35,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     </UserContext.Provider>
   );
 };
-
-
 
 // Create a custom hook to use the UserContext
 export const useUser = () => {
