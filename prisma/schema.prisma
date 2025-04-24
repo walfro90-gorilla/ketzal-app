@@ -87,6 +87,7 @@ model Supplier {
     users    User[]
 
     supplierType String?
+    supplierSubType String?
     location Json?
     photos Json?
     extras Json?

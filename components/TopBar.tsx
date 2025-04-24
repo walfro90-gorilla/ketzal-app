@@ -26,11 +26,11 @@ const TopBar = ({ session }) => {
       </Link>
       <br />
       <Link href={""} onClick={async () => await signOut()}>
-      <div className="flex items-center">
-        <LogOut className="h-4 w-4 mr-1" />
-        Logout
-      </div>
-        
+        <div className="flex items-center">
+          <LogOut className="h-4 w-4 mr-1" />
+          Logout
+        </div>
+
       </Link>
 
     </div>
@@ -51,9 +51,10 @@ const TopBar = ({ session }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>English</DropdownMenuItem>
-              <DropdownMenuItem>Latino</DropdownMenuItem>
-              <DropdownMenuItem>Français</DropdownMenuItem>
+              {/* <DropdownMenuItem>Latino</DropdownMenuItem> */}
+              <DropdownMenuItem disabled >English</DropdownMenuItem>
+              <DropdownMenuItem disabled>中国人</DropdownMenuItem>
+              <DropdownMenuItem disabled>Français</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -66,9 +67,9 @@ const TopBar = ({ session }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>$ USD</DropdownMenuItem>
-              <DropdownMenuItem>€ EUR</DropdownMenuItem>
-              <DropdownMenuItem>£ GBP</DropdownMenuItem>
+              <DropdownMenuItem disabled >$ USD</DropdownMenuItem>
+              <DropdownMenuItem disabled >€ EUR</DropdownMenuItem>
+              <DropdownMenuItem disabled >£ GBP</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -76,7 +77,12 @@ const TopBar = ({ session }) => {
         <div className="flex items-center space-x-4">
           {/* Social Media Links */}
           <div className="hidden sm:flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-green-700">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:text-white hover:bg-green-700"
+              onClick={() => window.open('https://www.facebook.com/ketzal.app.mx', '_blank')}
+            >
               <Facebook className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-green-700">

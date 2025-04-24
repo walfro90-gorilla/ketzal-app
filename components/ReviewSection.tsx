@@ -129,7 +129,7 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
           <div className="flex justify-center mb-8">
             <button
               type="button"
-              onClick={() => window.location.href = `/login?callbackUrl=/tour/${serviceId}`}
+              onClick={() => window.location.href = `/login?callbackUrl=/tours/${serviceId}`}
               className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-8 py-2 rounded-full transition-all"
             >
               Login para agregar review

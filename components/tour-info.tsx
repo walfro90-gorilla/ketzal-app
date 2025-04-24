@@ -21,19 +21,19 @@ interface TourInfoProps {
 
 export function TourInfo({ tour }: TourInfoProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-6 mb-8 text-gray-900 dark:text-gray-100">
       <div className="flex items-center mb-4">
         {[...Array(5)].map((_, index) => (
           <Star
             key={index}
-            className={`mr-1 ${index < tour.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-            fill='yellow'
+            className={`mr-1 ${index < tour.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}
+            fill={index < tour.rating ? 'yellow' : 'none'}
           />
         ))}
         <span className="font-bold mr-2">{tour.rating}</span>
-        <span className="text-gray-600">({tour.reviewCount} reviews)</span>
+        <span className="text-gray-600 dark:text-gray-300">({tour.reviewCount} reviews)</span>
       </div>
-      <p className="text-gray-700 mb-6">{tour.description}</p>
+      <p className="text-gray-700 dark:text-gray-300 mb-6">{tour.description}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="flex items-center">
           <Clock className="mr-2" />

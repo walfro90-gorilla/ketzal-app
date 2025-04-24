@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import TopBar from './TopBar'
+import ThemeToggle from './ThemeToggle'
 
 interface HeaderProps {
   session: any;
@@ -28,6 +29,8 @@ const Header = ({ session }: HeaderProps) => {
   const scrollDirection = useScrollDirection()
   const [showTopBar, setShowTopBar] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,20 +43,22 @@ const Header = ({ session }: HeaderProps) => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
       {/* TopBar */}
       <div
-        className={`transform transition-transform duration-300 ${showTopBar ? 'translate-y-0' : '-translate-y-full'
-          }`}
+        className={`transform transition-transform duration-300 ${showTopBar ? 'translate-y-0' : '-translate-y-full'}`}
       >
         <TopBar session={session} />
       </div>
 
       {/* Main Navigation */}
       <div
-        className={`bg-white shadow-md transition-all duration-300 ${isScrolled ? 'py-2' : 'py-4'
-          }`}
+        className={`bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 ${isScrolled ? 'py-2' : 'py-4'}`}
         style={{
           transform: showTopBar ? 'translateY(0)' : 'translateY(-50px)'
         }}
@@ -77,45 +82,54 @@ const Header = ({ session }: HeaderProps) => {
 
             {/* Main Navigation Links - Desktop */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="text-green-600 font-medium">Inicio</Link>
-              <Link href="/tours" className="text-gray-600 hover:text-green-600">Tours</Link>
-
-              <Link href="/blogs" className="text-gray-600 hover:text-green-600">Blog</Link>
-
-              <Link href="/contact" className="text-gray-600 hover:text-green-600">Contacto</Link>
-
-              {/* Pages Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="text-gray-600 hover:text-green-600">
-                    Mas
-                    <ChevronDown className="ml-1 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <Link href="/about">Quienes somos</Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem>
-                    <Link href="/faq">FAQ</Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
+              <Link href="/" className="text-gray-600 dark:text-gray-200 font-medium">Inicio</Link>
+              <Link href="/tours" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tours</Link>
+              <Link href="/contact" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Contacto</Link>
+              <div className="ml-4"><ThemeToggle /></div>
             </nav>
 
             {/* Search and Mobile Menu */}
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
+                <Search className="h-5 w-5 text-gray-600 dark:text-gray-200" />
               </Button>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setShowMobileMenu((v) => !v)}
+                aria-label="Abrir menú"
+              >
+                <Menu className="h-6 w-6 text-gray-600 dark:text-gray-200" />
               </Button>
             </div>
           </div>
         </div>
+        {/* Mobile Menu Overlay */}
+        {isMounted && showMobileMenu && (
+          <div className="fixed inset-0 z-50 bg-black/40 md:hidden" onClick={() => setShowMobileMenu(false)} />
+        )}
+        {/* Mobile Menu Drawer */}
+        {isMounted && (
+          <div
+            className={`fixed top-0 right-0 z-50 w-3/4 max-w-xs h-full bg-white dark:bg-zinc-900 shadow-lg transform transition-transform duration-300 md:hidden ${showMobileMenu ? 'translate-x-0' : 'translate-x-full'}`}
+            style={{ willChange: 'transform' }}
+          >
+            <div className="flex flex-col h-full p-6 space-y-6">
+              <div className="flex justify-end">
+                <Button variant="ghost" size="icon" onClick={() => setShowMobileMenu(false)} aria-label="Cerrar menú">
+                  <span className="text-2xl text-gray-600 dark:text-gray-200">×</span>
+                </Button>
+              </div>
+              <nav className="flex flex-col space-y-4">
+                <Link href="/" className="text-gray-700 dark:text-gray-200 text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Inicio</Link>
+                <Link href="/tours" className="text-gray-700 dark:text-gray-200 text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tours</Link>
+                <Link href="/contact" className="text-gray-700 dark:text-gray-200 text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Contacto</Link>
+              </nav>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

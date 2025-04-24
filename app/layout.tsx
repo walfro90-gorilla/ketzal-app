@@ -5,10 +5,13 @@ import "./globals.css";
 import { SupplierProvider } from "@/context/SupplierContext";
 import { UserProvider } from "@/context/UserContext";
 import { ServiceProvider } from "@/context/ServiceContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 import Header from "@/components/header";
 import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
+import AppWithLoader from '@/components/AppWithLoader'
+import { LoadingProvider } from '@/components/LoadingContext'
 
 // FONTS  -  Geist and Geist Mono
 const geistSans = Geist({
@@ -32,7 +35,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   // AUTHENTICATION
   const session = await auth()
 
@@ -41,20 +43,26 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider session={session}>
-          <UserProvider>
-            <SupplierProvider>
-              <ServiceProvider>
-                <div className="layout">
-                  <Header session={session} />
-                  <main className="main-content">
-                    {children}
-                  </main>
-                </div>
-              </ServiceProvider>
-            </SupplierProvider>
-          </UserProvider>
-        </SessionProvider>
+        <ThemeProvider>
+          <SessionProvider session={session}>
+            <UserProvider>
+              <SupplierProvider>
+                <ServiceProvider>
+                  <LoadingProvider>
+                    <AppWithLoader>
+                      <div className="layout">
+                        <Header session={session} />
+                        <main className="main-content">
+                          {children}
+                        </main>
+                      </div>
+                    </AppWithLoader>
+                  </LoadingProvider>
+                </ServiceProvider>
+              </SupplierProvider>
+            </UserProvider>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

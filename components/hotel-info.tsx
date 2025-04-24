@@ -211,11 +211,8 @@ const serviceIcons: Record<string, React.ReactNode> = {
 }
 
 export default function HotelInfo({ hotelProvider }) {
-
-
-
   return (
-    <div>
+    <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4 text-gray-900 dark:text-gray-100">
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
@@ -226,12 +223,10 @@ export default function HotelInfo({ hotelProvider }) {
                 <MapPin className="h-3 w-3" />
                 {hotelProvider.location.address}
               </div>
-
               <div className="mb-3">
                 <h3 className="text-sm font-semibold mb-1">Description</h3>
                 <p className="text-xs text-muted-foreground line-clamp-4">{hotelProvider.description}</p>
               </div>
-
               <div className="flex flex-wrap gap-1 mb-3">
                 {hotelProvider.extras.map((service) => (
                   <Badge key={service} variant="outline" className="flex items-center gap-1 px-2 py-0 text-[10px]">
@@ -240,7 +235,6 @@ export default function HotelInfo({ hotelProvider }) {
                   </Badge>
                 ))}
               </div>
-
               <div>
                 <Carousel className="w-full">
                   <CarouselContent>
@@ -263,7 +257,6 @@ export default function HotelInfo({ hotelProvider }) {
                 </Carousel>
               </div>
             </div>
-
             {/* Right column - Map */}
             <div className="md:col-span-2 p-0">
               <div className="h-full min-h-[250px] relative">
@@ -280,7 +273,6 @@ export default function HotelInfo({ hotelProvider }) {
           </div>
         </CardContent>
       </Card>
-
     </div >
   )
 }

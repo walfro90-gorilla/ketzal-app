@@ -218,7 +218,9 @@ export default function HotelSearch() {
   const handleHotelChange = (hotelId: string) => {
     const hotel = hotels.find((h) => h.id === hotelId) || null
     setSelectedHotel(hotel)
-    console.log("hotel:",hotel.id);
+    if (hotel) {
+      console.log("hotel:", hotel.id);
+    }
 
   }
 

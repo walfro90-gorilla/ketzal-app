@@ -59,7 +59,7 @@ const TourCarousel: React.FC<TourCarouselProps> = ({ tours }) => {
               </div>
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-xl font-bold text-green-600">${tour.price}</span>
-                <a href={`/tour/${tour.id}`} className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Ver más</a>
+                <a href={`/tours/${tour.id}`} className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Ver más</a>
               </div>
             </div>
           </div>

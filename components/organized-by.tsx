@@ -10,9 +10,9 @@ interface OrganizedByProps {
 
 export function OrganizedBy({id, name, memberSince, avatar }: OrganizedByProps) {
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium">Organizado por:</CardTitle>
+        <CardTitle className="text-base font-medium text-gray-900 dark:text-gray-100">Organizado por:</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-3">
@@ -23,14 +23,14 @@ export function OrganizedBy({id, name, memberSince, avatar }: OrganizedByProps) 
               fill
               sizes="100vw"
               style={{ objectFit: 'cover' }}
-              className="rounded-full object-cover"
+              className="rounded-full object-cover border border-gray-200 dark:border-zinc-700"
             />
             </a>
             <div>
-            <a href={`/supplier/${id}`} className="font-medium hover:underline">
+            <a href={`/supplier/${id}`} className="font-medium hover:underline text-gray-900 dark:text-gray-100">
               {name}
             </a>
-            <div className="text-sm text-gray-500">Asociado Ketzal desde:
+            <div className="text-sm text-gray-500 dark:text-gray-300">Asociado Ketzal desde:{' '}
               {
                 new Date(memberSince).toLocaleDateString("es-MX", {
                   year: "numeric",
@@ -38,7 +38,6 @@ export function OrganizedBy({id, name, memberSince, avatar }: OrganizedByProps) 
                   day: "2-digit",
                 })
               }
-
             </div>
           </div>
         </div>

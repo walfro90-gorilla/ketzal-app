@@ -23,7 +23,7 @@ export default async function Suppliers() {
 
 
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 mt-4">
-                {suppliers.map((supplier) => (
+                {(suppliers ?? []).map((supplier) => (
                     <SupplierCard supplier={supplier} key={supplier.id} />
                 ))}
             </div>

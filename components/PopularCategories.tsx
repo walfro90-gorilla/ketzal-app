@@ -10,9 +10,9 @@ const categories = [
 
 const PopularCategories = () => {
   return (
-    <section className="py-16 bg-gray-100">
+    <section className="py-16 bg-gray-100 dark:bg-zinc-900">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-center">Categorías populares</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-gray-100">Categorías populares</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((category) => (
             <Link key={category.name} href={category.link} className="group">
@@ -25,8 +25,8 @@ const PopularCategories = () => {
                   style={{ objectFit: 'cover' }}
                   className="rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                  <h3 className="text-white text-xl font-semibold">{category.name}</h3>
+                <div className="absolute inset-0 bg-black bg-opacity-40 dark:bg-opacity-60 flex items-center justify-center">
+                  <h3 className="text-white text-xl font-semibold drop-shadow dark:text-gray-100">{category.name}</h3>
                 </div>
               </div>
             </Link>
