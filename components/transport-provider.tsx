@@ -219,7 +219,7 @@ export default function TransportProvider({transportProvider}) {
               <div>
                 <h3 className="text-[10px] font-medium mb-1 text-gray-900 dark:text-gray-100">Services:</h3>
                 <div className="flex gap-2">
-                  {(transportProvider.services || []).map((service) => (
+                  {(transportProvider.extras || []).map((service) => (
                     <div key={service} className="flex items-center gap-0.5">
                       {service === "WiFi" && <Wifi className="h-3 w-3 text-gray-700 dark:text-gray-300" />}
                       {service === "Parking" && <Car className="h-3 w-3 text-gray-700 dark:text-gray-300" />}

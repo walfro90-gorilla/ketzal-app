@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart } from 'lucide-react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import "keen-slider/keen-slider.min.css"
 import { useKeenSlider } from "keen-slider/react"
 import Loader from '@/components/Loader'
@@ -57,6 +57,12 @@ const SpecialOffers = ({ services }: SpecialOffersProps) => {
       slider.on("updated", nextTimeout);
     },
   });
+  const { setLoading } = useLoading();
+  // Cerrar el loader cuando el componente termine de montarse
+  // y los servicios estén listos
+  React.useEffect(() => {
+    setLoading(false);
+  }, [services, setLoading]);
   return (
     <section className="py-16 bg-gray-100 dark:bg-zinc-900">
       <div className="container mx-auto px-4">
@@ -85,6 +91,7 @@ interface TourCardProps {
   packs: { data: Array<{ description: string, name: string, price: number, qty: number }> }
   price: number
   supplierId: string
+  cityTo: string
 }
 
 const TourCard = ({
@@ -98,7 +105,8 @@ const TourCard = ({
   id,
   packs,
   price,
-  supplierId
+  supplierId,
+  cityTo
 }: TourCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false)
   const { setLoading } = useLoading()
@@ -140,6 +148,7 @@ const TourCard = ({
           {/* Favorite Button */}
           <button
             onClick={(e) => {
+              e.stopPropagation()
               e.preventDefault()
               setIsFavorite(!isFavorite)
             }}
@@ -155,7 +164,7 @@ const TourCard = ({
             {/* Location */}
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300 text-sm mb-2">
               <span>✈</span>
-              {location}
+              {cityTo}
             </div>
 
             {/* Title */}

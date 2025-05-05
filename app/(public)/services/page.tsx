@@ -17,9 +17,9 @@ export default async function Service() {
     const session = await auth()
 
     return (
-        <Card>
+        <Card className="dark:bg-neutral-900">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-4xl font-bold">Servicios</h1>
+                <h1 className="text-4xl font-bold dark:text-white text-black">Servicios</h1>
                 <Link
                     href='/services/new'
                     className={buttonVariants()}

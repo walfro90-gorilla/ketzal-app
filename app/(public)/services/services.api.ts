@@ -11,7 +11,7 @@ export async function createService(serviceData: any){
         body: JSON.stringify(serviceData),
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
 }
 
 // READ serviceS
@@ -46,6 +46,6 @@ export async function deleteService(id: string){
         method: 'DELETE',
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
     
 }

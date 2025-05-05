@@ -9,8 +9,8 @@ import { Rate } from 'antd';
 const Testimonials = ({reviews, users}) => {
   const [current, setCurrent] = useState(0)
   useEffect(() => {
-    console.log("Reviews: ", reviews)
-    console.log("Usrs: ", users)
+    // console.log("Reviews: ", reviews)
+    // console.log("Usrs: ", users)
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % reviews.length)
     }, 3000)

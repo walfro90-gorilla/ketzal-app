@@ -48,6 +48,6 @@ export async function deleteUser(id: string) {
         method: 'DELETE',
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
 
 }

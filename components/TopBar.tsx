@@ -12,9 +12,18 @@ import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Popover } from 'antd'
 
-
+import { useLoading } from '@/components/LoadingContext'
+import { useEffect } from 'react'
+import { set } from 'date-fns'
 
 const TopBar = ({ session }) => {
+
+  const { setLoading } = useLoading();
+
+  // useEffect(() => {
+  //   setLoading(true)
+
+  // }, [])
 
   const content = (
     <div>

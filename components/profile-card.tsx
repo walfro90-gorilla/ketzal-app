@@ -20,7 +20,7 @@ export default function ProfileCard({
   onClose
 }: ProfileCardProps) {
   return (
-    <Card className="w-full max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <Card className="w-full max-w-sm mx-auto bg-white dark:bg-gray-950 shadow-lg rounded-lg overflow-hidden">
       <CardHeader className="flex justify-between items-center space-y-0 pb-0">
         {/* <h1 >Agency</h1> */}
       </CardHeader>

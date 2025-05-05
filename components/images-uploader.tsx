@@ -22,7 +22,7 @@ const ImageUploader = () => {
         beforeUpload: (file) => {
             const isPNG = file.type === "image/png";
             const isJPG = file.type === "image/jpeg";
-            const sizeFile = file.size <= 5 * 1024 * 1024; // Límite de 5MB
+            const sizeFile = file.size <= 10 * 1024 * 1024; // Límite de 5MB
 
             if (!isPNG && !isJPG && sizeFile) {
                 messageApi.error(`File is not a valid image file`);
@@ -30,7 +30,7 @@ const ImageUploader = () => {
             return isPNG || isJPG || sizeFile || Upload.LIST_IGNORE;
         },
         onChange: (info) => {
-            console.log(info.fileList);
+            // console.log(info.fileList);
         },
     };
 

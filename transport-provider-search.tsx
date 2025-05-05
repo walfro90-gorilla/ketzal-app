@@ -226,7 +226,7 @@ export default function TransportProviderSearch() {
                 setSearchQuery(e.target.value)
                 setIsDropdownOpen(true)
                 setTransportProviderID(e.target.id)
-                console.log("Transport id:", selectedProvider.id )
+                // console.log("Transport id:", selectedProvider.id )
                 if (e.target.value === "") {
                   setSelectedProvider(null)
                 }

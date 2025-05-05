@@ -4,7 +4,7 @@ import { useSuppliers } from "@/context/SupplierContext"
 export default function Users() {
 
   const idSuppliers = useSuppliers()
-  console.log("Supplier context:", idSuppliers)
+  // console.log("Supplier context:", idSuppliers)
 
   return (
     <div>

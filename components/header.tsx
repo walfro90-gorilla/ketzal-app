@@ -85,15 +85,15 @@ const Header = ({ session }: HeaderProps) => {
               <Link href="/" className="text-gray-600 dark:text-gray-200 font-medium">Inicio</Link>
               <Link href="/tours" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tours</Link>
               <Link href="/contact" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Contacto</Link>
-              <div className="ml-4"><ThemeToggle /></div>
+              {/* <div className="ml-4"><ThemeToggle /></div> */}
             </nav>
 
             {/* Search and Mobile Menu */}
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              <Button variant="ghost" size="icon">
+              {/* <Button variant="ghost" size="icon">
                 <Search className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-              </Button>
+              </Button> */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -113,7 +113,7 @@ const Header = ({ session }: HeaderProps) => {
         {/* Mobile Menu Drawer */}
         {isMounted && (
           <div
-            className={`fixed top-0 right-0 z-50 w-3/4 max-w-xs h-full bg-white dark:bg-zinc-900 shadow-lg transform transition-transform duration-300 md:hidden ${showMobileMenu ? 'translate-x-0' : 'translate-x-full'}`}
+            className={`fixed top-0 right-0 z-50 w-3/4 max-w-xs h-full bg-background text-foreground shadow-lg transform transition-transform duration-300 md:hidden ${showMobileMenu ? 'translate-x-0' : 'translate-x-full'}`}
             style={{ willChange: 'transform' }}
           >
             <div className="flex flex-col h-full p-6 space-y-6">
@@ -123,9 +123,9 @@ const Header = ({ session }: HeaderProps) => {
                 </Button>
               </div>
               <nav className="flex flex-col space-y-4">
-                <Link href="/" className="text-gray-700 dark:text-gray-200 text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Inicio</Link>
-                <Link href="/tours" className="text-gray-700 dark:text-gray-200 text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tours</Link>
-                <Link href="/contact" className="text-gray-700 dark:text-gray-200 text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Contacto</Link>
+                <Link href="/" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Inicio</Link>
+                <Link href="/tours" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tours</Link>
+                <Link href="/contact" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Contacto</Link>
               </nav>
             </div>
           </div>

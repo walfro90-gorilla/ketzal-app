@@ -6,17 +6,18 @@ import { getServices } from '@/app/(public)/services/services.api'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
+import { useLoading } from '@/components/LoadingContext'
 
 const { Search } = Input
 
 export default function TourPage() {
   const [tours, setTours] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [price, setPrice] = useState([0, 10000])
   const [rating, setRating] = useState(0)
   const [filtered, setFiltered] = useState<any[]>([])
   const [pageLoading, setPageLoading] = useState(true)
+  const { setLoading } = useLoading();
 
   useEffect(() => {
     // Espera a que el DOM esté listo
@@ -101,51 +102,48 @@ export default function TourPage() {
               </CardContent>
             </Card>
           </div>
-
-
-          
           {/* Tour List */}
           <div className="md:col-span-3">
-            {loading ? (
-              <div className="flex justify-center items-center h-40"><Spin size="large" /></div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filtered.length === 0 && (
-                  <div className="col-span-full text-center text-gray-500 dark:text-gray-400">No se encontraron tours.</div>
-                )}
-                {filtered.map((tour) => (
-                  <AntCard
-                    key={tour.id}
-                    hoverable
-                    cover={tour.images?.imgBanner ? (
-                      <img
-                        alt={tour.name}
-                        src={tour.images.imgBanner}
-                        className="h-56 w-full object-cover"
-                      />
-                    ) : null}
-                    className="overflow-hidden shadow border-0 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100"
-                    styles={{ body: { background: 'inherit', color: 'inherit' } }}
-                  >
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-lg line-clamp-1 text-gray-900 dark:text-gray-100">{tour.name}</span>
-                        <span className="text-green-600 dark:text-green-400 font-semibold text-lg">${tour.price}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-300 line-clamp-2 mb-1">{tour.location}</div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Rate disabled value={tour.rating || 0} />
-                        <span className="text-xs text-gray-400 dark:text-gray-500">({tour.reviewCount || 0})</span>
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">{tour.description}</div>
-                      <Link href={`/tours/${tour.id}`} className="block">
-                        <AntButton type="primary" className="w-full">Ver detalles</AntButton>
-                      </Link>
-                    </div>
-                  </AntCard>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.length === 0 && (
+                <div className="col-span-full text-center text-gray-500 dark:text-gray-400">No se encontraron tours.</div>
+              )}
+              {filtered.map((tour) => (
+                <AntCard
+                  key={tour.id}
+                  hoverable
+                  cover={tour.images?.imgBanner ? (
+                  <img
+                    alt={tour.name}
+                    src={tour.images.imgBanner}
+                    className="h-56 w-full object-cover"
+                  />
+                  ) : null}
+                  className="overflow-hidden shadow border-0 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100"
+                  styles={{ body: { background: 'inherit', color: 'inherit' } }}
+                  onClick={() => {
+                  setLoading(true);
+                  window.location.href = `/tours/${tour.id}`;
+                  }}
+                >
+                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-lg line-clamp-1 text-gray-900 dark:text-gray-100">{tour.name}</span>
+                    <span className="text-green-600 dark:text-green-400 font-semibold text-lg">${tour.price}</span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 line-clamp-2 mb-1">{tour.location}</div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Rate disabled value={tour.rating || 0} />
+                    <span className="text-xs text-gray-400 dark:text-gray-500">({tour.reviewCount || 0})</span>
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">{tour.description}</div>
+                  <Link href={`/tours/${tour.id}`} className="block">
+                    <AntButton type="primary" className="w-full" onClick={(e) => { e.stopPropagation(); setLoading(true); }}>Ver detalles</AntButton>
+                  </Link>
+                  </div>
+                </AntCard>
+              ))}
+            </div>
           </div>
         </div>
       </div>

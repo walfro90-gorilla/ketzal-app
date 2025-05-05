@@ -37,7 +37,7 @@ const UploaderIamge: React.FC = () => {
       getBase64(info.file.originFileObj as FileType, (url) => {
         setLoading(false);
         setImageUrl(url);
-        console.log("Image URL:", url)  
+        // console.log("Image URL:", url)  
       });
     }
   };

@@ -25,28 +25,28 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
 
   // Fetch services
   const service = await getService(id)
-  console.log("Service data: ", service)
+  // console.log("Service data: ", service)
 
   const provider = await getSupplier(service.supplierId)
-  console.log("Provider data: ", provider)
+  // console.log("Provider data: ", provider)
 
   const hotelProvider = await getSupplier(service.hotelProviderID)
-  console.log("Hotel Provider data: ", hotelProvider)
+  // console.log("Hotel Provider data: ", hotelProvider)
 
   const transportProvider = await getSupplier(service.transportProviderID)
-  console.log("Transport Provider data: ", transportProvider)
+  // console.log("Transport Provider data: ", transportProvider)
 
   const tours = (await getServices()).filter(service => service.serviceType === 'tour')
 
   // Reviews fetching
   const reviewsService = (await getReviews()).filter(review => review.serviceId === Number(id))
-  console.log("reviews: ", reviewsService)
+  // console.log("reviews: ", reviewsService)
 
   const users = (await getUsers())
-  console.log("users: ", users)
+  // console.log("users: ", users)
 
   const session = await auth()
-  console.log("Session: ", session)
+  // console.log("Session: ", session)
 
   const availableFrom = new Date(service.availableFrom);
   const availableTo = new Date(service.availableTo);

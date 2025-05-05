@@ -13,23 +13,27 @@ interface TourHeaderProps {
   bannerImage: string
 }
 
-export function TourHeader({ 
-  duration, 
-  tourType, 
-  groupSize, 
-  location, 
-  rating, 
+export function TourHeader({
+  duration,
+  tourType,
+  groupSize,
+  location,
+  rating,
   reviewCount,
   title,
   bannerImage,
 }: TourHeaderProps) {
+
+
   return (
+
+
     <div className="relative w-full">
       {/* Banner Section */}
       <div className="relative h-[400px] w-full">
         <div className="absolute inset-0">
-          <img 
-            src={bannerImage} 
+          <img
+            src={bannerImage}
             alt={title}
             className="w-full h-full object-cover"
           />

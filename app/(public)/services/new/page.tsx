@@ -18,10 +18,9 @@ async function ServicesNewPage({ params }: { params: { id: string } }) {
 
 
     return (
-        <div>
-
+        <div className="min-h-screen bg-white dark:bg-gray-900 mt-16">
             <div className="flex justify-center items-center h-full">
-                <Card>
+                <Card className="bg-white dark:bg-gray-800 text-black dark:text-white">
                     <CardHeader>
                         <CardTitle>
                             {

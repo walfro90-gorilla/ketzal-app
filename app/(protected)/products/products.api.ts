@@ -11,7 +11,7 @@ export async function createProduct(productData: any){
         body: JSON.stringify(productData),
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
 }
 
 // READ PRODUCTS
@@ -46,5 +46,5 @@ export async function deleteProduct(id: string){
         method: 'DELETE',
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
 }
