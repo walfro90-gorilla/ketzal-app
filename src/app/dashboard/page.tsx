@@ -1,3 +1,4 @@
+import { auth } from "@/auth"
 import { SidebarLeft } from "@/components/sidebar-left"
 import { SidebarRight } from "@/components/sidebar-right"
 import {
@@ -13,10 +14,24 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth();
+  const allowedRoles = ["admin", "superadmin", "adminsup"] as const;
+  let user: { role: "admin" | "superadmin" | "adminsup"; supplierId: string; name: string; email: string; avatar: string };
+  if (session?.user && allowedRoles.includes(session.user.role as any)) {
+    user = {
+      role: session.user.role as "admin" | "superadmin" | "adminsup",
+      supplierId: session.user.supplierId || "",
+      name: session.user.name || "",
+      email: session.user.email || "",
+      avatar: (session.user as any).avatar || ""
+    };
+  } else {
+    user = { role: "admin", supplierId: "", name: "", email: "", avatar: "" };
+  }
   return (
     <SidebarProvider>
-      <SidebarLeft />
+      <SidebarLeft user={user} />
       <SidebarInset>
         <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
           <div className="flex flex-1 items-center gap-2 px-3">
@@ -38,7 +53,7 @@ export default function Page() {
           <div className="mx-auto h-[100vh] w-full max-w-3xl rounded-xl bg-muted/50" />
         </div>
       </SidebarInset>
-      <SidebarRight />
+      <SidebarRight session={{ user, calendars: [] }} supplierData={{ name: "", imgLogo: "" }} />
     </SidebarProvider>
   )
 }

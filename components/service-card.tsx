@@ -4,7 +4,7 @@ import { Button } from "./ui/button"
 import { deleteService } from "@/app/(public)/services/services.api"
 import { useRouter } from "next/navigation";
 
-interface Service {
+export interface Service {
     supplierId: string;
     name: string;
     description: string;
@@ -16,13 +16,13 @@ interface Service {
         imgBanner: string;
         imgAlbum: string[];
     };
-    
+    id?: string;
 }
 
 export function ServiceCard({ service }: { service: Service }) {
     const router = useRouter()
 
-    async function handleRemoveService(id) {
+    async function handleRemoveService(id: string) {
         console.log("remove service", id)
         await deleteService(id)
         router.refresh()
@@ -60,7 +60,9 @@ export function ServiceCard({ service }: { service: Service }) {
                     variant="destructive"
                     onClick={(e) => {
                         e.stopPropagation()
-                        handleRemoveService(service.id)
+                        if (service.id) {
+                            handleRemoveService(service.id)
+                        }
                     }}
                 >
                     Eliminar

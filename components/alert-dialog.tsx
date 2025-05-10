@@ -24,7 +24,7 @@ export function AlertDialogProvider({ children }: { children: React.ReactNode })
   const [dialogOptions, setDialogOptions] = useState({ title: "", message1: "", message2: "", confirmText: "", cancelText: "" });
   const [resolvePromise, setResolvePromise] = useState<(value: boolean) => void>(() => { });
 
-  const showDialog = (options: { title: string, message: string, confirmText: string, cancelText: string }) => {
+  const showDialog = (options: { title: string, message1: string, message2: string, confirmText: string, cancelText: string }) => {
     setDialogOptions(options);
     setIsOpen(true);
     return new Promise<boolean>((resolve) => {

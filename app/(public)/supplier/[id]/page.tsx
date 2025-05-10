@@ -2,8 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api";
 
 // Página pública de detalle de proveedor
-export default async function PublicSupplierPage({ params }: { params: { id: string } }) {
-    const supplier = await getSupplier(params.id);
+export default async function PublicSupplierPage({ params }: { params: Promise< { id: string }> }) {
+
+    const { id } = await params;
+    const supplier = await getSupplier(id);
 
     if (!supplier) {
         return <div className="flex justify-center items-center h-96">Proveedor no encontrado</div>;

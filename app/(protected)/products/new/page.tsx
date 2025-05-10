@@ -2,10 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProductForm } from "./product-form"
 import { getProduct } from "../products.api"
 
-async function ProductsNewPage({ params }: { params: { id: string } }) {
+async function ProductsNewPage({ params }: { params: Promise<{ id: string }> }) {
 
-    const resolvedParams = await params
-    const product = await getProduct(resolvedParams.id)
+    const { id } = await params
+
+
+    const product = await getProduct(id)
     // console.log(product)
 
     return (
@@ -16,7 +18,7 @@ async function ProductsNewPage({ params }: { params: { id: string } }) {
                         {
                             product ? "Edit Product" : "Create New Product"
                         }
-                        
+
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

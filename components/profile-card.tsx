@@ -32,8 +32,8 @@ export default function ProfileCard({
             <div className="rounded-full bg-white p-1 h-full w-full">
               <div className="relative">
                 <Image
-                  src={avatarUrl}
-                  alt={name}
+                  src={avatarUrl || "/placeholder.svg"}
+                  alt={name || "Avatar"}
                   width={96}
                   height={96}
                   className="rounded-full h-full w-full object-cover"

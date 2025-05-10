@@ -6,7 +6,25 @@ import { useEffect, useState } from "react"
 import { Avatar } from 'antd';
 import { Rate } from 'antd';
 
-const Testimonials = ({reviews, users}) => {
+type Review = {
+  userId: string;
+  rating: number;
+  comment: string;
+  createdAt: string | Date;
+};
+
+type User = {
+  id: string;
+  image: string;
+  name: string;
+};
+
+interface TestimonialsProps {
+  reviews: Review[];
+  users: User[];
+}
+
+const Testimonials = ({reviews, users}: TestimonialsProps) => {
   const [current, setCurrent] = useState(0)
   useEffect(() => {
     // console.log("Reviews: ", reviews)

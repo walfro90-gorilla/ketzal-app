@@ -20,7 +20,7 @@ export const loginAction = async (
         return { success: true, callbackUrl: values.callbackUrl || "/home" }
     } catch (error) {
         if (error instanceof AuthError) {
-            return { error: error.cause?.err?.message }
+            return { error: (error.cause as any)?.message || "Unknown error" }
         }
         return { error: "Error 500" }
     }
@@ -74,7 +74,7 @@ export const registerAction = async (
     } catch (error) {
         console.log("first error", error)
         if (error instanceof AuthError) {
-            return { error: error.cause?.err?.message }
+            return { error: (error.cause as any)?.message || "Unknown error" }
         }
         return { error: error }
     }

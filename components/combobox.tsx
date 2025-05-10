@@ -46,7 +46,12 @@ const fireworks = [
   },
 ]
 
-export  function ComboBox({suppliers, selectedSupplier}: any) {
+type Supplier = {
+  id: string;
+  name: string;
+};
+
+export function ComboBox({suppliers, selectedSupplier}: {suppliers: Supplier[], selectedSupplier?: Supplier}) {
 
   const {getIdSupplier} = useSuppliers() // OBJECT DESTRUCTURING
 
@@ -63,7 +68,7 @@ export  function ComboBox({suppliers, selectedSupplier}: any) {
           className="w-[200px] justify-between"
         >
           {value
-            ? suppliers.find((supplier) => supplier.name === value)?.name
+            ? suppliers.find((supplier: Supplier) => supplier.name === value)?.name
             : "Select supplier..."}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -74,7 +79,7 @@ export  function ComboBox({suppliers, selectedSupplier}: any) {
           <CommandList>
             <CommandEmpty>No supplier found.</CommandEmpty>
             <CommandGroup>
-              {suppliers.map((supplier) => (
+              {suppliers.map((supplier: Supplier) => (
                 <CommandItem
                   key={supplier.id}
                   value={supplier.name}

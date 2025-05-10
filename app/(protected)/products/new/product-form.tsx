@@ -81,7 +81,7 @@ export function ProductForm({ product }: any) {
 
             <Button>
                 {
-                    params.id ? "Update Product" : "Create Product"
+                    params?.id ? "Update Product" : "Create Product"
                 }
             </Button>
         </form>

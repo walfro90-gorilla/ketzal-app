@@ -69,8 +69,14 @@ export function NavFavorites({
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Link className="text-muted-foreground" />
-                  <span>Copy Link</span>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 text-muted-foreground w-full text-left"
+                    // TODO: Add onClick handler to copy the link to clipboard
+                  >
+                    {/* You can add an icon here if desired */}
+                    <span>Copy Link</span>
+                  </button>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <ArrowUpRight className="text-muted-foreground" />

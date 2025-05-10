@@ -20,7 +20,31 @@ const ProtectedLayout = async ({
   // const values = useUser()
 
   // IF USER IS NOT AUTHENTICATED
-  if (session?.user?.role === "user") {
+  if (!session) {
+    return <div>
+      No session found. Please log in.
+      <div className="flex space-x-4">
+        <LogoutButton />
+        <HomeButton />
+      </div>
+    </div>
+  }
+
+  // Adapt session to match SessionType
+  const sessionForDashboard = {
+    calendars: [],
+    user: {
+      ...session.user,
+      id: session.user?.id || "",
+      name: session.user?.name || "",
+      email: session.user?.email || "",
+      avatar: (session.user as any).avatar || "", // fuerza avatar aunque no exista
+      supplierId: session.user?.supplierId || "",
+      role: (session.user?.role as "superadmin" | "admin" | "adminsup") || "admin",
+    },
+  };
+
+  if (session.user?.role === "user") {
     return <div>
       You are not an admin authenticated
       <div className="flex space-x-4">
@@ -31,15 +55,13 @@ const ProtectedLayout = async ({
   }
 
   return (
-    
-      <main className="flex-grow w-full flex flex-col">
+    <main className="flex-grow w-full flex flex-col">
       <AlertDialogProvider>
         <div >
-          <Dashboard session={session}>{children}</Dashboard>
+          <Dashboard session={sessionForDashboard}>{children}</Dashboard>
         </div>
       </AlertDialogProvider>
-      </main>
-
+    </main>
   )
 }
 

@@ -71,7 +71,12 @@ export function SupplierFormUser({ supplier }: any) {
             console.log("DATA:", data)
 
             const dataUpdate = await createSupplier(data);
-            await updateIdSupplier(dataUpdate, user);
+            if (user) {
+                await updateIdSupplier(dataUpdate, user);
+            } else {
+                console.error("User is null. Cannot update supplier ID.");
+                return;
+            }
             await signOut({
                 callbackUrl: '/login'
             });
@@ -127,7 +132,7 @@ export function SupplierFormUser({ supplier }: any) {
 
                     <Avatar src={imgUrl} shape="square" size={64} icon={<UserOutlined />} />
 
-                    <ImgCrop rotate aspect={1}>
+                    <ImgCrop aspect={1}>
                         <Upload
                             listType="picture-card"
                             showUploadList={false}
@@ -144,7 +149,7 @@ export function SupplierFormUser({ supplier }: any) {
                     <input id="logoUrl" {...register("imgLogo")} hidden />
                 </Space>
                 <Button>
-                    {params.id ? "Update supplier" : "Create supplier"}
+                    {params?.id ? "Update supplier" : "Create supplier"}
                 </Button>
             </Space>
         </form>

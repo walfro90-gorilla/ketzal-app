@@ -5,6 +5,7 @@ import { deleteSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { useRouter } from "next/navigation";
 
 interface Supplier {
+    id: string;
     name: string;
     // price: number;
     image: string;
@@ -14,7 +15,7 @@ interface Supplier {
 export function SupplierCard({ supplier }: { supplier: Supplier }) {
     const router = useRouter()
 
-    async function handleRemoveSupplier(id) {
+    async function handleRemoveSupplier(id: string) {
         console.log("remove supplier", id)
         await deleteSupplier(id)
         router.refresh()
@@ -32,7 +33,7 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
                 </CardTitle>
             </CardHeader>
 
-            <img alt="" src={supplier.imgLogo} />
+            <img alt="" src={supplier.image} />
             <CardContent>
                 <p>{supplier.description}</p>
 

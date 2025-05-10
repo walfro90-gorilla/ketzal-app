@@ -5,7 +5,15 @@ import { db } from "@/lib/db";
 
 
 
-export const updateIdSupplier = async (data, user) => {
+interface SupplierData {
+    id: string; // Adjust the type of 'id' as needed
+}
+
+interface User {
+    id: string; // Adjust the type of 'id' as needed
+}
+
+export const updateIdSupplier = async (data: SupplierData, user: User) => {
 
 
 
@@ -17,7 +25,7 @@ export const updateIdSupplier = async (data, user) => {
                 id: user.id
             },
             data: {
-                supplierId: data.id
+                supplierId: Number(data.id)
             }
         })
 

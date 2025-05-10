@@ -29,20 +29,20 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
     };
     console.log("New Review Submitted: ", newReview);
     setLoading(true);
-    await createReview(newReview)
-      .then((res: { id?: string }) => {
-        console.log("Review created: ", res);
-        setReviews([...reviews, { ...newReview, id: res?.id || nanoid(), createdAt: new Date() }]);
-        setComment("");
-        setRating(5);
-      }
-      )
-      .catch((err) => {
-        console.error("Error creating review: ", err);
-        setError("Error creating review. Please try again later.");
-      }
-      )
-      .finally(() => setLoading(false));
+    try {
+      await createReview(newReview);
+      setReviews([
+        ...reviews,
+        { ...newReview, id: nanoid(), createdAt: new Date() },
+      ]);
+      setComment("");
+      setRating(5);
+    } catch (err) {
+      console.error("Error creating review: ", err);
+      setError("Error creating review. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -114,7 +114,7 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
 
               <Popconfirm
                 title="¿Estás seguro de que deseas enviar esta reseña?"
-                onConfirm={() => handleSubmit(new Event('submit'))}
+                onConfirm={(e) => handleSubmit(e as React.FormEvent)}
                 okText="Sí"
                 cancelText="No"
                 disabled={!comment.trim()}

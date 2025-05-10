@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
 import { ItineraryCard } from "./ItineraryCard"
 import { AddActivityDialog } from "./AddActivityDialog"
-import { ItineraryTimeline } from "./ItineraryTimeline"
+import ItineraryTimeline from "./ItineraryTimeline"
 import type { ItineraryItem } from "../types/itinerary"
 import { useToast } from "@/components/ui/use-toast"
 import { Tabs } from "antd"
@@ -16,7 +16,7 @@ export function ItineraryBuilder() {
   const [itineraryItems, setItineraryItems] = useState<ItineraryItem[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<ItineraryItem | null>(null)
-  const { toast } = useToast()
+  const { showToast } = useToast()
 
   const handleAddItem = (item: ItineraryItem) => {
     const newItem = {
@@ -29,13 +29,13 @@ export function ItineraryBuilder() {
     if (editingItem) {
       setItineraryItems((items) => items.map((i) => (i.id === editingItem.id ? newItem : i)))
       setEditingItem(null)
-      toast({
+      showToast({
         title: "Activity updated",
         description: "Your activity has been successfully updated.",
       })
     } else {
       setItineraryItems((items) => [...items, newItem])
-      toast({
+      showToast({
         title: "Activity added",
         description: "Your new activity has been added to the itinerary.",
       })
@@ -50,10 +50,9 @@ export function ItineraryBuilder() {
 
   const handleDeleteItem = (id: number) => {
     setItineraryItems((items) => items.filter((item) => item.id !== id))
-    toast({
+    showToast({
       title: "Activity deleted",
       description: "The activity has been removed from your itinerary.",
-      variant: "destructive",
     })
   }
 
@@ -77,7 +76,7 @@ export function ItineraryBuilder() {
           {
             key: "2",
             label: "Timeline View",
-            children: <ItineraryTimeline items={itineraryItems} />,
+            children: <ItineraryTimeline itinerary={itineraryItems} />,
           },
         ]}
       />

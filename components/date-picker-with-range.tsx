@@ -13,16 +13,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function DatePickerWithRange({ value, onChange }) {
+type DatePickerWithRangeProps = {
+  value: Date | null;
+  onChange: (date: Date | null) => void;
+};
+
+export function DatePickerWithRange({ value, onChange }: DatePickerWithRangeProps) {
   const [date, setDate] = React.useState(value)
 
   React.useEffect(() => {
     setDate(value)
   }, [value])
 
-  const handleSelect = (selectedDate) => {
-    setDate(selectedDate)
-    onChange(selectedDate)
+  const handleSelect = (selectedDate: Date | undefined) => {
+    const dateOrNull = selectedDate === undefined ? null : selectedDate;
+    setDate(dateOrNull);
+    onChange(dateOrNull);
   }
 
   return (
@@ -42,7 +48,7 @@ export function DatePickerWithRange({ value, onChange }) {
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={date}
+          selected={date ?? undefined}
           onSelect={handleSelect}
           initialFocus
         />

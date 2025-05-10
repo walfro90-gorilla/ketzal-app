@@ -55,7 +55,7 @@ export default function VirtualItinerary() {
     }
 
     // Add the new activity to the activities state
-    setActivities((prevActivities) => {
+    setActivities((prevActivities: Activity[]) => {
       const updatedActivities = [...prevActivities, newActivity]
       console.log("Activities:", updatedActivities)
       return sortActivities(updatedActivities)
@@ -81,7 +81,7 @@ export default function VirtualItinerary() {
 
   // Function to handle activity deletion
   const handleDeleteActivity = (id: number) => {
-    setActivities((prevActivities) => prevActivities.filter((activity) => activity.id !== id))
+    setActivities((prevActivities: Activity[]) => prevActivities.filter((activity) => activity.id !== id))
   }
 
   return (
@@ -156,7 +156,7 @@ export default function VirtualItinerary() {
             <Text>No se han agregado actividades.</Text>
           ) : (
             <Timeline mode="left">
-              {activities.map((activity) => (
+              {activities.map((activity: Activity) => (
                 <Timeline.Item key={activity.id} label={`${activity.date} ${activity.time}`}>
                   <div className="mb-4 relative pr-8">
                     <Title level={4} className="mb-2">

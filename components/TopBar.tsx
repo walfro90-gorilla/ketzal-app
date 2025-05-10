@@ -11,12 +11,13 @@ import {
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Popover } from 'antd'
+import { Session } from 'next-auth'
 
 import { useLoading } from '@/components/LoadingContext'
 import { useEffect } from 'react'
 import { set } from 'date-fns'
 
-const TopBar = ({ session }) => {
+const TopBar = ({ session }: { session: Session | null }) => {
 
   const { setLoading } = useLoading();
 

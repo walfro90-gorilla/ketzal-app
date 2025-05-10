@@ -7,8 +7,8 @@ const { Title, Text } = Typography
 interface ItineraryItem {
   id: number
   title: string
-  date: string
-  time: string
+  date: Date
+  time: Date
   description: string
   location: string
 }
@@ -33,7 +33,7 @@ const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({ itinerary }) => {
                 <Title level={4}>{item.title}</Title>
                 <Text className="block mb-2">
                   <ClockCircleOutlined className="mr-2" />
-                  {item.time}
+                  {item.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </Text>
                 <Text className="block mb-2">
                   <EnvironmentOutlined className="mr-2" />

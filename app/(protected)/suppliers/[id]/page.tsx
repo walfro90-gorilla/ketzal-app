@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSupplier} from "@/app/(protected)/suppliers/suppliers.api";
+import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-async function SupplierDetailPage({ params }: { params: { id: string } }) {
+async function SupplierDetailPage({ params }: { params: Promise<{ id: string }> }) {
 
-    const resolvedParams = await params
+    const { id } = await params
 
-    const supplier = await getSupplier(resolvedParams.id)
+    const supplier = await getSupplier(id)
 
     return (
         <div
@@ -30,8 +30,8 @@ async function SupplierDetailPage({ params }: { params: { id: string } }) {
                     <p>{supplier.description}</p>
                     {/* <p> ${supplier.price}</p> */}
                     <img
-                    src={supplier.image}
-                    alt=""
+                        src={supplier.image}
+                        alt=""
                     />
                 </CardContent>
             </Card>

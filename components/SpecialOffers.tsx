@@ -13,7 +13,7 @@ import { useLoading } from '@/components/LoadingContext'
 
 
 interface SpecialOffersProps {
-  services: any[]
+  services: unknown[]
 }
 
 const SpecialOffers = ({ services }: SpecialOffersProps) => {

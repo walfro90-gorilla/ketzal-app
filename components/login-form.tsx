@@ -42,7 +42,7 @@ export function LoginForm({
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/home'
+  const callbackUrl = searchParams?.get('callbackUrl') || '/home'
 
   // 1. Define your form. 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -63,7 +63,7 @@ export function LoginForm({
       if (response.error) {
         setError(response.error)
       } else {
-        router.push(response.callbackUrl)
+        router.push(response.callbackUrl || '/home')
       }
     })
   }

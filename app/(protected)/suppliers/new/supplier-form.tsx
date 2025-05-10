@@ -78,7 +78,7 @@ export function SupplierForm({ supplier }: any) {
 
             <Button>
                 {
-                    params.id ? "Update supplier" : "Create supplier"
+                    params?.id ? "Update supplier" : "Create supplier"
                 }
             </Button>
         </form>

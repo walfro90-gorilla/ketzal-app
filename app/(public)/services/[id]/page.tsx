@@ -8,14 +8,12 @@ import { Row } from "antd";
 
 
 
-async function ServiceDetailPage({ params }: { params: { id: string } }) {
+async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
     // console.log(params);
 
-    const resolvedParams = await params
-
-
-
-    const service = await getService(resolvedParams.id)
+    const { id } = await params
+    const service = await getService(id)
+    
     console.log(service)
 
     return (
@@ -39,7 +37,7 @@ async function ServiceDetailPage({ params }: { params: { id: string } }) {
                     <p>{service.description}</p>
                     <p> ${service.price}</p>
 
-                    {service.packs.data.map((pack) =>
+                    {service.packs.data.map((pack : any) =>
                         <Row key={pack.id}>
                             <div >
                                 <h1>{pack.name}</h1>

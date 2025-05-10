@@ -18,18 +18,33 @@ import {
 } from "@/components/ui/sidebar"
 
 import { useUser } from "@/context/UserContext"
-import { useEffect, useState } from "react"
+import { useEffect, useState, ReactNode } from "react"
 import { set } from "date-fns"
 
+interface SessionType {
+  user: {
+    id: string
+    name: string
+    email: string
+    avatar: string
+    supplierId: string
+    role: "superadmin" | "admin" | "adminsup"
+  }
+  calendars: Array<{
+    name: string
+    items: string[]
+  }>
+}
 
+interface DashboardProps {
+  session: SessionType // Replace 'any' with your actual session type if available
+  children: ReactNode
+}
 
-
-
-
-export function Dashboard({ session, children }) {
+export function Dashboard({ session, children }: DashboardProps) {
 
   const { user, setUser } = useUser()
-  const [supplier, setSupplier] = useState(null)
+  const [supplier, setSupplier] = useState<SessionType["user"] | null>(null)
   const [supplierData, setSupplierData] = useState(null)
 
   useEffect(() => {
@@ -77,7 +92,7 @@ export function Dashboard({ session, children }) {
             }
           </div>
         </SidebarInset>
-        <SidebarRight session={session} supplierData={supplierData} />
+        <SidebarRight session={session} supplierData={supplierData || { name: "", imgLogo: "" }} />
       </SidebarProvider>
     </div>
   )

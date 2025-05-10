@@ -210,7 +210,20 @@ const serviceIcons: Record<string, React.ReactNode> = {
   spa: <Coffee className="h-3 w-3" />,
 }
 
-export default function HotelInfo({ hotelProvider }) {
+interface HotelProvider {
+  id: string;
+  name: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
+  description: string;
+  photos: string[];
+  extras: string[];
+}
+
+export default function HotelInfo({ hotelProvider }: { hotelProvider: HotelProvider }) {
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4 text-gray-900 dark:text-gray-100">
       <Card className="overflow-hidden">

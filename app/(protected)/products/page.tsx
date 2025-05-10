@@ -23,7 +23,7 @@ export default async function Products() {
   return (
     <div>
 
-      
+
 
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-4xl font-bold">Products</h1>
@@ -38,7 +38,7 @@ export default async function Products() {
 
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 mt-4">
-        {products.map((product) => (
+        {products.map((product: any) => (
           <ProductCard product={product} key={product.id} />
         ))}
       </div>

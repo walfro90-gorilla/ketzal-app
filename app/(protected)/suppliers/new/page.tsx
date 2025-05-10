@@ -2,10 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SupplierForm } from "./supplier-form"
 import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 
-async function SuppliersNewPage({ params }: { params: { id: string } }) {
+async function SuppliersNewPage({ params }: { params: Promise< { id: string }> }) {
 
-    const resolvedParams = await params
-    const supplier = await getSupplier(resolvedParams.id)
+    const {id}= await params
+
+    const supplier = await getSupplier(id)
 
     return (
         <div className="flex justify-center items-center h-screen">

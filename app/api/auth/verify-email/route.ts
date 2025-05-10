@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     }
 
     // verifyToken.expiresAt is a Date object
-    if (verifyToken.expiresAt < new Date()) {
+    if (verifyToken.expires < new Date()) {
         return new Response("Token expired", { status: 400 });
     }
 

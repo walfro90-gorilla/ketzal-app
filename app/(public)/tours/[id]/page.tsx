@@ -36,10 +36,10 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
   const transportProvider = await getSupplier(service.transportProviderID)
   // console.log("Transport Provider data: ", transportProvider)
 
-  const tours = (await getServices()).filter(service => service.serviceType === 'tour')
+  const tours = (await getServices()).filter((service: any) => service.serviceType === 'tour')
 
   // Reviews fetching
-  const reviewsService = (await getReviews()).filter(review => review.serviceId === Number(id))
+  const reviewsService = (await getReviews()).filter((review: { serviceId: number }) => review.serviceId === Number(id))
   // console.log("reviews: ", reviewsService)
 
   const users = (await getUsers())
@@ -63,7 +63,7 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
 
     itinerary: service.itinerary,
 
-    images: service.images.imgAlbum.map((img) => img),
+    images: service.images.imgAlbum.map((img: string) => img),
 
 
     fromCity: service.cityFrom,
@@ -77,8 +77,8 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
         lng: -0.1278
       }
     },
-    included: service.includes.map((include) => include),
-    excluded: service.excludes.map((exclude) => exclude),
+    included: service.includes.map((include: string) => include),
+    excluded: service.excludes.map((exclude: string) => exclude),
     description: service.description,
     duration: durationInDays + " dias",
     tourType: service.serviceCategory,

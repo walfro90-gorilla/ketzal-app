@@ -19,7 +19,7 @@ interface Category {
 }
 
 interface PopularCategoriesProps {
-  services: any;
+  services: unknown[];
   categories: Category[];
 }
 

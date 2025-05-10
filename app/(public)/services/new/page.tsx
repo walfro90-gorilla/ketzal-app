@@ -6,10 +6,10 @@ import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 import { auth } from "@/auth"
 
 
-async function ServicesNewPage({ params }: { params: { id: string } }) {
+async function ServicesNewPage({ params }: { params: Promise< { id: string }> }) {
 
-    const resolvedParams = await params
-    const service = await getService(resolvedParams.id)
+    const {id} = await params
+    const service = await getService(id)
     const suppliers = await getSuppliers()
 
     const session = await auth()

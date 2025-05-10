@@ -8,7 +8,7 @@ import { useKeenSlider } from "keen-slider/react";
 export interface Tour {
   id: string;
   name: string;
-  image: string;
+  images: { imgAlbum: string };
   price: number;
   rating: number;
   reviewCount: number;

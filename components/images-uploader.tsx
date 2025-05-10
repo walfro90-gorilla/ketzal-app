@@ -10,7 +10,7 @@ import ImgCrop from 'antd-img-crop';
 const ImageUploader = () => {
 
     // Use the hook to get the context
-    const { images, setImages } = useServices();
+    const { images, setImages }: { images: { imgBanner: string | null; imgAlbum: string[] }, setImages: React.Dispatch<React.SetStateAction<{ imgBanner: string | null; imgAlbum: string[] }>> } = useServices();
 
     const [isUploading, setIsUploading] = React.useState(false);
     const [prevFileListLength, setPrevFileListLength] = React.useState(0);
@@ -121,11 +121,11 @@ const ImageUploader = () => {
                             }
                             setPrevFileListLength(info.fileList.length);
 
-                            const newFiles = info.fileList.filter((file) => file.originFileObj && !file.uploaded);
+                            // Only process files that are not yet uploaded (status !== 'done')
+                            const newFiles = info.fileList.filter((file) => file.originFileObj && file.status !== "done");
 
                             newFiles.forEach(async (file) => {
                                 if (!isUploading) {
-                                    file.uploaded = true; // Marcar como subido para evitar duplicación
                                     await onUpload(file.originFileObj as File, "album");
                                 }
                             });

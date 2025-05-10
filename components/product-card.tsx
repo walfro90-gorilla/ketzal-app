@@ -5,6 +5,7 @@ import { deleteProduct } from "@/app/(protected)/products/products.api"
 import { useRouter } from "next/navigation";
 
 interface Product {
+    id: string;
     name: string;
     price: number;
     image: string;
@@ -14,7 +15,7 @@ interface Product {
 export function ProductCard({ product }: { product: Product }) {
     const router = useRouter()
 
-    async function handleRemoveProduct(id) {
+    async function handleRemoveProduct(id: string) {
         console.log("remove product", id)
         await deleteProduct(id)
         router.refresh()

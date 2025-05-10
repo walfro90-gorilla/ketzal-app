@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServices } from "@/app/(public)/services/services.api";
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api";
 
+import type { Service } from "@/components/service-card";
 import { ServiceCard } from "@/components/service-card";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -10,7 +11,8 @@ import { Card } from "antd";
 
 export default async function Service() {
 
-    const services = await getServices();
+    // Use the correct Service type for services
+    const services: Array<Service> = await getServices();
     const suppliers = await getSuppliers();
 
     // Get the current session
@@ -31,8 +33,8 @@ export default async function Service() {
 
 
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 mt-4">
-                {services.filter(service => service.supplierId === session?.user.supplierId).map((service) => (
-                    <ServiceCard suppliers service={service} key={service.id} />
+                {services.filter((service: Service) => service.supplierId === session?.user.supplierId).map((service) => (
+                   <ServiceCard service={service} key={service.id} />
                 ))}
             </div>
         </Card>

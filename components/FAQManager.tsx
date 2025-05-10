@@ -13,7 +13,12 @@ interface FAQ {
   answer: string
 }
 
-export const FAQManager: React.FC = ({onSubmit, initialData}) => {
+interface FAQManagerProps {
+  onSubmit: (values: FAQ) => void;
+  initialData?: FAQ[];
+}
+
+export const FAQManager: React.FC<FAQManagerProps> = ({ onSubmit, initialData }) => {
 
 
   const [faqs, setFaqs] = useState<FAQ[]>([])
@@ -29,7 +34,7 @@ export const FAQManager: React.FC = ({onSubmit, initialData}) => {
       setIsSubmitting(true)
       const values = await form.validateFields()
       onSubmit(values)
-      onClose()
+      form.resetFields()
     } catch (error) {
       console.error("Validation failed:", error)
     } finally {

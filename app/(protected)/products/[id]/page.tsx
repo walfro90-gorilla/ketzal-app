@@ -3,12 +3,12 @@ import { getProduct } from "../products.api";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-async function ProductDetailPage({ params }: { params: { id: string } }) {
+async function ProductDetailPage({ params }: { params: Promise< { id: string } > }) {
     // console.log(params);
 
-    const resolvedParams = await params
+    const {id} = await params
 
-    const product = await getProduct(resolvedParams.id)
+    const product = await getProduct(id)
     console.log(product)
 
     return (

@@ -24,6 +24,15 @@ interface TourLocationProps {
 }
 
 export function TourLocation({ itinerary, location, included, excluded }: TourLocationProps) {
+  // Convert itinerary id and time/date fields to match ItineraryItem type
+  const itineraryForComponent = itinerary.map(item => ({
+    ...item,
+    id: Number(item.id),
+    date: item.date,
+    time: item.time,
+    description: item.description,
+    location: item.location,
+  }))
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&zoom=10`
 
 
@@ -34,7 +43,7 @@ export function TourLocation({ itinerary, location, included, excluded }: TourLo
         <CardTitle className="text-xl sm:text-2xl font-bold text-center text-gray-900 dark:text-gray-100">Itinerario 🗺️</CardTitle>
       </CardHeader>
       <div className="aspect-[4/3] w-full relative">
-        <Itinerary itineraryData={itinerary} />
+        <Itinerary itineraryData={itineraryForComponent} />
       </div>
       <CardContent className="pt-6">
         <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">Que incluye tu tour?</h3>

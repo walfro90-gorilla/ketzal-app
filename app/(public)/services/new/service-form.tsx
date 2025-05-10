@@ -128,7 +128,13 @@ interface Include {
 
 
 
-export function ServiceForm({ suppliers, service, session }) {
+interface ServiceFormProps {
+    suppliers: any; // Replace 'any' with the actual type if known
+    service: any; // Replace 'any' with the actual type if known
+    session: any; // Replace 'any' with the actual type if known
+}
+
+export function ServiceForm({ suppliers, service, session }: ServiceFormProps) {
 
 
     // FAQs STATEs  
@@ -286,10 +292,10 @@ export function ServiceForm({ suppliers, service, session }) {
             try {
                 const suppliersData = await getSuppliers()
                 setSuppliersState(suppliersData)
-                setSuppliersStateTransport(suppliersData.filter(supplier => supplier.supplierType === 'transporte'))
-                setSuppliersStateHotel(suppliersData.filter(supplier => supplier.supplierType === 'hospedaje'))
+                setSuppliersStateTransport(suppliersData.filter((supplier: { supplierType: string }) => supplier.supplierType === 'transporte'))
+                setSuppliersStateHotel(suppliersData.filter((supplier: { supplierType: string }) => supplier.supplierType === 'hospedaje'))
                 // Find the supplier by session.user.supplierId
-                const selected = suppliersData.find(supplier => supplier.id === session.user.supplierId);
+                const selected = suppliersData.find((supplier: { id: number }) => supplier.id === session.user.supplierId);
                 setSelectedSupplier(selected)
 
             } catch (error) {
@@ -556,7 +562,7 @@ export function ServiceForm({ suppliers, service, session }) {
                                 </Label>
                                 <Input
                                     {...register("sizeTour", {
-                                        setValueAs: value => parseFloat(value, 10)
+                                        setValueAs: value => parseFloat(value)
                                     })}
                                     type="number"
                                     min={1}
@@ -575,19 +581,19 @@ export function ServiceForm({ suppliers, service, session }) {
 
                                 <ImageUploader />
 
-                                {errors.images?.imgBanner && (
+                                {errors.images && 'imgBanner' in errors.images && (
                                     <Alert
                                         showIcon
                                         type="error"
-                                        message={errors.images.imgBanner.message}
+                                        message={(errors.images as any).imgBanner.message}
                                     />
                                 )}
 
-                                {errors.images?.imgAlbum && (
+                                {errors.images && 'imgAlbum' in errors.images && (
                                     <Alert
                                         showIcon
                                         type="error"
-                                        message={errors.images.imgAlbum.message}
+                                        message={(errors.images as any).imgAlbum.message}
                                     />
                                 )}
                             </Col>
@@ -623,8 +629,8 @@ export function ServiceForm({ suppliers, service, session }) {
                                 <Label>Precio Regular:</Label>
                                 <Input
                                     {...register("price", {
-                                        setValueAs: value => parseFloat(value, 10)
-                                    })}
+                                        setValueAs: value => parseFloat(value)
+                                    })}     
                                 />
                                 {
                                     typeof errors.price?.message === 'string' && <Alert showIcon type="error" message={errors.price?.message} />
@@ -717,7 +723,7 @@ export function ServiceForm({ suppliers, service, session }) {
                                         options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
                                         showSearch
                                         filterOption={(input, option) =>
-                                            option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
                                         }
                                     />
 
@@ -731,7 +737,7 @@ export function ServiceForm({ suppliers, service, session }) {
                                         notFoundContent={<div className="text-gray-500">No hay ciudades disponibles</div>}
                                         showSearch
                                         filterOption={(input, option) =>
-                                            option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
                                         }
                                     />
 
@@ -752,7 +758,7 @@ export function ServiceForm({ suppliers, service, session }) {
                                         options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
                                         showSearch
                                         filterOption={(input, option) =>
-                                            option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
                                         }
                                     />
 
@@ -766,7 +772,7 @@ export function ServiceForm({ suppliers, service, session }) {
                                         notFoundContent={<div className="text-gray-500">No cities available</div>}
                                         showSearch
                                         filterOption={(input, option) =>
-                                            option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
                                         }
                                     />
 
@@ -1099,7 +1105,7 @@ export function ServiceForm({ suppliers, service, session }) {
 
                         <Button>
                             {
-                                params.id ? "Update service" : "Create service"
+                                params?.id ? "Update service" : "Create service"
                             }
                         </Button>
                     </form>
