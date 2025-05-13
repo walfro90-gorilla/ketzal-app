@@ -18,13 +18,13 @@ export default async function Page() {
   const session = await auth();
   const allowedRoles = ["admin", "superadmin", "adminsup"] as const;
   let user: { role: "admin" | "superadmin" | "adminsup"; supplierId: string; name: string; email: string; avatar: string };
-  if (session?.user && allowedRoles.includes(session.user.role as any)) {
+  if (session?.user && allowedRoles.includes(session.user.role as typeof allowedRoles[number])) {
     user = {
       role: session.user.role as "admin" | "superadmin" | "adminsup",
       supplierId: session.user.supplierId || "",
       name: session.user.name || "",
       email: session.user.email || "",
-      avatar: (session.user as any).avatar || ""
+      avatar: (session.user as { avatar?: string }).avatar || ""
     };
   } else {
     user = { role: "admin", supplierId: "", name: "", email: "", avatar: "" };

@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
-import { on } from "events"
 import { useForm } from "react-hook-form"
 
 import { createSupplier, updateSupplier } from "@/app/(protected)/suppliers/suppliers.api"

@@ -14,25 +14,18 @@ import { useSuppliers } from "@/context/SupplierContext"
 import { createService, updateService } from "../services.api"
 import { DatePickerWithRange } from "@/components/date-picker-with-range"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
-import { use, useEffect, useState } from "react"
+import {  useEffect, useState } from "react"
 
 // Validation schema with zod and zodResolver from react-hook-form to validate the form
 import { zodResolver } from "@hookform/resolvers/zod"
 import { serviceSchema } from "@/validations/serviceSchema"
 
-import { Alert, Avatar, Space, Card, Col, Row, Table, message, Select, Modal, Checkbox, List, Typography } from "antd"
+import { Alert,  Card, Col, Row, Table, message, Select,  Checkbox, List, Typography } from "antd"
 
-import Marquee from 'react-fast-marquee';
 import ImageUploader from "@/components/images-uploader"
 
 // Import the context and the hook  to use the context  from the ServiceContext
 import { useServices } from "@/context/ServiceContext"
-import { string } from "zod"
-import TourIncludes from "@/components/TourIncludes"
-import { ItineraryBuilder } from "@/components/ItineraryBuilder"
-import { FAQManager } from "@/components/FAQManager"
-import MexicanStatesCitiesPage from "@/src/app/mexican-states-cities/page"
-import { MexicanStatesCitiesSelector } from "@/components/MexicanStatesCitiesSelector"
 
 import { cn } from "@/lib/utils"
 
@@ -48,9 +41,7 @@ import { FAQList } from "@/components/FAQList"
 import { useFAQs } from "@/hooks/useFAQs"
 import type { FAQ } from "@/types/faq"
 import VirtualItinerary from "@/components/virtual-itinerary-custom"
-import HotelSearch from "@/hotel-search"
-import TransportProviderSearch from "@/transport-provider-search"
-import { set } from "date-fns"
+
 
 
 const { Title } = Typography
@@ -134,7 +125,7 @@ interface ServiceFormProps {
     session: any; // Replace 'any' with the actual type if known
 }
 
-export function ServiceForm({ suppliers, service, session }: ServiceFormProps) {
+export function ServiceForm({  service, session }: ServiceFormProps) {
 
 
     // FAQs STATEs  
@@ -200,20 +191,7 @@ export function ServiceForm({ suppliers, service, session }: ServiceFormProps) {
 
 
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
-
-    const showModal = () => {
-        setIsModalVisible(true);
-    };
-
-    const handleOk = () => {
-        setIsModalVisible(false);
-    };
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
-    };
-
+    
 
     // Use the hook to get the context
     const { images, setImages, activities, setActivities, transportProviderID, setTransportProviderID, hotelProviderID, setHotelProviderID } = useServices()

@@ -4,7 +4,7 @@ import { Button } from "./ui/button"
 import { deleteProduct } from "@/app/(protected)/products/products.api"
 import { useRouter } from "next/navigation";
 
-interface Product {
+export interface Product {
     id: string;
     name: string;
     price: number;

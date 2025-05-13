@@ -1,4 +1,4 @@
- "use client"
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
@@ -11,7 +11,6 @@ import { updateIdSupplier } from "@/actions/user-action"
 import { useUser } from "@/context/UserContext"
 import { signOut } from "next-auth/react"
 import { useAlertDialog } from "@/components/alert-dialog"
-import UploaderIamge from "@/components/butto-upload-image"
 import { useState } from "react"
 import { Avatar, Space, Upload } from "antd"
 
@@ -24,7 +23,6 @@ import ImgCrop from "antd-img-crop"
 
 export function SupplierFormUser({ supplier }: any) {
 
-    const [file, setFile] = useState<File | null>(null);
     const [imgUrl, setImgUrl] = useState<string | null>(null);
 
 
@@ -71,10 +69,13 @@ export function SupplierFormUser({ supplier }: any) {
             console.log("DATA:", data)
 
             const dataUpdate = await createSupplier(data);
-            if (user) {
-                await updateIdSupplier(dataUpdate, user);
-            } else {
+            if (user && dataUpdate && dataUpdate.id) {
+                await updateIdSupplier({ id: dataUpdate.id }, user);
+            } else if (!user) {
                 console.error("User is null. Cannot update supplier ID.");
+                return;
+            } else {
+                console.error("Supplier creation failed or missing id.");
                 return;
             }
             await signOut({
@@ -137,7 +138,6 @@ export function SupplierFormUser({ supplier }: any) {
                             listType="picture-card"
                             showUploadList={false}
                             beforeUpload={(file) => {
-                                setFile(file);
                                 onUpload(file);
                                 return false;
                             }}

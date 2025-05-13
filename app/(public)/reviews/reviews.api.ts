@@ -11,7 +11,7 @@ export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localh
             },
             body: JSON.stringify(reviewData),
         })
-        const data = await res.json()
+        await res.json()
         // console.log(data)
     }
 
@@ -46,7 +46,7 @@ export async function deleteReview(id: string){
     const res = await fetch(`${BACKEND_URL}/api/reviews/${id}`, {
         method: 'DELETE',
     })
-    const data = await res.json()
+    await res.json()
     // console.log(data)
     
 }

@@ -1,8 +1,7 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
 
 // CREATE user
-export async function createUser(userData: any) {
-
+export async function createUser(userData: unknown) {
     const res = await fetch(`${BACKEND_URL}/api/users`, {
         method: 'POST',
         headers: {
@@ -10,9 +9,7 @@ export async function createUser(userData: any) {
         },
         body: JSON.stringify(userData),
     })
-    const data = await res.json()
-    // console.log(data)
-    return data
+    return await res.json()
 }
 
 
@@ -30,7 +27,7 @@ export async function getUser(id: string) {
 }
 
 // UPDATE user
-export async function updateUser(id: string, userData: any) {
+export async function updateUser(id: string, userData: unknown) {
     const res = await fetch(`${BACKEND_URL}/api/users/${id}`, {
         method: 'PATCH',
         headers: {
@@ -47,7 +44,7 @@ export async function deleteUser(id: string) {
     const res = await fetch(`${BACKEND_URL}/api/users/${id}`, {
         method: 'DELETE',
     })
-    const data = await res.json()
+     await res.json()
     // console.log(data)
 
 }

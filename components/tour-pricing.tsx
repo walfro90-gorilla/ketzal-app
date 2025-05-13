@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface TourPricingProps {
-  packs?: any[],
+  packs?: { name: string; price: number; qty: number }[],
   availableFrom: string,
   availableTo: string | null,
   price: number
@@ -13,16 +13,11 @@ interface TourPricingProps {
   discount?: number
 }
 
-export function TourPricing({ packs, availableFrom, availableTo, price, originalPrice, discount = 10 }: TourPricingProps) {
+export function TourPricing({ packs, availableFrom, availableTo, originalPrice, discount = 10 }: TourPricingProps) {
   const [selectedPack, setSelectedPack] = useState<string>("");
-  const [selectedPacks, setSelectedPacks] = useState<any[]>([]);
+  const [selectedPacks  ] = useState<any[]>([]);
 
-  const handleAddPack = () => {
-    const pack = packs?.find(p => p.name === selectedPack);
-    if (pack) {
-      setSelectedPacks([...selectedPacks, pack]);
-    }
-  };
+ 
 
   return (
     <Card className="w-full bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">

@@ -4,7 +4,7 @@ import { Button } from "./ui/button"
 import { deleteSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { useRouter } from "next/navigation";
 
-interface Supplier {
+export interface Supplier {
     id: string;
     name: string;
     // price: number;

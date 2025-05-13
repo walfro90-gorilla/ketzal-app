@@ -9,7 +9,7 @@ const { TextArea } = Input
 export default function ContactPage() {
     const [form] = Form.useForm()
 
-    const onFinish = (values: any) => {
+    const onFinish = () => {
         message.success("¡Mensaje enviado correctamente!")
         form.resetFields()
     }

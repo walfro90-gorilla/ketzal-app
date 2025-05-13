@@ -3,11 +3,8 @@ import { Dashboard } from "@/components/dashboard/page";
 // IMPORTING AUTH
 import { auth } from "@/auth"
 import LogoutButton from "@/components/logout-button"
-import { Button } from "@/components/ui/button";
 import HomeButton from "@/components/home-button";
 import { AlertDialogProvider } from "@/components/alert-dialog"
-
-import { useUser } from "@/context/UserContext"
 
 const ProtectedLayout = async ({
   children,
@@ -38,7 +35,7 @@ const ProtectedLayout = async ({
       id: session.user?.id || "",
       name: session.user?.name || "",
       email: session.user?.email || "",
-      avatar: (session.user as any).avatar || "", // fuerza avatar aunque no exista
+      avatar: (session.user as { avatar?: string }).avatar || "", // explicitly define the type for avatar
       supplierId: session.user?.supplierId || "",
       role: (session.user?.role as "superadmin" | "admin" | "adminsup") || "admin",
     },

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import moment from "moment"
 import { Form, Input, DatePicker, TimePicker, Button, Timeline, Card, Typography } from "antd"
 import { ClockCircleOutlined, EnvironmentOutlined } from "@ant-design/icons"
 
@@ -20,7 +21,7 @@ export default function VirtualItinerary() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [form] = Form.useForm()
 
-  const onFinish = (values: any) => {
+  const onFinish = (values: { title: string; date: moment.Moment; time: moment.Moment; description: string; location: string }) => {
     const newActivity: Activity = {
       id: Date.now(),
       title: values.title,

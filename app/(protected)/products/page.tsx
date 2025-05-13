@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getProducts } from "./products.api"
 import { ProductCard } from "@/components/product-card"
 import { buttonVariants } from "@/components/ui/button"
+import type { Product } from "@/components/product-card"
 
 // IMPORTING AUTH
 import { auth } from "@/auth"
@@ -38,7 +39,7 @@ export default async function Products() {
 
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 mt-4">
-        {products.map((product: any) => (
+        {products.map((product: Product) => (
           <ProductCard product={product} key={product.id} />
         ))}
       </div>
