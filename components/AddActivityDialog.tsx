@@ -8,14 +8,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import type { ItineraryItem } from "../types/itinerary"
 import { useForm, Controller } from "react-hook-form"
-import { CalendarIcon, ClockIcon } from "lucide-react"
+// import { CalendarIcon, ClockIcon } from "lucide-react"
 import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+// import { cn } from "@/lib/utils"
+// import { Calendar } from "@/components/ui/calendar"
+// import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { TimePickerDemo } from "./TimePickerDemo"
 import { Upload, message, Form } from "antd"
 import { PlusOutlined } from "@ant-design/icons"
+import type { UploadChangeParam } from "antd/es/upload"
 
 interface AddActivityDialogProps {
   open: boolean
@@ -52,10 +53,10 @@ export function AddActivityDialog({ open, onOpenChange, onSubmit, initialValues 
     reset()
   }
 
-  const handleImageUpload = (info: any) => {
+  const handleImageUpload = (info: UploadChangeParam) => {
     if (info.file.status === "done") {
       message.success(`${info.file.name} file uploaded successfully`)
-      setValue("photo", info.file.response.url) // Assuming the server returns the URL in the response
+      setValue("photo", info.file.response?.url || "") // Assuming the server returns the URL in the response
     } else if (info.file.status === "error") {
       message.error(`${info.file.name} file upload failed.`)
     }

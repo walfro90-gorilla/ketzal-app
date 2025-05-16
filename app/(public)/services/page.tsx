@@ -13,7 +13,7 @@ export default async function Service() {
 
     // Use the correct Service type for services
     const services: Array<Service> = await getServices();
-    const suppliers = await getSuppliers();
+    await getSuppliers();
 
     // Get the current session
     const session = await auth()

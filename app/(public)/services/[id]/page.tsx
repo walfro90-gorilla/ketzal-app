@@ -6,7 +6,13 @@ import { buttonVariants } from "@/components/ui/button";
 import { getService } from "@/app/(public)/services/services.api";
 import { Row } from "antd";
 
-
+type Pack = {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    qty: number;
+};
 
 async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
     // console.log(params);
@@ -37,7 +43,7 @@ async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }
                     <p>{service.description}</p>
                     <p> ${service.price}</p>
 
-                    {service.packs.data.map((pack : any) =>
+                    {service.packs.data.map((pack: Pack) =>
                         <Row key={pack.id}>
                             <div >
                                 <h1>{pack.name}</h1>
@@ -46,9 +52,7 @@ async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }
                                 <p> {pack.qty}</p>
                             </div>
                         </Row>
-                    )
-
-                    }
+                    )}
 
                 </CardContent>
             </Card>

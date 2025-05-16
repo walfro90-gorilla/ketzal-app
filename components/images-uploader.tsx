@@ -30,7 +30,7 @@ const ImageUploader = () => {
             return isPNG || isJPG || sizeFile || Upload.LIST_IGNORE;
         },
         onChange: (info) => {
-            // console.log(info.fileList);
+            console.log(info.fileList);
         },
     };
 

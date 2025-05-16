@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription,  CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+// import { Label } from "@/components/ui/label";
 
 import {
   Form,
@@ -20,7 +20,7 @@ import { z } from 'zod';
 import { signUpSchema } from '@/lib/zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { signIn } from '@/auth';
+// import { signIn } from '@/auth';
 import { registerAction } from '@/actions/auth-action';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';

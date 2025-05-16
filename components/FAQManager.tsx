@@ -18,7 +18,7 @@ interface FAQManagerProps {
   initialData?: FAQ[];
 }
 
-export const FAQManager: React.FC<FAQManagerProps> = ({ onSubmit, initialData }) => {
+export const FAQManager: React.FC<FAQManagerProps> = ({ onSubmit }) => {
 
 
   const [faqs, setFaqs] = useState<FAQ[]>([])

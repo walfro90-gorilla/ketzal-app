@@ -13,18 +13,40 @@ import {
 } from "@/components/ui/alert-dialog"
 import { AlertDialogOverlay } from "@radix-ui/react-alert-dialog";
 
-const AlertDialogContext = createContext({
+// Define los tipos para las opciones y el contexto
+
+type AlertDialogOptions = {
+  title: string;
+  message1: string;
+  message2: string;
+  confirmText: string;
+  cancelText: string;
+};
+
+type AlertDialogContextType = {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  showDialog: (options: AlertDialogOptions) => Promise<boolean>;
+};
+
+const AlertDialogContext = createContext<AlertDialogContextType>({
   isOpen: false,
-  setIsOpen: (open: boolean) => { },
-  showDialog: (options: { title: string, message1: string, message2: string, confirmText: string, cancelText: string }) => Promise.resolve(false),
+  setIsOpen: () => {},
+  showDialog: async () => false,
 });
 
 export function AlertDialogProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [dialogOptions, setDialogOptions] = useState({ title: "", message1: "", message2: "", confirmText: "", cancelText: "" });
+  const [dialogOptions, setDialogOptions] = useState<AlertDialogOptions>({
+    title: "",
+    message1: "",
+    message2: "",
+    confirmText: "",
+    cancelText: "",
+  });
   const [resolvePromise, setResolvePromise] = useState<(value: boolean) => void>(() => { });
 
-  const showDialog = (options: { title: string, message1: string, message2: string, confirmText: string, cancelText: string }) => {
+  const showDialog = (options: AlertDialogOptions) => {
     setDialogOptions(options);
     setIsOpen(true);
     return new Promise<boolean>((resolve) => {

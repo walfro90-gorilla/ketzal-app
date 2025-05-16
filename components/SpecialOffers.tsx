@@ -7,13 +7,13 @@ import { Heart } from 'lucide-react'
 import React, { useState } from 'react'
 import "keen-slider/keen-slider.min.css"
 import { useKeenSlider } from "keen-slider/react"
-import Loader from '@/components/Loader'
+// import Loader from '@/components/Loader'
 import { useLoading } from '@/components/LoadingContext'
 
 
 
 interface SpecialOffersProps {
-  services: unknown[]
+  services: TourCardProps[]; // Updated type
 }
 
 const SpecialOffers = ({ services }: SpecialOffersProps) => {
@@ -68,7 +68,7 @@ const SpecialOffers = ({ services }: SpecialOffersProps) => {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">Trending Tour</h2>
         <div ref={sliderRef} className="keen-slider">
-          {services?.length > 0 && services.map((service: any) => (
+          {services?.length > 0 && services.map((service: TourCardProps) => (
             <div className="keen-slider__slide" key={service.name}>
               <TourCard {...service} />
             </div>
@@ -96,16 +96,16 @@ interface TourCardProps {
 
 const TourCard = ({
   name,
-  location,
+  // location,
   images,
-  availableFrom,
-  availableTo,
-  createdAt,
-  description,
+  // availableFrom,
+  // availableTo,
+  // createdAt,
+  // description,
   id,
-  packs,
+  // packs,
   price,
-  supplierId,
+  // supplierId,
   cityTo
 }: TourCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false)

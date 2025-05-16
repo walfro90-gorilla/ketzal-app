@@ -9,18 +9,18 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Image from "next/image"
 
 // Define the hotel data type
-interface Hotel {
-  id: string
-  name: string
-  location: {
-    latitude: number
-    longitude: number
-    address: string
-  }
-  description: string
-  photos: string[]
-  services: string[]
-}
+// interface Hotel {
+//   id: string
+//   name: string
+//   location: {
+//     latitude: number
+//     longitude: number
+//     address: string
+//   }
+//   description: string
+//   photos: string[]
+//   services: string[]
+// }
 
 // Service icon mapping
 const serviceIcons: Record<string, React.ReactNode> = {

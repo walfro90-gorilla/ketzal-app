@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Plus } from "lucide-react";
+// import { Plus } from "lucide-react";
 
-import { Calendars } from "@/components/calendars";
+// import { Calendars } from "@/components/calendars";
 import { DatePicker } from "@/components/date-picker";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -12,15 +12,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
+  // SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import ProfileCard from "./profile-card";
 import ProfileCardNew from "./profile-card-new";
-import { get } from "http";
-import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api";
+// import { get } from "http";
+// import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api";
 import { useEffect, useState } from "react";
-import { set } from "date-fns";
+// import { set } from "date-fns";
 
 // SidebarRight component
 type SidebarRightProps = React.ComponentProps<typeof Sidebar> & {

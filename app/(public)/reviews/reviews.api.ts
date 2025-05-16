@@ -1,21 +1,28 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
 
+// Define a type for review data
+interface ReviewData {
+    title: string;
+    content: string;
+    rating: number;
+    // Add other fields as necessary
+}
 
-    // CREATE review
-    export async function createReview(reviewData: any){
+// CREATE review
+export async function createReview(reviewData: ReviewData) {
 
-        const res = await fetch(`${BACKEND_URL}/api/reviews`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(reviewData),
-        })
-        await res.json()
-        // console.log(data)
-    }
+    const res = await fetch(`${BACKEND_URL}/api/reviews`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reviewData),
+    })
+    await res.json()
+    // console.log(data)
+}
 
-    // READ reviewS
+// READ reviewS
 export async function getReviews() {
     const res = await fetch(`${BACKEND_URL}/api/reviews`)
     const data = await res.json()
@@ -29,7 +36,7 @@ export async function getReview(id:string) {
 }
 
 // UPDATE review
-export async function updateReview(id: string, reviewData: any){
+export async function updateReview(id: string, reviewData: ReviewData){
     const res = await fetch(`${BACKEND_URL}/api/reviews/${id}`, {
         method: 'PATCH',
         headers: {

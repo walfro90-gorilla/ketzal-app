@@ -1,7 +1,14 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
 
+// Define Category type to match PopularCategories
+export interface Category {
+  name: string;
+  image: string;
+  link: string;
+}
+
 // CREATE category
-export async function createCategory(categoryData: any){
+export async function createCategory(categoryData: Category){
     const res = await fetch(`${BACKEND_URL}/api/categories`, {
         method: 'POST',
         headers: {
@@ -27,7 +34,7 @@ export async function getCategory(id:string) {
 }
 
 // UPDATE category
-export async function updateCategory(id: string, categoryData: any){
+export async function updateCategory(id: string, categoryData: Category){
     const res = await fetch(`${BACKEND_URL}/api/categories/${id}`, {
         method: 'PATCH',
         headers: {

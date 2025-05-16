@@ -17,6 +17,7 @@ export interface Service {
         imgAlbum: string[];
     };
     id?: string;
+    serviceType: string;
 }
 
 export function ServiceCard({ service }: { service: Service }) {

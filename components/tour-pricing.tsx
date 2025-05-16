@@ -15,7 +15,7 @@ interface TourPricingProps {
 
 export function TourPricing({ packs, availableFrom, availableTo, originalPrice, discount = 10 }: TourPricingProps) {
   const [selectedPack, setSelectedPack] = useState<string>("");
-  const [selectedPacks  ] = useState<any[]>([]);
+  const [selectedPacks] = useState<{ name: string; price: number; qty: number }[]>([]);
 
  
 

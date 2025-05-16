@@ -1,6 +1,6 @@
 "use client"
 
-import { X } from 'lucide-react'
+// import { X } from 'lucide-react'
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
@@ -14,10 +14,10 @@ interface ProfileCardProps {
 }
 
 export default function ProfileCard({
-  email = "walfre.am@gmail.com",
+  // email = "walfre.am@gmail.com",
   name = "Walfre",
   avatarUrl = "/placeholder.svg",
-  onClose
+  // onClose
 }: ProfileCardProps) {
   return (
     <Card className="w-full max-w-sm mx-auto bg-white dark:bg-gray-950 shadow-lg rounded-lg overflow-hidden">

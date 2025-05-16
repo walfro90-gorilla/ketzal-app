@@ -1,6 +1,6 @@
 'use client'
 
-import { Facebook, Twitter, Linkedin, Globe, ChevronDown, User, DoorOpen, Instagram, Youtube, LayoutDashboard, LogIn, LogOut } from 'lucide-react'
+import { Facebook,  Globe, ChevronDown, User,  Instagram, Youtube, LayoutDashboard, LogIn, LogOut } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -14,12 +14,12 @@ import { Popover } from 'antd'
 import { Session } from 'next-auth'
 
 import { useLoading } from '@/components/LoadingContext'
-import { useEffect } from 'react'
-import { set } from 'date-fns'
+// import { useEffect } from 'react'
+// import { set } from 'date-fns'
 
 const TopBar = ({ session }: { session: Session | null }) => {
 
-  const { setLoading } = useLoading();
+  useLoading();
 
   // useEffect(() => {
   //   setLoading(true)

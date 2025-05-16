@@ -1,7 +1,8 @@
 import type React from "react"
-import { Modal, Form, Input, DatePicker, TimePicker, Upload, message } from "antd"
+import { Modal, Form, Input, DatePicker, TimePicker, Upload } from "antd"
 import { PlusOutlined } from "@ant-design/icons"
 import type { ItineraryItem } from "../types/itinerary"
+import type { UploadChangeParam } from "antd/es/upload/interface"
 
 interface AddActivityModalProps {
   visible: boolean
@@ -20,7 +21,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ visible, onCancel, 
     })
   }
 
-  const normFile = (e: any) => {
+  const normFile = (e: UploadChangeParam) => {
     if (Array.isArray(e)) {
       return e
     }

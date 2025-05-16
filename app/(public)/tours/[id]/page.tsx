@@ -3,22 +3,23 @@ import { TourHeader } from '@/components/tour-header'
 import { TourInfo } from '@/components/tour-info'
 import { TourPricing } from '@/components/tour-pricing'
 import { TourLocation } from '@/components/tour-location'
-import { TourBookingForm } from '@/components/tour-booking-form'
+// import { TourBookingForm } from '@/components/tour-booking-form'
 import { LocalHighlights } from '@/components/local-highlights'
 import { OrganizedBy } from '@/components/organized-by'
 import { getService, getServices } from '@/app/(public)/services/services.api'
 import { getSupplier } from '@/app/(protected)/suppliers/suppliers.api'
-import { TourIncludeExclude } from '@/components/tour-include-exclude'
-import HotelSearch from '@/hotel-search'
+// import { TourIncludeExclude } from '@/components/tour-include-exclude'
+// import HotelSearch from '@/hotel-search'
 import HotelInfo from '@/components/hotel-info'
-import TransportProviderSearch from '@/transport-provider-search'
+// import TransportProviderSearch from '@/transport-provider-search'
 import TransportProvider from '@/components/transport-provider'
 import ReviewSection from '@/components/ReviewSection'
-import TourCarousel from '@/components/TourCarousel'
+// import TourCarousel from '@/components/TourCarousel'
 import SpecialOffers from '@/components/SpecialOffers'
 import { getReviews } from '../../reviews/reviews.api'
 import { getUsers } from '@/app/(protected)/users/users.api'
 import { auth } from '@/auth'
+import type { Service } from '@/components/service-card'
 
 export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -36,7 +37,7 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
   const transportProvider = await getSupplier(service.transportProviderID)
   // console.log("Transport Provider data: ", transportProvider)
 
-  const tours = (await getServices()).filter((service: any) => service.serviceType === 'tour')
+  const tours = (await getServices()).filter((service: Service) => service.serviceType === 'tour')
 
   // Reviews fetching
   const reviewsService = (await getReviews()).filter((review: { serviceId: number }) => review.serviceId === Number(id))
@@ -175,7 +176,14 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                   <LocalHighlights faqs={tourData.faqs} localInfo={tourData.localInfo} highlights={tourData.highlights} />
                 </div>
                 <div className="mt-8">
-                  <ReviewSection serviceId={tourData.id} reviewsService={reviewsService} users={users} session={session} />
+                  {session && (
+                    <ReviewSection
+                      serviceId={tourData.id}
+                      reviewsService={reviewsService}
+                      users={users}
+                      session={session}
+                    />
+                  )}
                 </div>
 
                 <div className="mt-8">

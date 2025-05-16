@@ -11,16 +11,16 @@ import { useParams, useRouter } from "next/navigation"
 import { useSuppliers } from "@/context/SupplierContext"
 
 // API services import
-import { createService, updateService } from "../services.api"
+import { createService, updateService, ServiceData } from "../services.api"
 import { DatePickerWithRange } from "@/components/date-picker-with-range"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 // Validation schema with zod and zodResolver from react-hook-form to validate the form
 import { zodResolver } from "@hookform/resolvers/zod"
 import { serviceSchema } from "@/validations/serviceSchema"
 
-import { Alert,  Card, Col, Row, Table, message, Select,  Checkbox, List, Typography } from "antd"
+import { Alert, Card, Col, Row, Table, message, Select, Checkbox, List, Typography } from "antd"
 
 import ImageUploader from "@/components/images-uploader"
 
@@ -41,6 +41,7 @@ import { FAQList } from "@/components/FAQList"
 import { useFAQs } from "@/hooks/useFAQs"
 import type { FAQ } from "@/types/faq"
 import VirtualItinerary from "@/components/virtual-itinerary-custom"
+import type { Supplier } from "@/components/supplier-card"
 
 
 
@@ -92,12 +93,12 @@ const statesCitiesData: StatesCitiesData =
     "Morelos": ["Amacuzac", "Atlatlahucan", "Axochiapan", "Ayala", "Coatlan del Rio", "Cuautla", "Cuernavaca", "Emiliano Zapata", "Huitzilac", "Jantetelco", "Jiutepec", "Jojutla", "Jonacatepec de Leandro Valle", "Mazatepec", "Miacatlan", "Ocuituco", "Puente de Ixtla", "Temixco", "Temoac", "Tepalcingo", "Tepoztlan", "Tetecala", "Tetela del Volcan", "Tlalnepantla", "Tlaltizapan de Zapata", "Tlaquiltenango", "Tlayacapan", "Totolapan", "Xochitepec", "Yautepec", "Yecapixtla", "Zacatepec", "Zacualpan de Amilpas"],
     "Nayarit": ["Acaponeta", "Ahuacatlan", "Amatlan de Canas", "Bahia de Banderas", "Compostela", "Del Nayar", "Huajicori", "Ixtlan del Rio", "Jala", "La Yesca", "Rosamorada", "Ruiz", "San Blas", "San Pedro Lagunillas", "Santa Maria del Oro", "Santiago Ixcuintla", "Tecuala", "Tepic", "Tuxpan", "Xalisco"],
     "Nuevo Leon": ["Abasolo", "Agualeguas", "Allende", "Anahuac", "Apodaca", "Aramberri", "Bustamante", "Cadereyta Jimenez", "Cerralvo", "China", "Cienega de Flores", "Doctor Arroyo", "Doctor Coss", "Doctor Gonzalez", "El Carmen", "Galeana", "Garcia", "General Bravo", "General Escobedo", "General Teran", "General Trevino", "General Zaragoza", "General Zuazua", "Guadalupe", "Hidalgo", "Higueras", "Hualahuises", "Iturbide", "Juarez", "Lampazos de Naranjo", "Linares", "Los Aldamas", "Los Herreras", "Los Ramones", "Marin", "Melchor Ocampo", "Mier y Noriega", "Mina", "Montemorelos", "Monterrey", "Paras", "Pesqueria", "Rayones", "Sabinas Hidalgo", "Salinas Victoria", "San Nicolas de los Garza", "San Pedro Garza Garcia", "Santa Catarina", "Santiago", "Vallecillo", "Villaldama"],
-    "Oaxaca": ["Abejones", "Acatlan de Perez Figueroa", "Animas Trujano", "Asuncion Cacalotepec", "Asuncion Cuyotepeji", "Asuncion Ixtaltepec", "Asuncion Nochixtlan", "Asuncion Ocotlan", "Asuncion Tlacolulita", "Ayoquezco de Aldama", "Ayotzintepec", "Calihuala", "Candelaria Loxicha", "Capulalpam de Mendez", "Chahuites", "Chalcatongo de Hidalgo", "Chiquihuitlan de Benito Juarez", "Cienega de Zimatlan", "Ciudad Ixtepec", "Coatecas Altas", "Coicoyan de las Flores", "Concepcion Buenavista", "Concepcion Papalo", "Constancia del Rosario", "Cosolapa", "Cosoltepec", "Cuilapam de Guerrero", "Cuna de la Independencia de Oaxaca", "Cuyamecalco Villa de Zaragoza", "El Barrio de la Soledad", "El Espinal", "Eloxochitlan de Flores Magon", "Fresnillo de Trujano", "Guadalupe Etla", "Guadalupe de Ramirez", "Guelatao de Juarez", "Guevea de Humboldt", "Heroica Ciudad de Ejutla de Crespo", "Heroica Ciudad de Huajuapan de Leon", "Heroica Ciudad de Juchitan de Zaragoza", "Heroica Ciudad de Tlaxiaco", "Heroica Villa Tezoatlan de Segura y Luna", "Huautepec", "Huautla de Jimenez", "Ixpantepec Nieves", "Ixtlan de Juarez", "La Compania", "La Pe", "La Reforma", "La Trinidad Vista Hermosa", "Loma Bonita", "Magdalena Apasco", "Magdalena Jaltepec", "Magdalena Mixtepec", "Magdalena Ocotlan", "Magdalena Penasco", "Magdalena Teitipac", "Magdalena Tequisistlan", "Magdalena Tlacotepec", "Magdalena Yodocono de Porfirio Diaz", "Magdalena Zahuatlan", "Mariscala de Juarez", "Martires de Tacubaya", "Matias Romero Avendano", "Mazatlan Villa de Flores", "Mesones Hidalgo", "Miahuatlan de Porfirio Diaz", "Mixistlan de la Reforma", "Monjas", "Natividad", "Nazareno Etla", "Nejapa de Madero", "Nuevo Zoquiapam", "Oaxaca de Juarez", "Ocotlan de Morelos", "Pinotepa de Don Luis", "Pluma Hidalgo", "Putla Villa de Guerrero", "Reforma de Pineda", "Reyes Etla", "Rojas de Cuauhtemoc", "Salina Cruz", "San Agustin Amatengo", "San Agustin Atenango", "San Agustin Chayuco", "San Agustin Etla", "San Agustin Loxicha", "San Agustin Tlacotepec", "San Agustin Yatareni", "San Agustin de las Juntas", "San Andres Cabecera Nueva", "San Andres Dinicuiti", "San Andres Huaxpaltepec", "San Andres Huayapam", "San Andres Ixtlahuaca", "San Andres Lagunas", "San Andres Nuxino", "San Andres Paxtlan", "San Andres Sinaxtla", "San Andres Solaga", "San Andres Teotilalpam", "San Andres Tepetlapa", "San Andres Yaa", "San Andres Zabache", "San Andres Zautla", "San Antonino Castillo Velasco", "San Antonino Monte Verde", "San Antonino el Alto", "San Antonio Acutla", "San Antonio Huitepec", "San Antonio Nanahuatipam", "San Antonio Sinicahua", "San Antonio Tepetlapa", "San Antonio de la Cal", "San Baltazar Chichicapam", "San Baltazar Loxicha", "San Baltazar Yatzachi el Bajo", "San Bartolo Coyotepec", "San Bartolo Soyaltepec", "San Bartolo Yautepec", "San Bartolome Ayautla", "San Bartolome Loxicha", "San Bartolome Quialana", "San Bartolome Yucuane", "San Bartolome Zoogocho", "San Bernardo Mixtepec", "San Blas Atempa", "San Carlos Yautepec", "San Cristobal Amatlan", "San Cristobal Amoltepec", "San Cristobal Lachirioag", "San Cristobal Suchixtlahuaca", "San Dionisio Ocotepec", "San Dionisio Ocotlan", "San Dionisio del Mar", "San Esteban Atatlahuca", "San Felipe Jalapa de Diaz", "San Felipe Tejalapam", "San Felipe Usila", "San Francisco Cahuacua", "San Francisco Cajonos", "San Francisco Chapulapa", "San Francisco Chindua", "San Francisco Huehuetlan", "San Francisco Ixhuatan", "San Francisco Jaltepetongo", "San Francisco Lachigolo", "San Francisco Logueche", "San Francisco Nuxano", "San Francisco Ozolotepec", "San Francisco Sola", "San Francisco Telixtlahuaca", "San Francisco Teopan", "San Francisco Tlapancingo", "San Francisco del Mar", "San Gabriel Mixtepec", "San Ildefonso Amatlan", "San Ildefonso Sola", "San Ildefonso Villa Alta", "San Jacinto Amilpas", "San Jacinto Tlacotepec", "San Jeronimo Coatlan", "San Jeronimo Silacayoapilla", "San Jeronimo Sosola", "San Jeronimo Taviche", "San Jeronimo Tecoatl", "San Jeronimo Tlacochahuaya", "San Jorge Nuchita", "San Jose Ayuquila", "San Jose Chiltepec", "San Jose Estancia Grande", "San Jose Independencia", "San Jose Lachiguiri", "San Jose Tenango", "San Jose del Penasco", "San Jose del Progreso", "San Juan Achiutla", "San Juan Atepec", "San Juan Bautista Atatlahuaca", "San Juan Bautista Coixtlahuaca", "San Juan Bautista Cuicatlan", "San Juan Bautista Guelache", "San Juan Bautista Jayacatlan", "San Juan Bautista Lo de Soto", "San Juan Bautista Suchitepec", "San Juan Bautista Tlachichilco", "San Juan Bautista Tlacoatzintepec", "San Juan Bautista Tuxtepec", "San Juan Bautista Valle Nacional", "San Juan Cacahuatepec", "San Juan Chicomezuchil", "San Juan Chilateca", "San Juan Cieneguilla", "San Juan Coatzospam", "San Juan Colorado", "San Juan Comaltepec", "San Juan Cotzocon", "San Juan Diuxi", "San Juan Evangelista Analco", "San Juan Guelavia", "San Juan Guichicovi", "San Juan Ihualtepec", "San Juan Juquila Mixes", "San Juan Juquila Vijanos", "San Juan Lachao", "San Juan Lachigalla", "San Juan Lajarcia", "San Juan Lalana", "San Juan Mazatlan", "San Juan Mixtepec", "San Juan Mixtepec", "San Juan Numi", "San Juan Ozolotepec", "San Juan Petlapa", "San Juan Quiahije", "San Juan Quiotepec", "San Juan Sayultepec", "San Juan Tabaa", "San Juan Tamazola", "San Juan Teita", "San Juan Teitipac", "San Juan Tepeuxila", "San Juan Teposcolula", "San Juan Yaee", "San Juan Yatzona", "San Juan Yucuita", "San Juan de los Cues", "San Juan del Estado", "San Juan del Rio", "San Lorenzo Albarradas", "San Lorenzo Cacaotepec", "San Lorenzo Cuaunecuiltitla", "San Lorenzo Texmelucan", "San Lorenzo Victoria", "San Lorenzo", "San Lucas Camotlan", "San Lucas Ojitlan", "San Lucas Quiavini", "San Lucas Zoquiapam", "San Luis Amatlan", "San Marcial Ozolotepec", "San Marcos Arteaga", "San Martin Huamelulpam", "San Martin Itunyoso", "San Martin Lachila", "San Martin Peras", "San Martin Tilcajete", "San Martin Toxpalan", "San Martin Zacatepec", "San Martin de los Cansecos", "San Mateo Cajonos", "San Mateo Etlatongo", "San Mateo Nejapam", "San Mateo Penasco", "San Mateo Pinas", "San Mateo Rio Hondo", "San Mateo Sindihui", "San Mateo Tlapiltepec", "San Mateo Yoloxochitlan", "San Mateo Yucuhiti", "San Mateo del Mar", "San Melchor Betaza", "San Miguel Achiutla", "San Miguel Ahuehuetitlan", "San Miguel Aloapam", "San Miguel Amatitlan", "San Miguel Amatlan", "San Miguel Chicahua", "San Miguel Chimalapa", "San Miguel Coatlan", "San Miguel Ejutla", "San Miguel Huautla", "San Miguel Mixtepec", "San Miguel Panixtlahuaca", "San Miguel Peras", "San Miguel Piedras", "San Miguel Quetzaltepec", "San Miguel Santa Flor", "San Miguel Soyaltepec", "San Miguel Suchixtepec", "San Miguel Tecomatlan", "San Miguel Tenango", "San Miguel Tequixtepec", "San Miguel Tilquiapam", "San Miguel Tlacamama", "San Miguel Tlacotepec", "San Miguel Tulancingo", "San Miguel Yotao", "San Miguel del Puerto", "San Miguel del Rio", "San Miguel el Grande", "San Nicolas Hidalgo", "San Nicolas", "San Pablo Coatlan", "San Pablo Cuatro Venados", "San Pablo Etla", "San Pablo Huitzo", "San Pablo Huixtepec", "San Pablo Macuiltianguis", "San Pablo Tijaltepec", "San Pablo Villa de Mitla", "San Pablo Yaganiza", "San Pedro Amuzgos", "San Pedro Apostol", "San Pedro Atoyac", "San Pedro Cajonos", "San Pedro Comitancillo", "San Pedro Coxcaltepec Cantaros", "San Pedro Huamelula", "San Pedro Huilotepec", "San Pedro Ixcatlan", "San Pedro Ixtlahuaca", "San Pedro Jaltepetongo", "San Pedro Jicayan", "San Pedro Jocotipac", "San Pedro Juchatengo", "San Pedro Martir Quiechapa", "San Pedro Martir Yucuxaco", "San Pedro Martir", "San Pedro Mixtepec", "San Pedro Mixtepec", "San Pedro Molinos", "San Pedro Nopala", "San Pedro Ocopetatillo", "San Pedro Ocotepec", "San Pedro Pochutla", "San Pedro Quiatoni", "San Pedro Sochiapam", "San Pedro Tapanatepec", "San Pedro Taviche", "San Pedro Teozacoalco", "San Pedro Teutila", "San Pedro Tidaa", "San Pedro Topiltepec", "San Pedro Totolapam", "San Pedro Yaneri", "San Pedro Yolox", "San Pedro Yucunama", "San Pedro el Alto", "San Pedro y San Pablo Ayutla", "San Pedro y San Pablo Teposcolula", "San Pedro y San Pablo Tequixtepec", "San Raymundo Jalpan", "San Sebastian Abasolo", "San Sebastian Coatlan", "San Sebastian Ixcapa", "San Sebastian Nicananduta", "San Sebastian Rio Hondo", "San Sebastian Tecomaxtlahuaca", "San Sebastian Teitipac", "San Sebastian Tutla", "San Simon Almolongas", "San Simon Zahuatlan", "San Vicente Coatlan", "San Vicente Lachixio", "San Vicente Nunu", "Santa Ana Ateixtlahuaca", "Santa Ana Cuauhtemoc", "Santa Ana Tavela", "Santa Ana Tlapacoyan", "Santa Ana Yareni", "Santa Ana Zegache", "Santa Ana del Valle", "Santa Ana", "Santa Catalina Quieri", "Santa Catarina Cuixtla", "Santa Catarina Ixtepeji", "Santa Catarina Juquila", "Santa Catarina Lachatao", "Santa Catarina Loxicha", "Santa Catarina Mechoacan", "Santa Catarina Minas", "Santa Catarina Quiane", "Santa Catarina Quioquitani", "Santa Catarina Tayata", "Santa Catarina Ticua", "Santa Catarina Yosonotu", "Santa Catarina Zapoquila", "Santa Cruz Acatepec", "Santa Cruz Amilpas", "Santa Cruz Itundujia", "Santa Cruz Mixtepec", "Santa Cruz Nundaco", "Santa Cruz Papalutla", "Santa Cruz Tacache de Mina", "Santa Cruz Tacahua", "Santa Cruz Tayata", "Santa Cruz Xitla", "Santa Cruz Xoxocotlan", "Santa Cruz Zenzontepec", "Santa Cruz de Bravo", "Santa Gertrudis", "Santa Ines Yatzeche", "Santa Ines de Zaragoza", "Santa Ines del Monte", "Santa Lucia Miahuatlan", "Santa Lucia Monteverde", "Santa Lucia Ocotlan", "Santa Lucia del Camino", "Santa Magdalena Jicotlan", "Santa Maria Alotepec", "Santa Maria Apazco", "Santa Maria Atzompa", "Santa Maria Camotlan", "Santa Maria Chachoapam", "Santa Maria Chilchotla", "Santa Maria Chimalapa", "Santa Maria Colotepec", "Santa Maria Cortijo", "Santa Maria Coyotepec", "Santa Maria Ecatepec", "Santa Maria Guelace", "Santa Maria Guienagati", "Santa Maria Huatulco", "Santa Maria Huazolotitlan", "Santa Maria Ipalapa", "Santa Maria Ixcatlan", "Santa Maria Jacatepec", "Santa Maria Jalapa del Marques", "Santa Maria Jaltianguis", "Santa Maria Lachixio", "Santa Maria Mixtequilla", "Santa Maria Nativitas", "Santa Maria Nduayaco", "Santa Maria Ozolotepec", "Santa Maria Papalo", "Santa Maria Penoles", "Santa Maria Petapa", "Santa Maria Quiegolani", "Santa Maria Sola", "Santa Maria Tataltepec", "Santa Maria Tecomavaca", "Santa Maria Temaxcalapa", "Santa Maria Temaxcaltepec", "Santa Maria Teopoxco", "Santa Maria Tepantlali", "Santa Maria Texcatitlan", "Santa Maria Tlahuitoltepec", "Santa Maria Tlalixtac", "Santa Maria Tonameca", "Santa Maria Totolapilla", "Santa Maria Xadani", "Santa Maria Yalina", "Santa Maria Yavesia", "Santa Maria Yolotepec", "Santa Maria Yosoyua", "Santa Maria Yucuhiti", "Santa Maria Zacatepec", "Santa Maria Zaniza", "Santa Maria Zoquitlan", "Santa Maria del Rosario", "Santa Maria del Tule", "Santa Maria la Asuncion", "Santiago Amoltepec", "Santiago Apoala", "Santiago Apostol", "Santiago Astata", "Santiago Atitlan", "Santiago Ayuquililla", "Santiago Cacaloxtepec", "Santiago Camotlan", "Santiago Chazumba", "Santiago Choapam", "Santiago Comaltepec", "Santiago Huajolotitlan", "Santiago Huauclilla", "Santiago Ihuitlan Plumas", "Santiago Ixcuintepec", "Santiago Ixtayutla", "Santiago Jamiltepec", "Santiago Jocotepec", "Santiago Juxtlahuaca", "Santiago Lachiguiri", "Santiago Lalopa", "Santiago Laollaga", "Santiago Laxopa", "Santiago Llano Grande", "Santiago Matatlan", "Santiago Miltepec", "Santiago Minas", "Santiago Nacaltepec", "Santiago Nejapilla", "Santiago Niltepec", "Santiago Nundiche", "Santiago Nuyoo", "Santiago Pinotepa Nacional", "Santiago Suchilquitongo", "Santiago Tamazola", "Santiago Tapextla", "Santiago Tenango", "Santiago Tepetlapa", "Santiago Tetepec", "Santiago Texcalcingo", "Santiago Textitlan", "Santiago Tilantongo", "Santiago Tillo", "Santiago Tlazoyaltepec", "Santiago Xanica", "Santiago Xiacui", "Santiago Yaitepec", "Santiago Yaveo", "Santiago Yolomecatl", "Santiago Yosondua", "Santiago Yucuyachi", "Santiago Zacatepec", "Santiago Zoochila", "Santiago del Rio", "Santo Domingo Albarradas", "Santo Domingo Armenta", "Santo Domingo Chihuitan", "Santo Domingo Ingenio", "Santo Domingo Ixcatlan", "Santo Domingo Nuxaa", "Santo Domingo Ozolotepec", "Santo Domingo Petapa", "Santo Domingo Roayaga", "Santo Domingo Tehuantepec", "Santo Domingo Teojomulco", "Santo Domingo Tepuxtepec", "Santo Domingo Tlatayapam", "Santo Domingo Tomaltepec", "Santo Domingo Tonala", "Santo Domingo Tonaltepec", "Santo Domingo Xagacia", "Santo Domingo Yanhuitlan", "Santo Domingo Yodohino", "Santo Domingo Zanatepec", "Santo Domingo de Morelos", "Santo Tomas Jalieza", "Santo Tomas Mazaltepec", "Santo Tomas Ocotepec", "Santo Tomas Tamazulapan", "Santos Reyes Nopala", "Santos Reyes Papalo", "Santos Reyes Tepejillo", "Santos Reyes Yucuna", "Silacayoapam", "Sitio de Xitlapehua", "Soledad Etla", "Tamazulapam del Espiritu Santo", "Tanetze de Zaragoza", "Taniche", "Tataltepec de Valdes", "Teococuilco de Marcos Perez", "Teotitlan de Flores Magon", "Teotitlan del Valle", "Teotongo", "Tepelmeme Villa de Morelos", "Tlacolula de Matamoros", "Tlacotepec Plumas", "Tlalixtac de Cabrera", "Totontepec Villa de Morelos", "Trinidad Zaachila", "Union Hidalgo", "Valerio Trujano", "Villa Diaz Ordaz", "Villa Hidalgo", "Villa Sola de Vega", "Villa Talea de Castro", "Villa Tejupam de la Union", "Villa de Chilapa de Diaz", "Villa de Etla", "Villa de Tamazulapam del Progreso", "Villa de Tututepec", "Villa de Zaachila", "Yaxe", "Yogana", "Yutanduchi de Guerrero", "Zapotitlan Lagunas", "Zapotitlan Palmas", "Zimatlan de Alvarez"],
+    "Oaxaca": ["Abejones", "Acatlan de Perez Figueroa", "Animas Trujano", "Asuncion Cacalotepec", "Asuncion Cuyotepeji", "Asuncion Ixtaltepec", "Asuncion Nochixtlan", "Asuncion Ocotlan", "Asuncion Tlacolulita", "Ayoquezco de Aldama", "Ayotzintepec", "Calihuala", "Candelaria Loxicha", "Capulalpam de Mendez", "Chahuites", "Chalcatongo de Hidalgo", "Chiquihuitlan de Benito Juarez", "Cienega de Zimatlan", "Ciudad Ixtepec", "Coatecas Altas", "Coicoyan de las Flores", "Concepcion Buenavista", "Concepcion Papalo", "Constancia del Rosario", "Cosolapa", "Cosoltepec", "Cuilapam de Guerrero", "Cuna de la Independencia de Oaxaca", "Cuyamecalco Villa de Zaragoza", "El Barrio de la Soledad", "El Espinal", "Eloxochitlan de Flores Magon", "Fresnillo de Trujano", "Guadalupe Etla", "Guadalupe de Ramirez", "Guelatao de Juarez", "Guevea de Humboldt", "Heroica Ciudad de Ejutla de Crespo", "Heroica Ciudad de Huajuapan de Leon", "Heroica Ciudad de Juchitan de Zaragoza", "Heroica Ciudad de Tlaxiaco", "Heroica Villa Tezoatlan de Segura y Luna", "Huautepec", "Huautla de Jimenez", "Ixpantepec Nieves", "Ixtlan de Juarez", "La Compania", "La Pe", "La Reforma", "La Trinidad Vista Hermosa", "Loma Bonita", "Magdalena Apasco", "Magdalena Jaltepec", "Magdalena Mixtepec", "Magdalena Ocotlan", "Magdalena Penasco", "Magdalena Teitipac", "Magdalena Tequisistlan", "Magdalena Tlacotepec", "Magdalena Yodocono de Porfirio Diaz", "Magdalena Zahuatlan", "Mariscala de Juarez", "Martires de Tacubaya", "Matias Romero Avendano", "Mazatlan Villa de Flores", "Mesones Hidalgo", "Miahuatlan de Porfirio Diaz", "Mixistlan de la Reforma", "Monjas", "Natividad", "Nazareno Etla", "Nejapa de Madero", "Nuevo Zoquiapam", "Oaxaca de Juarez", "Ocotlan de Morelos", "Pinotepa de Don Luis", "Pluma Hidalgo", "Putla Villa de Guerrero", "Reforma de Pineda", "Reyes Etla", "Rojas de Cuauhtemoc", "Salina Cruz", "San Agustin Amatengo", "San Agustin Atenango", "San Agustin Chayuco", "San Agustin Etla", "San Agustin Loxicha", "San Agustin Tlacotepec", "San Agustin Yatareni", "San Agustin de las Juntas", "San Andres Cabecera Nueva", "San Andres Dinicuiti", "San Andres Huaxpaltepec", "San Andres Huayapam", "San Andres Ixtlahuaca", "San Andres Lagunas", "San Andres Nuxino", "San Andres Paxtlan", "San Andres Sinaxtla", "San Andres Solaga", "San Andres Teotilalpam", "San Andres Tepetlapa", "San Andres Yaa", "San Andres Zabache", "San Andres Zautla", "San Antonino Castillo Velasco", "San Antonino Monte Verde", "San Antonino el Alto", "San Antonio Acutla", "San Antonio Huitepec", "San Antonio Nanahuatipam", "San Antonio Sinicahua", "San Antonio Tepetlapa", "San Antonio de la Cal", "San Baltazar Chichicapam", "San Baltazar Loxicha", "San Baltazar Yatzachi el Bajo", "San Bartolo Coyotepec", "San Bartolo Soyaltepec", "San Bartolo Yautepec", "San Bartolome Ayautla", "San Bartolome Loxicha", "San Bartolome Quialana", "San Bartolome Yucuane", "San Bartolome Zoogocho", "San Bernardo Mixtepec", "San Blas Atempa", "San Carlos Yautepec", "San Cristobal Amatlan", "San Cristobal Amoltepec", "San Cristobal Lachirioag", "San Cristobal Suchixtlahuaca", "San Dionisio Ocotepec", "San Dionisio Ocotlan", "San Dionisio del Mar", "San Esteban Atatlahuca", "San Felipe Jalapa de Diaz", "San Felipe Tejalapam", "San Felipe Usila", "San Francisco Cahuacua", "San Francisco Cajonos", "San Francisco Chapulapa", "San Francisco Chindua", "San Francisco Huehuetlan", "San Francisco Ixhuatan", "San Francisco Jaltepetongo", "San Francisco Lachigolo", "San Francisco Logueche", "San Francisco Nuxano", "San Francisco Ozolotepec", "San Francisco Sola", "San Francisco Telixtlahuaca", "San Francisco Teopan", "San Francisco Tlapancingo", "San Francisco del Mar", "San Gabriel Mixtepec", "San Ildefonso Amatlan", "San Ildefonso Sola", "San Ildefonso Villa Alta", "San Jacinto Amilpas", "San Jacinto Tlacotepec", "San Jeronimo Coatlan", "San Jeronimo Silacayoapilla", "San Jeronimo Sosola", "San Jeronimo Taviche", "San Jeronimo Tecoatl", "San Jeronimo Tlacochahuaya", "San Jorge Nuchita", "San Jose Ayuquila", "San Jose Chiltepec", "San Jose Estancia Grande", "San Jose Independencia", "San Jose Lachiguiri", "San Jose Tenango", "San Jose del Penasco", "San Jose del Progreso", "San Juan Achiutla", "San Juan Atepec", "San Juan Bautista Atatlahuaca", "San Juan Bautista Coixtlahuaca", "San Juan Bautista Cuicatlan", "San Juan Bautista Guelache", "San Juan Bautista Jayacatlan", "San Juan Bautista Lo de Soto", "San Juan Bautista Suchitepec", "San Juan Bautista Tlachichilco", "San Juan Bautista Tlacoatzintepec", "San Juan Bautista Tuxtepec", "San Juan Bautista Valle Nacional", "San Juan Cacahuatepec", "San Juan Chicomezuchil", "San Juan Chilateca", "San Juan Cieneguilla", "San Juan Coatzospam", "San Juan Colorado", "San Juan Comaltepec", "San Juan Cotzocon", "San Juan Diuxi", "San Juan Evangelista Analco", "San Juan Guelavia", "San Juan Guichicovi", "San Juan Ihualtepec", "San Juan Juquila Mixes", "San Juan Juquila Vijanos", "San Juan Lachao", "San Juan Lachigalla", "San Juan Lajarcia", "San Juan Lalana", "San Juan Mazatlan", "San Juan Mixtepec", "San Juan Mixtepec", "San Juan Numi", "San Juan Ozolotepec", "San Juan Petlapa", "San Juan Quiahije", "San Juan Quiotepec", "San Juan Sayultepec", "San Juan Tabaa", "San Juan Tamazola", "San Juan Teita", "San Juan Teitipac", "San Juan Tepeuxila", "San Juan Teposcolula", "San Juan Yaee", "San Juan Yatzona", "San Juan Yucuita", "San Juan de los Cues", "San Juan del Estado", "San Juan del Rio", "San Lorenzo Albarradas", "San Lorenzo Cacaotepec", "San Lorenzo Cuauunecuiltitla", "San Lorenzo Texmelucan", "San Lorenzo Victoria", "San Lorenzo", "San Lucas Camotlan", "San Lucas Ojitlan", "San Lucas Quiavini", "San Lucas Zoquiapam", "San Luis Amatlan", "San Marcial Ozolotepec", "San Marcos Arteaga", "San Martin Huamelulpam", "San Martin Itunyoso", "San Martin Lachila", "San Martin Peras", "San Martin Tilcajete", "San Martin Toxpalan", "San Martin Zacatepec", "San Martin de los Cansecos", "San Mateo Cajonos", "San Mateo Etlatongo", "San Mateo Nejapam", "San Mateo Penasco", "San Mateo Pinas", "San Mateo Rio Hondo", "San Mateo Sindihui", "San Mateo Tlapiltepec", "San Mateo Yoloxochitlan", "San Mateo Yucuhiti", "San Mateo del Mar", "San Melchor Betaza", "San Miguel Achiutla", "San Miguel Ahuehuetitlan", "San Miguel Aloapam", "San Miguel Amatitlan", "San Miguel Amatlan", "San Miguel Chicahua", "San Miguel Chimalapa", "San Miguel Coatlan", "San Miguel Ejutla", "San Miguel Huautla", "San Miguel Mixtepec", "San Miguel Panixtlahuaca", "San Miguel Peras", "San Miguel Piedras", "San Miguel Quetzaltepec", "San Miguel Santa Flor", "San Miguel Soyaltepec", "San Miguel Suchixtepec", "San Miguel Tecomatlan", "San Miguel Tenango", "San Miguel Tequixtepec", "San Miguel Tilquiapam", "San Miguel Tlacamama", "San Miguel Tlacotepec", "San Miguel Tulancingo", "San Miguel Yotao", "San Miguel del Puerto", "San Miguel del Rio", "San Miguel el Grande", "San Nicolas Hidalgo", "San Nicolas", "San Pablo Coatlan", "San Pablo Cuatro Venados", "San Pablo Etla", "San Pablo Huitzo", "San Pablo Huixtepec", "San Pablo Macuiltianguis", "San Pablo Tijaltepec", "San Pablo Villa de Mitla", "San Pablo Yaganiza", "San Pedro Amuzgos", "San Pedro Apostol", "San Pedro Atoyac", "San Pedro Cajonos", "San Pedro Comitancillo", "San Pedro Coxcaltepec Cantaros", "San Pedro Huamelula", "San Pedro Huilotepec", "San Pedro Ixcatlan", "San Pedro Ixtlahuaca", "San Pedro Jaltepetongo", "San Pedro Jicayan", "San Pedro Jocotipac", "San Pedro Juchatengo", "San Pedro Martir Quiechapa", "San Pedro Martir Yucuxaco", "San Pedro Martir", "San Pedro Mixtepec", "San Pedro Mixtepec", "San Pedro Molinos", "San Pedro Nopala", "San Pedro Ocopetatillo", "San Pedro Ocotepec", "San Pedro Pochutla", "San Pedro Quiatoni", "San Pedro Sochiapam", "San Pedro Tapanatepec", "San Pedro Taviche", "San Pedro Teozacoalco", "San Pedro Teutila", "San Pedro Tidaa", "San Pedro Topiltepec", "San Pedro Totolapam", "San Pedro Yaneri", "San Pedro Yolox", "San Pedro Yucunama", "San Pedro el Alto", "San Pedro y San Pablo Ayutla", "San Pedro y San Pablo Teposcolula", "San Pedro y San Pablo Tequixtepec", "San Raymundo Jalpan", "San Sebastian Abasolo", "San Sebastian Coatlan", "San Sebastian Ixcapa", "San Sebastian Nicananduta", "San Sebastian Rio Hondo", "San Sebastian Tecomaxtlahuaca", "San Sebastian Teitipac", "San Sebastian Tutla", "San Simon Almolongas", "San Simon Zahuatlan", "San Vicente Coatlan", "San Vicente Lachixio", "San Vicente Nunu", "Santa Ana Ateixtlahuaca", "Santa Ana Cuauhtemoc", "Santa Ana Tavela", "Santa Ana Tlapacoyan", "Santa Ana Yareni", "Santa Ana Zegache", "Santa Ana del Valle", "Santa Ana", "Santa Catalina Quieri", "Santa Catarina Cuixtla", "Santa Catarina Ixtepeji", "Santa Catarina Juquila", "Santa Catarina Lachatao", "Santa Catarina Loxicha", "Santa Catarina Mechoacan", "Santa Catarina Minas", "Santa Catarina Quiane", "Santa Catarina Quioquitani", "Santa Catarina Tayata", "Santa Catarina Ticua", "Santa Catarina Yosonotu", "Santa Catarina Zapoquila", "Santa Cruz Acatepec", "Santa Cruz Amilpas", "Santa Cruz Itundujia", "Santa Cruz Mixtepec", "Santa Cruz Nundaco", "Santa Cruz Papalutla", "Santa Cruz Tacache de Mina", "Santa Cruz Tacahua", "Santa Cruz Tayata", "Santa Cruz Xitla", "Santa Cruz Xoxocotlan", "Santa Cruz Zenzontepec", "Santa Cruz de Bravo", "Santa Gertrudis", "Santa Ines Yatzeche", "Santa Ines de Zaragoza", "Santa Ines del Monte", "Santa Lucia Miahuatlan", "Santa Lucia Monteverde", "Santa Lucia Ocotlan", "Santa Lucia del Camino", "Santa Magdalena Jicotlan", "Santa Maria Alotepec", "Santa Maria Apazco", "Santa Maria Atzompa", "Santa Maria Camotlan", "Santa Maria Chachoapam", "Santa Maria Chilchotla", "Santa Maria Chimalapa", "Santa Maria Colotepec", "Santa Maria Cortijo", "Santa Maria Coyotepec", "Santa Maria Ecatepec", "Santa Maria Guelace", "Santa Maria Guienagati", "Santa Maria Huatulco", "Santa Maria Huazolotitlan", "Santa Maria Ipalapa", "Santa Maria Ixcatlan", "Santa Maria Jacatepec", "Santa Maria Jalapa del Marques", "Santa Maria Jaltianguis", "Santa Maria Lachixio", "Santa Maria Mixtequilla", "Santa Maria Nativitas", "Santa Maria Nduayaco", "Santa Maria Ozolotepec", "Santa Maria Papalo", "Santa Maria Penoles", "Santa Maria Petapa", "Santa Maria Quiegolani", "Santa Maria Sola", "Santa Maria Tataltepec", "Santa Maria Tecomavaca", "Santa Maria Temaxcalapa", "Santa Maria Temaxcaltepec", "Santa Maria Teopoxco", "Santa Maria Tepantlali", "Santa Maria Texcatitlan", "Santa Maria Tlahuitoltepec", "Santa Maria Tlalixtac", "Santa Maria Tonameca", "Santa Maria Totolapilla", "Santa Maria Xadani", "Santa Maria Yalina", "Santa Maria Yavesia", "Santa Maria Yolotepec", "Santa Maria Yosoyua", "Santa Maria Yucuhiti", "Santa Maria Zacatepec", "Santa Maria Zaniza", "Santa Maria Zoquitlan", "Santa Maria del Rosario", "Santa Maria del Tule", "Santa Maria la Asuncion", "Santiago Amoltepec", "Santiago Apoala", "Santiago Apostol", "Santiago Astata", "Santiago Atitlan", "Santiago Ayuquililla", "Santiago Cacaloxtepec", "Santiago Camotlan", "Santiago Chazumba", "Santiago Choapam", "Santiago Comaltepec", "Santiago Huajolotitlan", "Santiago Huauclilla", "Santiago Ihuitlan Plumas", "Santiago Ixcuintepec", "Santiago Ixtayutla", "Santiago Jamiltepec", "Santiago Jocotepec", "Santiago Juxtlahuaca", "Santiago Lachiguiri", "Santiago Lalopa", "Santiago Laollaga", "Santiago Laxopa", "Santiago Llano Grande", "Santiago Matatlan", "Santiago Miltepec", "Santiago Minas", "Santiago Nacaltepec", "Santiago Nejapilla", "Santiago Niltepec", "Santiago Nundiche", "Santiago Nuyoo", "Santiago Pinotepa Nacional", "Santiago Suchilquitongo", "Santiago Tamazola", "Santiago Tapextla", "Santiago Tenango", "Santiago Tepetlapa", "Santiago Tetepec", "Santiago Texcalcingo", "Santiago Textitlan", "Santiago Tilantongo", "Santiago Tillo", "Santiago Tlazoyaltepec", "Santiago Xanica", "Santiago Xiacui", "Santiago Yaitepec", "Santiago Yaveo", "Santiago Yolomecatl", "Santiago Yosondua", "Santiago Yucuyachi", "Santiago Zacatepec", "Santiago Zoochila", "Santiago del Rio", "Santo Domingo Albarradas", "Santo Domingo Armenta", "Santo Domingo Chihuitan", "Santo Domingo Ingenio", "Santo Domingo Ixcatlan", "Santo Domingo Nuxaa", "Santo Domingo Ozolotepec", "Santo Domingo Petapa", "Santo Domingo Roayaga", "Santo Domingo Tehuantepec", "Santo Domingo Teojomulco", "Santo Domingo Tepuxtepec", "Santo Domingo Tlatayapam", "Santo Domingo Tomaltepec", "Santo Domingo Tonala", "Santo Domingo Tonaltepec", "Santo Domingo Xagacia", "Santo Domingo Yanhuitlan", "Santo Domingo Yodohino", "Santo Domingo Zanatepec", "Santo Domingo de Morelos", "Santo Tomas Jalieza", "Santo Tomas Mazaltepec", "Santo Tomas Ocotepec", "Santo Tomas Tamazulapan", "Santos Reyes Nopala", "Santos Reyes Papalo", "Santos Reyes Tepejillo", "Santos Reyes Yucuna", "Silacayoapam", "Sitio de Xitlapehua", "Soledad Etla", "Tamazulapam del Espiritu Santo", "Tanetze de Zaragoza", "Taniche", "Tataltepec de Valdes", "Teococuilco de Marcos Perez", "Teotitlan de Flores Magon", "Teotitlan del Valle", "Teotongo", "Tepelmeme Villa de Morelos", "Tlacolula de Matamoros", "Tlacotepec Plumas", "Tlalixtac de Cabrera", "Totontepec Villa de Morelos", "Trinidad Zaachila", "Union Hidalgo", "Valerio Trujano", "Villa Diaz Ordaz", "Villa Hidalgo", "Villa Sola de Vega", "Villa Talea de Castro", "Villa Tejupam de la Union", "Villa de Chilapa de Diaz", "Villa de Etla", "Villa de Tamazulapam del Progreso", "Villa de Tututepec", "Villa de Zaachila", "Yaxe", "Yogana", "Yutanduchi de Guerrero", "Zapotitlan Lagunas", "Zapotitlan Palmas", "Zimatlan de Alvarez"],
     "Queretaro": ["Amealco de Bonfil", "Arroyo Seco", "Cadereyta de Montes", "Colon", "Corregidora", "El Marques", "Ezequiel Montes", "Huimilpan", "Jalpan de Serra", "Landa de Matamoros", "Pedro Escobedo", "Penamiller", "Pinal de Amoles", "Queretaro", "San Joaquin", "San Juan del Rio", "Tequisquiapan", "Toliman"],
     "Quintana Roo": ["Bacalar", "Benito Juarez", "Cozumel", "Felipe Carrillo Puerto", "Isla Mujeres", "Jose Maria Morelos", "Lazaro Cardenas", "Othon P. Blanco", "Puerto Morelos", "Solidaridad", "Tulum"],
     "San Luis Potosi": ["Ahualulco", "Alaquines", "Aquismon", "Armadillo de los Infante", "Axtla de Terrazas", "Cardenas", "Catorce", "Cedral", "Cerritos", "Cerro de San Pedro", "Charcas", "Ciudad Fernandez", "Ciudad Valles", "Ciudad del Maiz", "Coxcatlan", "Ebano", "El Naranjo", "Guadalcazar", "Huehuetlan", "Lagunillas", "Matehuala", "Matlapa", "Mexquitic de Carmona", "Moctezuma", "Rayon", "Rioverde", "Salinas", "San Antonio", "San Ciro de Acosta", "San Luis Potosi", "San Martin Chalchicuautla", "San Nicolas Tolentino", "San Vicente Tancuayalab", "Santa Catarina", "Santa Maria del Rio", "Santo Domingo", "Soledad de Graciano Sanchez", "Tamasopo", "Tamazunchale", "Tampacan", "Tampamolon Corona", "Tamuin", "Tancanhuitz", "Tanlajas", "Tanquian de Escobedo", "Tierra Nueva", "Vanegas", "Venado", "Villa Hidalgo", "Villa Juarez", "Villa de Arista", "Villa de Arriaga", "Villa de Guadalupe", "Villa de Ramos", "Villa de Reyes", "Villa de la Paz", "Xilitla", "Zaragoza"],
     "Sinaloa": ["Ahome", "Angostura", "Badiraguato", "Choix", "Concordia", "Cosala", "Culiacan", "El Fuerte", "Elota", "Escuinapa", "Guasave", "Mazatlan", "Mocorito", "Navolato", "Rosario", "Salvador Alvarado", "San Ignacio", "Sinaloa"],
-    "Sonora": ["Aconchi", "Agua Prieta", "Alamos", "Altar", "Arivechi", "Arizpe", "Atil", "Bacadehuachi", "Bacanora", "Bacerac", "Bacoachi", "Bacum", "Banamichi", "Baviacora", "Bavispe", "Benito Juarez", "Benjamin Hill", "Caborca", "Cajeme", "Cananea", "Carbo", "Cucurpe", "Cumpas", "Divisaderos", "Empalme", "Etchojoa", "Fronteras", "General Plutarco Elias Calles", "Granados", "Guaymas", "Hermosillo", "Huachinera", "Huasabas", "Huatabampo", "Huepac", "Imuris", "La Colorada", "Magdalena", "Mazatan", "Moctezuma", "Naco", "Nacori Chico", "Nacozari de Garcia", "Navojoa", "Nogales", "Onavas", "Opodepe", "Oquitoa", "Pitiquito", "Puerto Penasco", "Quiriego", "Rayon", "Rosario", "Sahuaripa", "San Felipe de Jesus", "San Ignacio Rio Muerto", "San Javier", "San Luis Rio Colorado", "San Miguel de Horcasitas", "San Pedro de la Cueva", "Santa Ana", "Santa Cruz", "Saric", "Soyopa", "Suaqui Grande", "Tepache", "Trincheras", "Tubutama", "Ures", "Villa Hidalgo", "Villa Pesqueira", "Yecora"],
+    "Sonora": ["Aconchi", "Agua Prieta", "Alamos", "Altar", "Arivechi", "Arizpe", "Atil", "Bacadehuachi", "Bacanora", "Bacerac", "Bacoachi", "Bacum", "Banamichi", "Baviacora", "Bavispe", "Benito Juarez", "Benjamin Hill", "Caborca", "Cajeme", "Cananea", "Carbo", "Cucurpe", "Cumpas", "Divisaderos", "Empalme", "Etchojoa", "Fronteras", "General Plutarco Elias Calles", "Granados", "Guaymas", "Hermosillo", "Huachinera", "Huasabas", "Huatabampo", "Huepac", "Imuris", "La Colorada", "Magdalena", "Mazatan", "Moctezuma", "Naco", "Nacori Chico", "Nacozari de", "Nacozari", "Nogales", "Onavas", "Pitiquito", "Puerto Penasco", "Rayon", "San Felipe de Jesus", "San Javier", "San Luis Rio Colorado", "San Miguel de Horcasitas", "San Pedro de la Cueva", "Santa Ana", "Santa Cruz", "Sahuaripa", "Sierra Vista", "Soyopa", "Sukaloso", "Tepache", "Trinidad Garcia de la Cadena", "Tubutama", "Ures"],
     "Tabasco": ["Balancan", "Cardenas", "Centla", "Centro", "Comalcalco", "Cunduacan", "Emiliano Zapata", "Huimanguillo", "Jalapa", "Jalpa de Mendez", "Jonuta", "Macuspana", "Nacajuca", "Paraiso", "Tacotalpa", "Teapa", "Tenosique"],
     "Tamaulipas": ["Abasolo", "Aldama", "Altamira", "Antiguo Morelos", "Burgos", "Bustamante", "Camargo", "Casas", "Ciudad Madero", "Cruillas", "El Mante", "Gomez Farias", "Gonzalez", "Guemez", "Guerrero", "Gustavo Diaz Ordaz", "Hidalgo", "Jaumave", "Jimenez", "Llera", "Mainero", "Matamoros", "Mendez", "Mier", "Miguel Aleman", "Miquihuana", "Nuevo Laredo", "Nuevo Morelos", "Ocampo", "Padilla", "Palmillas", "Reynosa", "Rio Bravo", "San Carlos", "San Fernando", "San Nicolas", "Soto la Marina", "Tampico", "Tula", "Valle Hermoso", "Victoria", "Villagran", "Xicotencatl"],
     "Tlaxcala": ["Acuamanala de Miguel Hidalgo", "Amaxac de Guerrero", "Acteopan", "Apizaco", "Atlangatepec", "Atltzayanca", "Benito Juarez", "Calpulalpan", "Chiautempan", "Contla de Juan Cuamatzi", "Cuapiaxtla", "Cuaxomulco", "El Carmen Tequexquitla", "Emiliano Zapata", "Espanita", "Huamantla", "Hueyotlipan", "Ixtacuixtla de Mariano Matamoros", "Ixtenco", "La Magdalena Tlaltelulco", "Lazaro Cardenas", "Mazatecochco de Jose Maria Morelos", "Munoz de Domingo Arenas", "Nanacamilpa de Mariano Arista", "Nativitas", "Panotla", "Papalotla de Xicohtencatl", "San Damian Texoloc", "San Francisco Tetlanohcan", "San Jeronimo Zacualpan", "San Jose Teacalco", "San Juan Huactzinco", "San Lorenzo Axocomanitla", "San Lucas Tecopilco", "San Pablo del Monte", "Sanctorum de Lazaro Cardenas", "Santa Ana Nopalucan", "Santa Apolonia Teacalco", "Santa Catarina Ayometla", "Santa Cruz Quilehtla", "Santa Cruz Tlaxcala", "Santa Isabel Xiloxoxtla", "Tenancingo", "Teolocholco", "Tepetitla de Lardizabal", "Tepeyanco", "Terrenate", "Tetla de la Solidaridad", "Tetlatlahuca", "Tlaxco", "Tocatlan", "Totolac", "Tzompantepec", "Xaloztoc", "Xaltocan", "Xicohtzinco", "Yauhquemehcan", "Zacatelco", "Ziltlaltepec de Trinidad Sanchez Santos"],
@@ -115,17 +116,85 @@ interface Include {
     title: string
 }
 
+interface Service {
+    id: string;
+    name: string;
+    supplierId?: number; // Add this if not present
+    description?: string;
+    price?: number;
+    location?: string;
+    availableFrom?: Date | null;
+    availableTo?: Date | null;
+    packs?: { data: { name: string; description: string; qty: number; price: number }[] }; // <-- changed
+    images?: string[];
+    ytLink?: string;
+    sizeTourM?: number;
+    serviceType?: string;
+    serviceCategory?: string;
+    stateFrom?: string;
+    cityFrom?: string;
+    stateTo?: string;
+    cityTo?: string;
+    includes?: string[];
+    excludes?: string[];
+    faqs?: FAQ[];
+    activities?: string[];
+    transportProviderID?: number;
+    hotelProviderID?: number;
+}
 
-
+interface Session {
+    user: {
+        id: string;
+        name?: string | null | undefined;
+        email?: string | null;
+        image?: string | null;
+        supplierId?: string | null;
+        role: string;
+    };
+}
 
 
 interface ServiceFormProps {
-    suppliers: any; // Replace 'any' with the actual type if known
-    service: any; // Replace 'any' with the actual type if known
-    session: any; // Replace 'any' with the actual type if known
+    suppliers: Supplier[];
+    service: Service; // Change from Service[] to Service
+    session: Session | null;
 }
 
-export function ServiceForm({  service, session }: ServiceFormProps) {
+// Add this interface above ServiceFormProps
+interface ServiceFormFields {
+    supplierId?: number;
+    name?: string;
+    description?: string;
+    price?: number;
+    location?: string;
+    availableFrom?: Date | null;
+    availableTo?: Date | null;
+    packs?: { data: { name: string; description: string; qty: number; price: number }[] }; // <-- changed
+    images?: string[];
+    ytLink?: string;
+    sizeTour?: number;
+    serviceType?: string;
+    serviceCategory?: string;
+    stateFrom?: string;
+    cityFrom?: string;
+    stateTo?: string;
+    cityTo?: string;
+    includes?: string[];
+    excludes?: string[];
+    faqs?: FAQ[];
+    itinerary?: string[];
+    transportProviderID?: number;
+    hotelProviderID?: number;
+}
+
+// Define the type for images errors
+interface ImagesError {
+    imgBanner?: { message: string };
+    imgAlbum?: { message: string };
+}
+
+export function ServiceForm({ service, session }: ServiceFormProps) {
 
 
     // FAQs STATEs  
@@ -191,14 +260,14 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
 
 
 
-    
+
 
     // Use the hook to get the context
-    const { images, setImages, activities, setActivities, transportProviderID, setTransportProviderID, hotelProviderID, setHotelProviderID } = useServices()
+    const { images, activities, transportProviderID, hotelProviderID } = useServices()
 
 
     const values = useSuppliers()
-    const { getIdSupplier } = useSuppliers()
+    // const { getIdSupplier } = useSuppliers()
 
     const router = useRouter()
     const params = useParams<{ id: string }>()
@@ -208,7 +277,7 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
     const [packs, setPacks] = useState<{ data: { name: string, description: string, qty: number, price: number }[] }>({ data: [] })
 
     // STATE FOR suppliers
-    const [suppliersState, setSuppliersState] = useState<{ id: number, name: string }[]>([])
+    // const [suppliersState, setSuppliersState] = useState<{ id: number, name: string }[]>([])
     const [suppliersStateTransport, setSuppliersStateTransport] = useState<{ id: number, name: string }[]>([])
     const [suppliersStateHotel, setSuppliersStateHotel] = useState<{ id: number, name: string }[]>([])
     const [selectedSupplier, setSelectedSupplier] = useState<{ id: number, name: string } | undefined>(undefined)
@@ -222,19 +291,20 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
             content: content,
         });
     };
-    const success = () => {
-        messageApi.open({
-            type: 'success',
-            content: 'This is a success message',
-        });
-    };
+    // const success = () => {
 
-    const error = ({ content }: { content: string }) => {
-        messageApi.open({
-            type: 'error',
-            content: content,
-        });
-    };
+    //     messageApi.open({
+    //         type: 'success',
+    //         content: 'This is a success message',
+    //     });
+    // };
+
+    // const error = ({ content }: { content: string }) => {
+    //     messageApi.open({
+    //         type: 'error',
+    //         content: content,
+    //     });
+    // };
 
 
 
@@ -256,28 +326,31 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
         setValue("hotelProviderID", hotelProviderID)
 
         if (images) {
-            setValue("images", {
-                imgBanner: images.imgBanner || "",
-                imgAlbum: images.imgAlbum || "",
-            });
+            // If imgAlbum is an array, combine banner and album into a single array
+
+            setValue("images", [
+                ...(images.imgBanner ? [images.imgBanner] : []),
+                ...(Array.isArray(images.imgAlbum) ? images.imgAlbum : (images.imgAlbum ? [images.imgAlbum] : [])),
+            ]);
         }
 
         if (errors.name) {
+
             warning({ content: "Se necesitan todos los campos" })
         }
 
         const fetchSuppliers = async () => {
             try {
                 const suppliersData = await getSuppliers()
-                setSuppliersState(suppliersData)
+                // setSuppliersState(suppliersData)
                 setSuppliersStateTransport(suppliersData.filter((supplier: { supplierType: string }) => supplier.supplierType === 'transporte'))
                 setSuppliersStateHotel(suppliersData.filter((supplier: { supplierType: string }) => supplier.supplierType === 'hospedaje'))
                 // Find the supplier by session.user.supplierId
-                const selected = suppliersData.find((supplier: { id: number }) => supplier.id === session.user.supplierId);
+                const selected = suppliersData.find((supplier: { id: number }) => supplier.id === Number(session?.user?.supplierId));
                 setSelectedSupplier(selected)
 
             } catch (error) {
-                // console.log("Failed to fetch suppliers", error)
+                console.log("Failed to fetch suppliers", error)
             }
         }
         fetchSuppliers()
@@ -300,8 +373,8 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
 
     }, [images, selectedState, selectedStateTo, includes, excludes, faqs, activities])
 
-    // USE FORM HOOK: useForm, zodResolver, register, handleSubmit and setValue from react-hook-form
-    const { control, register, handleSubmit, setValue, getValues, formState: { errors } } = useForm(
+    // CHANGE useForm to use the generic type
+    const { control, register, handleSubmit, setValue, formState: { errors } } = useForm<ServiceFormFields>(
         {
             defaultValues: {
                 supplierId: service?.supplierId,
@@ -334,36 +407,54 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
     )
 
     // SUBMIT function to handle the form submission
-    const onSubmit = async (data: any) => {
-
+    const onSubmit = async (data: ServiceFormFields) => {
+        // Adaptar los datos del formulario al formato que espera el backend
+        const adaptedData: ServiceData = {
+            name: data.name ?? '',
+            location: data.location ?? '',
+            images: {
+                imgBanner: images?.imgBanner ?? '',
+                imgAlbum: Array.isArray(images?.imgAlbum) ? images.imgAlbum : [],
+            },
+            availableFrom: data.availableFrom ? new Date(data.availableFrom).toISOString() : '',
+            availableTo: data.availableTo ? new Date(data.availableTo).toISOString() : '',
+            createdAt: new Date().toISOString(),
+            description: data.description ?? '',
+            id: service?.id ?? '',
+            packs: packs,
+            price: data.price ?? 0,
+            supplierId: String(values.idSupplier ?? session?.user?.supplierId ?? ''),
+            cityTo: data.cityTo ?? '',
+        };
         try {
-            if (!service) {
-                await updateService(service.id, { ...data, supplierId: values.idSupplier })
+            if (service) {
+                await updateService(service.id, adaptedData);
             } else {
-                await createService({ ...data, supplierId: session.user.supplierId })
+                await createService(adaptedData);
+                console.log('service new', adaptedData);
             }
-            // Handle successful form submission
+            router.push("/services");
+            router.refresh();
         } catch (error) {
-            console.error("Failed to submit form", error)
+            console.error("Failed to submit form", error);
         }
-        router.push("/services")
-        router.refresh()
+
     }
 
-    const handleSubmitInclusions = async (e: any) => {
-        e.preventDefault()
-        setValue("includes", includes)
-        setValue("excludes", excludes)
+    // const handleSubmitInclusions = async (e: any) => {
+    //     e.preventDefault()
+    //     setValue("includes", includes)
+    //     setValue("excludes", excludes)
 
-        // console.log("Inclusions:", includes, excludes)
-    }
+    //     // console.log("Inclusions:", includes, excludes)
+    // }
 
     // Handle submit for add packages //
-    const handleSbmitPcks = async (e: any) => {
-        e.preventDefault() // Prevent the form from submitting
-        if (!pack.name || !pack.description || !pack.price || !pack.qty) { // Check if the package has all the required fields
-            warning({ content: 'Ingresa todos los datos del paquete' }) // Show a warning message
-            return; // Stop the function
+    const handleSbmitPcks = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (!pack.name || !pack.description || !pack.price || !pack.qty) {
+            warning({ content: 'Ingresa todos los datos del paquete' });
+            return;
         }
 
         const updatedPacks = { data: [...packs.data, pack] } // Create a new list of packages with the new package
@@ -470,625 +561,625 @@ export function ServiceForm({  service, session }: ServiceFormProps) {
             {/* ContextHolder to show messages error|warning|info */}
             {contextHolder}
 
-          
-                
-
-                    <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-gray-900 text-black dark:text-white p-4 rounded-lg">
-
-                        <Row className="mb-4">
-                            <Col span={10}>
-                                <Label>Proveedor::</Label>
-                                <h1> {selectedSupplier?.name} </h1>
-                                <div hidden>
-                                    <Input
-                                        value={values.idSupplier ? values.idSupplier : session.user.supplierId}
-                                        {...register("supplierId")}
-                                        disabled
-                                        className="w-1/4"
-                                        hidden={true}
-                                    />
-                                </div>
-                            </Col>
-
-                            <Col span={4}>
-                                <Label>
-                                    <h1>Servicio:</h1>
-                                </Label>
-                                <Select
-                                    // {...register("serviceType")}
-                                    // value={getValues("serviceType") || "tour"}
-                                    style={{ width: 120 }}
-                                    options={[
-                                        { value: 'bus', label: 'bus', disabled: true },
-                                        { value: 'tour', label: 'tour', },
-                                        { value: 'hotel', label: 'hotel', disabled: true },
-                                        { value: 'tickets', label: 'Tickets', disabled: true },
-                                    ]}
-                                    onChange={(value) => setValue("serviceType", value)}
-                                />
-                                {typeof errors.serviceCategory?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.serviceCategory.message} />
-                                )}
-                            </Col>
-
-
-                            <Col span={4}>
-                                <Label>
-                                    <h1>Tipo:</h1>
-                                </Label>
-                                <Select
-                                    // {...register("serviceCategory")}
-                                    // value={getValues("serviceCategory") || "ecoturismo"}
-                                    style={{ width: 120 }}
-                                    options={[
-                                        { value: 'ecoturismo', label: 'ecoturismo' },
-                                        { value: 'paquete', label: 'paquete' },
-                                        { value: 'festival', label: 'festival' },
-                                        { value: 'familiar', label: 'familiar' },
-                                    ]}
-                                    onChange={(value) => setValue("serviceCategory", value)}
-                                />
-                                {typeof errors.serviceCategory?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.serviceCategory.message} />
-                                )}
-                            </Col>
-
-
-                            <Col span={4}>
-                                <Label>
-                                    <h1>Tamaño:</h1>
-                                </Label>
-                                <Input
-                                    {...register("sizeTour", {
-                                        setValueAs: value => parseFloat(value)
-                                    })}
-                                    type="number"
-                                    min={1}
-                                />
-                                {typeof errors.sizeTour?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.sizeTour.message} />
-                                )}
-                            </Col>
-
-                        </Row>
-
-                        <Row className="mb-4">
-                            <Label>Fotos:</Label>
-
-                            <Col span={24}>
-
-                                <ImageUploader />
-
-                                {errors.images && 'imgBanner' in errors.images && (
-                                    <Alert
-                                        showIcon
-                                        type="error"
-                                        message={(errors.images as any).imgBanner.message}
-                                    />
-                                )}
-
-                                {errors.images && 'imgAlbum' in errors.images && (
-                                    <Alert
-                                        showIcon
-                                        type="error"
-                                        message={(errors.images as any).imgAlbum.message}
-                                    />
-                                )}
-                            </Col>
-
-
-                        </Row>
-
-                        <Row className="mb-4">
-
-
-                            <Col span={8}>
-
-                                <Label>Nombre del Servicio:</Label>
-                                <Input
-                                    {...register("name")}
-                                />
-                                {typeof errors.name?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.name.message} />
-                                )}
-                            </Col>
-                            <Col span={13}>
-                                <Label>
-                                    <h1>Youtube video Llink:</h1>
-                                </Label>
-                                <Input
-                                    {...register("ytLink")}
-                                />
-                                {typeof errors.ytLink?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.ytLink.message} />
-                                )}
-                            </Col>
-                            <Col span={3} >
-                                <Label>Precio Regular:</Label>
-                                <Input
-                                    {...register("price", {
-                                        setValueAs: value => parseFloat(value)
-                                    })}     
-                                />
-                                {
-                                    typeof errors.price?.message === 'string' && <Alert showIcon type="error" message={errors.price?.message} />
-                                }
-                            </Col>
-
-
-                        </Row>
-                        <Row className="mb-4">
-                            <Col span={24}>
-                                <Label>Descripcion:</Label>
-                                <Textarea
-                                    {...register("description")}
-                                />
-                                {
-                                    typeof errors.description?.message === 'string' && <Alert showIcon type="error" message={errors.description?.message} />
-                                }
-                            </Col>
-                        </Row>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <Label> Paquetes:</Label>
-
-                        <Row className="mb-4 mt-4">
-                            <Col span={12} className="mb-4">
-                                <Label className="mr-4">Desde:</Label>
-                                <Controller
-                                    name="availableFrom"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <DatePickerWithRange
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                        />
-                                    )}
-                                />
-                                {
-                                    typeof errors.availableFrom?.message === 'string' && <Alert showIcon type="error" message={errors.availableFrom?.message} />
-                                }
-                            </Col>
-
-                            <Col span={12} className="mb-4">
-                                <Label className="mr-4">Hasta:</Label>
-                                <Controller
-                                    name="availableTo"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <DatePickerWithRange
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                        />
-                                    )}
-                                />
-                                {
-                                    typeof errors.availableTo?.message === 'string' && <Alert showIcon type="error" message={errors.availableTo?.message} />
-                                }
-                            </Col>
-
-                        </Row>
-
-                        <Row className="mb-4 mt-4">
-
-                            <Col span={12}>
-                                <div
-                                    className={cn("flex flex-col space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow", "sm:flex-row sm:space-x-4 sm:space-y-0")}
-                                >
-                                    <Label>Origen:</Label>
-                                    <Select
-                                        className="w-full sm:w-1/2"
-                                        placeholder="Selecciona el estado"
-                                        onChange={handleStateChange}
-                                        value={selectedState}
-                                        options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
-                                        showSearch
-                                        filterOption={(input, option) =>
-                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
-                                        }
-                                    />
-
-                                    <Select
-                                        className="w-full sm:w-1/2"
-                                        placeholder="Seleciona la Ciudad"
-                                        onChange={handleCityChange}
-                                        value={selectedCity}
-                                        disabled={!selectedState}
-                                        options={cities.map((city) => ({ value: city, label: city }))}
-                                        notFoundContent={<div className="text-gray-500">No hay ciudades disponibles</div>}
-                                        showSearch
-                                        filterOption={(input, option) =>
-                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
-                                        }
-                                    />
-
-
-                                </div>
-                            </Col>
-
-                            <Col span={12}>
-                                <div
-                                    className={cn("flex flex-col space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow", "sm:flex-row sm:space-x-4 sm:space-y-0")}
-                                >
-                                    <Label>Destino:</Label>
-                                    <Select
-                                        className="w-full sm:w-1/2"
-                                        placeholder="Selecciona el Estado"
-                                        onChange={handleStateToChange}
-                                        value={selectedStateTo}
-                                        options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
-                                        showSearch
-                                        filterOption={(input, option) =>
-                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
-                                        }
-                                    />
-
-                                    <Select
-                                        className="w-full sm:w-1/2"
-                                        placeholder="Seleccciona la Ciudad"
-                                        onChange={handleCityToChange}
-                                        value={selectedCityTo}
-                                        disabled={!selectedStateTo}
-                                        options={citiesTo.map((city) => ({ value: city, label: city }))}
-                                        notFoundContent={<div className="text-gray-500">No cities available</div>}
-                                        showSearch
-                                        filterOption={(input, option) =>
-                                            (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
-                                        }
-                                    />
-
-                                </div>
-                            </Col>
-
-
-                        </Row>
-                        <Row className="mb-4 mt-4">
-                            <Col span={6}>
-                                {typeof errors.stateFrom?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.stateFrom.message} />
-                                )}
-
-                            </Col>
-                            <Col span={6}>
-
-                                {typeof errors.cityFrom?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.cityFrom.message} />
-                                )}
-
-                            </Col>
-                            <Col span={6}>
-
-                                {typeof errors.stateTo?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.stateTo.message} />
-                                )}
-
-                            </Col>
-                            <Col span={6}>
-
-
-
-                                {typeof errors.cityTo?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.cityTo.message} />
-                                )}
-                            </Col>
-                        </Row>
-
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Label>Transporte:</Label>
-                                <Select
-                                    style={{ width: '100%' }}
-                                    options={suppliersStateTransport.map((supplier) => ({
-                                        value: supplier.id,
-                                        label: supplier.name,
-                                    }))}
-                                    onChange={(value) => setValue("transportProviderID", value)}
-                                />
-                                {typeof errors.transportProviderID?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.transportProviderID.message} />
-                                )}
-                            </Col>
-                            <Col span={12}>
-                                <Label>Hotel:</Label>
-                                <Select
-                                    style={{ width: '100%' }}
-                                    options={suppliersStateHotel.map((supplier) => ({
-                                        value: supplier.id,
-                                        label: supplier.name,
-                                    }))}
-                                    onChange={(value) => setValue("hotelProviderID", value)}
-                                />
-                                {typeof errors.hotelProviderID?.message === 'string' && (
-                                    <Alert showIcon type="error" message={errors.hotelProviderID.message} />
-                                )}
-                            </Col>
-                        </Row>
-
-
-
-                        <Row className="mb-4 mt-4">
-                            <Col span={7}>
-                                <Label>Tipo </Label>
-                                <Input
-                                    value={pack.name}
-                                    onChange={(e) => setPack({ ...pack, name: e.target.value })}
-                                    placeholder="Tipo de Paquete"
-                                />
-                            </Col>
-                            <Col span={7}>
-                                <Label>Descripción</Label>
-                                <Input
-                                    value={pack.description}
-                                    onChange={(e) => setPack({ ...pack, description: e.target.value })}
-                                    placeholder="Descripción"
-                                />
-                            </Col>
-                            <Col span={3}>
-                                <Label>Precio</Label>
-                                <Input
-                                    value={pack.price}
-                                    placeholder="Price"
-                                    type="number"
-                                    onChange={(e) => setPack({ ...pack, price: parseFloat(e.target.value) })}
-                                />
-                            </Col>
-                            <Col span={3}>
-                                <Label>Cantidad</Label>
-                                <Input
-                                    value={pack.qty}
-                                    type="number"
-                                    onChange={(e) => setPack({ ...pack, qty: parseFloat(e.target.value) })}
-                                    placeholder="Qty"
-                                />
-                            </Col>
-                            <Col span={2}>
-                                <Label>Agregar</Label>
-                                <Button onClick={handleSbmitPcks} >+</Button>
-                            </Col>
-                        </Row>
-                        <Row className="mb-4 mt-4">
-                            <Col span={24}>
-
-                                {
-                                    packs.data.length > 0 && (
-                                        <Row gutter={16}>
-                                            <Col span={24}>
-                                                <Table
-                                                    dataSource={packs?.data.map((pack, index) => ({ ...pack, key: index + 1 }))}
-                                                    columns={[
-                                                        {
-                                                            title: <b>ID</b>,
-                                                            dataIndex: 'key',
-                                                            key: 'key',
-                                                        },
-                                                        {
-                                                            title: <b>Package Name</b>,
-                                                            dataIndex: 'name',
-                                                            key: 'name',
-                                                        },
-                                                        {
-                                                            title: <b>Description</b>,
-                                                            dataIndex: 'description',
-                                                            key: 'description',
-                                                        },
-                                                        {
-                                                            title: <b>Qty</b>,
-                                                            dataIndex: 'qty',
-                                                            key: 'qty',
-                                                        },
-                                                        {
-                                                            title: <b>Price</b>,
-                                                            dataIndex: 'price',
-                                                            key: 'price',
-                                                        },
-                                                        {
-                                                            title: <b>Delete</b>,
-                                                            key: 'action',
-                                                            render: (_, record) => (
-                                                                <Label
-                                                                    onClick={() => handleDeletePack(record.key)}
-                                                                    style={{ cursor: 'pointer' }}
-                                                                >
-                                                                    ❌
-                                                                </Label>
-                                                            ),
-                                                        },
-                                                    ]}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    )
-                                }
-
-                                {
-                                    typeof errors.packs?.message === 'string' && <Alert showIcon type="error" message={errors.packs?.message} />
-                                }
-                            </Col>
-
-                        </Row>
-
-                        {/* Itinerar builder */}
-
-                        <Row className="mb-4 mt-4">
-                            <VirtualItinerary />
-                            {typeof errors.itinerary?.message === 'string' && (
-                                <Alert showIcon type="error" message={errors.itinerary.message} />
-                            )}
-                        </Row>
-
-
-
-
-
-
-                        <Row className="mb-4 mt-4">
-
-                            <Card className="w-full max-w-1xl mx-auto bg-white dark:bg-gray-800 text-black dark:text-white">
-                                <CardHeader>
-                                    <CardTitle>
-                                        <Title level={4}>
-                                            Servicios Inlcuidos
-                                        </Title>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                    <Row className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <Col span={12}>
-                                            <Title level={3} className="mb-4 flex items-center">
-                                                <CheckCircle2 className="mr-2 text-green-500" />
-                                                Incluido
-                                            </Title>
-                                            {
-                                                typeof errors.includes?.message === 'string' && <Alert showIcon type="error" message={errors.includes?.message} />
-                                            }
-
-                                            <List
-                                                dataSource={initialItems}
-                                                renderItem={(item) => (
-                                                    <List.Item>
-                                                        <Checkbox
-                                                            checked={includes.includes(item.name)}
-                                                            onChange={() => handleIncludeChange(item.name)}>
-                                                            {item.name}
-                                                        </Checkbox>
-                                                    </List.Item>
-                                                )}
-                                            />
-                                        </Col>
-                                        <Col span={12}>
-                                            <Title level={3} className="mb-4 flex items-center">
-                                                <XCircle className="mr-2 text-red-500" />
-                                                No Incluido
-                                            </Title>
-                                            {
-                                                typeof errors.excludes?.message === 'string' && <Alert showIcon type="error" message={errors.excludes?.message} />
-                                            }
-                                            <List
-                                                dataSource={initialItems}
-                                                renderItem={(item) => (
-                                                    <List.Item>
-                                                        <Checkbox
-                                                            checked={excludes.includes(item.name)}
-                                                            onChange={() => handleNotIncludeChange(item.name)}>
-                                                            {item.name}
-                                                        </Checkbox>
-                                                    </List.Item>
-                                                )}
-                                            />
-                                        </Col>
-                                    </Row>
-
-                                </CardContent>
-                                <CardContent>
-
-                                    {(includes.length > 0 || excludes.length > 0) && (
-                                        <div className="mt-6">
-                                            <Title level={4}>Selected Items</Title>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <Card>
-                                                    <CardHeader>
-                                                        <CardTitle className="text-sm font-medium">Includes</CardTitle>
-                                                    </CardHeader>
-                                                    <CardContent className="bg-white dark:bg-gray-800 text-black dark:text-white">
-                                                        <List
-                                                            dataSource={initialItems.filter((item) => includes.includes(item.name))}
-                                                            renderItem={(item) => <List.Item>{item.name}</List.Item>}
-                                                        />
-                                                    </CardContent>
-                                                </Card>
-                                                <Card>
-                                                    <CardHeader>
-                                                        <CardTitle className="text-sm font-medium">Not Includes</CardTitle>
-                                                    </CardHeader>
-                                                    <CardContent className="bg-white dark:bg-gray-800 text-black dark:text-white">
-                                                        <List
-                                                            dataSource={initialItems.filter((item) => excludes.includes(item.name))}
-                                                            renderItem={(item) => <List.Item>{item.name}</List.Item>}
-                                                        />
-                                                    </CardContent>
-                                                </Card>
-                                            </div>
-                                        </div>
-                                    )}
-                                </CardContent>
-
-                            </Card>
-
-                            {/* <TourIncludes /> */}
-
-                        </Row>
-
-
-
-
-                        {/* FAQs builder */}
-                        <div className="container mx-auto py-8">
-                            {/* <FAQManager /> */}
-
-                            <div className="max-w-4xl mx-auto p-4">
-                                <h1 className="text-2xl font-bold mb-4">FAQ Manager</h1>
-                                <div className="mb-4">
-                                    <Input
-                                        placeholder="Search FAQs"
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="mb-2"
-                                    />
-                                    {typeof errors.faqs?.message === 'string' && (
-                                        <Alert showIcon type="error" message={errors.faqs.message} />
-                                    )}
-                                    <Button onClick={handleOpenModal}>
-                                        <PlusCircleOutlined className="mr-2" />
-                                        Add FAQ
-                                    </Button>
-                                </div>
-                                <FAQList faqs={filteredFAQs} onEdit={handleEdit} onDelete={handleDelete} />
-                                <FAQModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleSubmitFAQs} initialData={editingFAQ} />
-
-                            </div>
-
+            {/* DEBUG: Mostrar errores de validación */}
+            <pre>{JSON.stringify(errors, null, 2)}</pre>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-gray-900 text-black dark:text-white p-4 rounded-lg">
+
+                <Row className="mb-4">
+                    <Col span={10}>
+                        <Label>Proveedor::</Label>
+                        <h1> {selectedSupplier?.name} </h1>
+                        <div hidden>
+                            <Input
+                                value={values.idSupplier ? values.idSupplier : session?.user?.supplierId ?? ''}
+                                {...register("supplierId")}
+                                disabled
+                                className="w-1/4"
+                                hidden={true}
+                            />
                         </div>
+                    </Col>
+
+                    <Col span={4}>
+                        <Label>
+                            <h1>Servicio:</h1>
+                        </Label>
+                        <Select
+                            // {...register("serviceType")}
+                            // value={getValues("serviceType") || "tour"}
+                            style={{ width: 120 }}
+                            options={[
+                                { value: 'bus', label: 'bus', disabled: true },
+                                { value: 'tour', label: 'tour', },
+                                { value: 'hotel', label: 'hotel', disabled: true },
+                                { value: 'tickets', label: 'Tickets', disabled: true },
+                            ]}
+                            onChange={(value) => setValue("serviceType", value)}
+                        />
+                        {typeof errors.serviceCategory?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.serviceCategory.message} />
+                        )}
+                    </Col>
 
 
+                    <Col span={4}>
+                        <Label>
+                            <h1>Tipo:</h1>
+                        </Label>
+                        <Select
+                            // {...register("serviceCategory")}
+                            // value={getValues("serviceCategory") || "ecoturismo"}
+                            style={{ width: 120 }}
+                            options={[
+                                { value: 'ecoturismo', label: 'ecoturismo' },
+                                { value: 'paquete', label: 'paquete' },
+                                { value: 'festival', label: 'festival' },
+                                { value: 'familiar', label: 'familiar' },
+                            ]}
+                            onChange={(value) => setValue("serviceCategory", value)}
+                        />
+                        {typeof errors.serviceCategory?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.serviceCategory.message} />
+                        )}
+                    </Col>
 
 
-
-
-
+                    <Col span={4}>
+                        <Label>
+                            <h1>Tamaño:</h1>
+                        </Label>
                         <Input
-                            {...register("location")}
+                            {...register("sizeTour", {
+                                setValueAs: value => parseFloat(value)
+                            })}
+                            type="number"
+                            min={1}
+                        />
+                        {typeof errors.sizeTour?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.sizeTour.message} />
+                        )}
+                    </Col>
+
+                </Row>
+
+                <Row className="mb-4">
+                    <Label>Fotos:</Label>
+
+                    <Col span={24}>
+
+                        <ImageUploader />
+
+                        {errors.images && 'imgBanner' in errors.images && (
+                            <Alert
+                                showIcon
+                                type="error"
+                                message={(errors.images as ImagesError).imgBanner?.message}
+                            />
+                        )}
+
+                        {errors.images && 'imgAlbum' in errors.images && (
+                            <Alert
+                                showIcon
+                                type="error"
+                                message={(errors.images as ImagesError).imgAlbum?.message}
+                            />
+                        )}
+                    </Col>
+
+
+                </Row>
+
+                <Row className="mb-4">
+
+
+                    <Col span={8}>
+
+                        <Label>Nombre del Servicio:</Label>
+                        <Input
+                            {...register("name")}
+                        />
+                        {typeof errors.name?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.name.message} />
+                        )}
+                    </Col>
+                    <Col span={13}>
+                        <Label>
+                            <h1>Youtube video Llink:</h1>
+                        </Label>
+                        <Input
+                            {...register("ytLink")}
+                        />
+                        {typeof errors.ytLink?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.ytLink.message} />
+                        )}
+                    </Col>
+                    <Col span={3} >
+                        <Label>Precio Regular:</Label>
+                        <Input
+                            {...register("price", {
+                                setValueAs: value => parseFloat(value)
+                            })}
                         />
                         {
-                            typeof errors.location?.message === 'string' && <Alert showIcon type="error" message={errors.location?.message} />
+                            typeof errors.price?.message === 'string' && <Alert showIcon type="error" message={errors.price?.message} />
+                        }
+                    </Col>
+
+
+                </Row>
+                <Row className="mb-4">
+                    <Col span={24}>
+                        <Label>Descripcion:</Label>
+                        <Textarea
+                            {...register("description")}
+                        />
+                        {
+                            typeof errors.description?.message === 'string' && <Alert showIcon type="error" message={errors.description?.message} />
+                        }
+                    </Col>
+                </Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <Label> Paquetes:</Label>
+
+                <Row className="mb-4 mt-4">
+                    <Col span={12} className="mb-4">
+                        <Label className="mr-4">Desde:</Label>
+                        <Controller
+                            name="availableFrom"
+                            control={control}
+                            render={({ field }) => (
+                                <DatePickerWithRange
+                                    value={field.value ?? null}
+                                    onChange={field.onChange}
+                                />
+                            )}
+                        />
+                        {
+                            typeof errors.availableFrom?.message === 'string' && <Alert showIcon type="error" message={errors.availableFrom?.message} />
+                        }
+                    </Col>
+
+                    <Col span={12} className="mb-4">
+                        <Label className="mr-4">Hasta:</Label>
+                        <Controller
+                            name="availableTo"
+                            control={control}
+                            render={({ field }) => (
+                                <DatePickerWithRange
+                                    value={field.value ?? null}
+                                    onChange={field.onChange}
+                                />
+                            )}
+                        />
+                        {
+                            typeof errors.availableTo?.message === 'string' && <Alert showIcon type="error" message={errors.availableTo?.message} />
+                        }
+                    </Col>
+
+                </Row>
+
+                <Row className="mb-4 mt-4">
+
+                    <Col span={12}>
+                        <div
+                            className={cn("flex flex-col space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow", "sm:flex-row sm:space-x-4 sm:space-y-0")}
+                        >
+                            <Label>Origen:</Label>
+                            <Select
+                                className="w-full sm:w-1/2"
+                                placeholder="Selecciona el estado"
+                                onChange={handleStateChange}
+                                value={selectedState}
+                                options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
+                                }
+                            />
+
+                            <Select
+                                className="w-full sm:w-1/2"
+                                placeholder="Seleciona la Ciudad"
+                                onChange={handleCityChange}
+                                value={selectedCity}
+                                disabled={!selectedState}
+                                options={cities.map((city) => ({ value: city, label: city }))}
+                                notFoundContent={<div className="text-gray-500">No hay ciudades disponibles</div>}
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
+                                }
+                            />
+
+
+                        </div>
+                    </Col>
+
+                    <Col span={12}>
+                        <div
+                            className={cn("flex flex-col space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow", "sm:flex-row sm:space-x-4 sm:space-y-0")}
+                        >
+                            <Label>Destino:</Label>
+                            <Select
+                                className="w-full sm:w-1/2"
+                                placeholder="Selecciona el Estado"
+                                onChange={handleStateToChange}
+                                value={selectedStateTo}
+                                options={Object.keys(statesCitiesData).map((state) => ({ value: state, label: state }))}
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
+                                }
+                            />
+
+                            <Select
+                                className="w-full sm:w-1/2"
+                                placeholder="Seleccciona la Ciudad"
+                                onChange={handleCityToChange}
+                                value={selectedCityTo}
+                                disabled={!selectedStateTo}
+                                options={citiesTo.map((city) => ({ value: city, label: city }))}
+                                notFoundContent={<div className="text-gray-500">No cities available</div>}
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.label?.toLowerCase() ?? "").indexOf(input.toLowerCase()) >= 0
+                                }
+                            />
+
+                        </div>
+                    </Col>
+
+
+                </Row>
+                <Row className="mb-4 mt-4">
+                    <Col span={6}>
+                        {typeof errors.stateFrom?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.stateFrom.message} />
+                        )}
+
+                    </Col>
+                    <Col span={6}>
+
+                        {typeof errors.cityFrom?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.cityFrom.message} />
+                        )}
+
+                    </Col>
+                    <Col span={6}>
+
+                        {typeof errors.stateTo?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.stateTo.message} />
+                        )}
+
+                    </Col>
+                    <Col span={6}>
+
+
+
+                        {typeof errors.cityTo?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.cityTo.message} />
+                        )}
+                    </Col>
+                </Row>
+
+                <Row gutter={16}>
+                    <Col span={12}>
+                        <Label>Transporte:</Label>
+                        <Select
+                            style={{ width: '100%' }}
+                            options={suppliersStateTransport.map((supplier) => ({
+                                value: supplier.id,
+                                label: supplier.name,
+                            }))}
+                            onChange={(value) => setValue("transportProviderID", value)}
+                        />
+                        {typeof errors.transportProviderID?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.transportProviderID.message} />
+                        )}
+                    </Col>
+                    <Col span={12}>
+                        <Label>Hotel:</Label>
+                        <Select
+                            style={{ width: '100%' }}
+                            options={suppliersStateHotel.map((supplier) => ({
+                                value: supplier.id,
+                                label: supplier.name,
+                            }))}
+                            onChange={(value) => setValue("hotelProviderID", value)}
+                        />
+                        {typeof errors.hotelProviderID?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.hotelProviderID.message} />
+                        )}
+                    </Col>
+                </Row>
+
+
+
+                <Row className="mb-4 mt-4">
+                    <Col span={7}>
+                        <Label>Tipo </Label>
+                        <Input
+                            value={pack.name}
+                            onChange={(e) => setPack({ ...pack, name: e.target.value })}
+                            placeholder="Tipo de Paquete"
+                        />
+                    </Col>
+                    <Col span={7}>
+                        <Label>Descripción</Label>
+                        <Input
+                            value={pack.description}
+                            onChange={(e) => setPack({ ...pack, description: e.target.value })}
+                            placeholder="Descripción"
+                        />
+                    </Col>
+                    <Col span={3}>
+                        <Label>Precio</Label>
+                        <Input
+                            value={Number.isFinite(pack.price) && pack.price !== 0 ? pack.price : ''}
+                            placeholder="Price"
+                            type="number"
+                            onChange={(e) => setPack({ ...pack, price: parseFloat(e.target.value) })}
+                        />
+                    </Col>
+                    <Col span={3}>
+                        <Label>Cantidad</Label>
+                        <Input
+                            value={Number.isFinite(pack.qty) && pack.qty !== 0 ? pack.qty : ''}
+                            type="number"
+                            onChange={(e) => setPack({ ...pack, qty: parseFloat(e.target.value) })}
+                            placeholder="Qty"
+                        />
+                    </Col>
+                    <Col span={2}>
+                        <Label>Agregar</Label>
+                        <Button onClick={handleSbmitPcks} >+</Button>
+                    </Col>
+                </Row>
+                <Row className="mb-4 mt-4">
+                    <Col span={24}>
+
+                        {
+                            packs.data.length > 0 && (
+                                <Row gutter={16}>
+                                    <Col span={24}>
+                                        <Table
+                                            dataSource={packs?.data.map((pack, index) => ({ ...pack, key: index + 1 }))}
+                                            columns={[
+                                                {
+                                                    title: <b>ID</b>,
+                                                    dataIndex: 'key',
+                                                    key: 'key',
+                                                },
+                                                {
+                                                    title: <b>Package Name</b>,
+                                                    dataIndex: 'name',
+                                                    key: 'name',
+                                                },
+                                                {
+                                                    title: <b>Description</b>,
+                                                    dataIndex: 'description',
+                                                    key: 'description',
+                                                },
+                                                {
+                                                    title: <b>Qty</b>,
+                                                    dataIndex: 'qty',
+                                                    key: 'qty',
+                                                },
+                                                {
+                                                    title: <b>Price</b>,
+                                                    dataIndex: 'price',
+                                                    key: 'price',
+                                                },
+                                                {
+                                                    title: <b>Delete</b>,
+                                                    key: 'action',
+                                                    render: (_, record) => (
+                                                        <Label
+                                                            onClick={() => handleDeletePack(record.key)}
+                                                            style={{ cursor: 'pointer' }}
+                                                        >
+                                                            ❌
+                                                        </Label>
+                                                    ),
+                                                },
+                                            ]}
+                                        />
+                                    </Col>
+                                </Row>
+                            )
                         }
 
+                        {
+                            typeof errors.packs?.message === 'string' && <Alert showIcon type="error" message={errors.packs?.message} />
+                        }
+                    </Col>
+
+                </Row>
+
+                {/* Itinerar builder */}
+
+                <Row className="mb-4 mt-4">
+                    <VirtualItinerary />
+                    {typeof errors.itinerary?.message === 'string' && (
+                        <Alert showIcon type="error" message={errors.itinerary.message} />
+                    )}
+                </Row>
 
 
-                        <Button>
-                            {
-                                params?.id ? "Update service" : "Create service"
-                            }
-                        </Button>
-                    </form>
-                
-          
+
+
+
+
+                <Row className="mb-4 mt-4">
+
+                    <Card className="w-full max-w-1xl mx-auto bg-white dark:bg-gray-800 text-black dark:text-white">
+                        <CardHeader>
+                            <CardTitle>
+                                <Title level={4}>
+                                    Servicios Inlcuidos
+                                </Title>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                            <Row className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <Col span={12}>
+                                    <Title level={3} className="mb-4 flex items-center">
+                                        <CheckCircle2 className="mr-2 text-green-500" />
+                                        Incluido
+                                    </Title>
+                                    {
+                                        typeof errors.includes?.message === 'string' && <Alert showIcon type="error" message={errors.includes?.message} />
+                                    }
+
+                                    <List
+                                        dataSource={initialItems}
+                                        renderItem={(item) => (
+                                            <List.Item>
+                                                <Checkbox
+                                                    checked={includes.includes(item.name)}
+                                                    onChange={() => handleIncludeChange(item.name)}>
+                                                    {item.name}
+                                                </Checkbox>
+                                            </List.Item>
+                                        )}
+                                    />
+                                </Col>
+                                <Col span={12}>
+                                    <Title level={3} className="mb-4 flex items-center">
+                                        <XCircle className="mr-2 text-red-500" />
+                                        No Incluido
+                                    </Title>
+                                    {
+                                        typeof errors.excludes?.message === 'string' && <Alert showIcon type="error" message={errors.excludes?.message} />
+                                    }
+                                    <List
+                                        dataSource={initialItems}
+                                        renderItem={(item) => (
+                                            <List.Item>
+                                                <Checkbox
+                                                    checked={excludes.includes(item.name)}
+                                                    onChange={() => handleNotIncludeChange(item.name)}>
+                                                    {item.name}
+                                                </Checkbox>
+                                            </List.Item>
+                                        )}
+                                    />
+                                </Col>
+                            </Row>
+
+                        </CardContent>
+                        <CardContent>
+
+                            {(includes.length > 0 || excludes.length > 0) && (
+                                <div className="mt-6">
+                                    <Title level={4}>Selected Items</Title>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle className="text-sm font-medium">Includes</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="bg-white dark:bg-gray-800 text-black dark:text-white">
+                                                <List
+                                                    dataSource={initialItems.filter((item) => includes.includes(item.name))}
+                                                    renderItem={(item) => <List.Item>{item.name}</List.Item>}
+                                                />
+                                            </CardContent>
+                                        </Card>
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle className="text-sm font-medium">Not Includes</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="bg-white dark:bg-gray-800 text-black dark:text-white">
+                                                <List
+                                                    dataSource={initialItems.filter((item) => excludes.includes(item.name))}
+                                                    renderItem={(item) => <List.Item>{item.name}</List.Item>}
+                                                />
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+
+                    </Card>
+
+                    {/* <TourIncludes /> */}
+
+                </Row>
+
+
+
+
+                {/* FAQs builder */}
+                <div className="container mx-auto py-8">
+                    {/* <FAQManager /> */}
+
+                    <div className="max-w-4xl mx-auto p-4">
+                        <h1 className="text-2xl font-bold mb-4">FAQ Manager</h1>
+                        <div className="mb-4">
+                            <Input
+                                placeholder="Search FAQs"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="mb-2"
+                            />
+                            {typeof errors.faqs?.message === 'string' && (
+                                <Alert showIcon type="error" message={errors.faqs.message} />
+                            )}
+                            <Button onClick={handleOpenModal}>
+                                <PlusCircleOutlined className="mr-2" />
+                                Add FAQ
+                            </Button>
+                        </div>
+                        <FAQList faqs={filteredFAQs} onEdit={handleEdit} onDelete={handleDelete} />
+                        <FAQModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleSubmitFAQs} initialData={editingFAQ} />
+
+                    </div>
+
+                </div>
+
+
+
+
+
+
+
+                <Input
+                    {...register("location")}
+                />
+                {
+                    typeof errors.location?.message === 'string' && <Alert showIcon type="error" message={errors.location?.message} />
+                }
+
+
+
+                <Button type="submit">
+                    {
+                        params?.id ? "Update service" : "Create service"
+                    }
+                </Button>
+            </form>
+
+
         </>
-    )
+    );
 }

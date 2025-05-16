@@ -7,8 +7,16 @@ import { useForm } from "react-hook-form"
 import { createSupplier, updateSupplier } from "@/app/(protected)/suppliers/suppliers.api"
 import { useParams, useRouter } from "next/navigation"
 
+type Supplier = {
+    name?: string;
+    description?: string;
+    contactEmail?: string;
+    phoneNumber?: string;
+    address?: string;
+    imgLogo?: string;
+};
 
-export function SupplierForm({ supplier }: any) {
+export function SupplierForm({ supplier }: { supplier?: Supplier }) {
 
     // console.log(supplier)
 

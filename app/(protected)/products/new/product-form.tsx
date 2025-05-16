@@ -7,8 +7,15 @@ import { useForm } from "react-hook-form"
 import { createProduct, updateProduct } from "../products.api"
 import { useParams, useRouter } from "next/navigation"
 
+interface Product {
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    image: string;
+}
 
-export function ProductForm({ product }: any) {
+export function ProductForm({ product }: { product?: Product }) {
 
     console.log(product)
 
@@ -32,16 +39,16 @@ export function ProductForm({ product }: any) {
         if (params?.id) {
             await updateProduct(params.id, {
                 ...data,
-                price: parseFloat(data.price),
-                stock: parseInt(data.stock),
+                price: product?.price,
+                stock: product?.stock,
             })
             console.log('update')
         } else {
             console.log(data)
             await createProduct({
                 ...data,
-                price: parseFloat(data.price),
-                stock: parseInt(data.stock),
+                price: product?.price,
+                stock: product?.stock,
             })
         }
 

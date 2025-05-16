@@ -15,7 +15,7 @@ interface LocalHighlightsProps {
   }[]
 }
 
-export function LocalHighlights({ faqs, localInfo, highlights }: LocalHighlightsProps) {
+export function LocalHighlights({ faqs }: LocalHighlightsProps) {
   return (
     <div className="space-y-8">
       {/* <Card>

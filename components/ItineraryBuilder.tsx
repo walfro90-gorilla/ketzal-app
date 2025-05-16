@@ -10,7 +10,7 @@ import type { ItineraryItem } from "../types/itinerary"
 import { useToast } from "@/components/ui/use-toast"
 import { Tabs } from "antd"
 
-const { TabPane } = Tabs
+// const { TabPane } = Tabs
 
 export function ItineraryBuilder() {
   const [itineraryItems, setItineraryItems] = useState<ItineraryItem[]>([])

@@ -5,18 +5,18 @@ import Image from 'next/image'
 import '../styles/tour-gallery.css'
 import { Carousel } from 'antd'
 
-type ViewOption = 'photos' | 'video' | 'map'
+// type ViewOption = 'photos' | 'video' | 'map'
 
 export function TourGallery({ images }: { images: string[] }) {
   const [mainImage, setMainImage] = useState(images[0])
-  const [activeView, setActiveView] = useState<ViewOption>('photos')
+  // const [activeView, setActiveView] = useState<ViewOption>('photos')
 
-  const handleViewChange = (view: ViewOption) => {
-    setActiveView(view)
-    // For now, we'll just show the first image when switching views
-    // In a real app, you would show different content based on the view
-    setMainImage(images[0])
-  }
+  // const handleViewChange = (view: ViewOption) => {
+  //   setActiveView(view)
+  //   // For now, we'll just show the first image when switching views
+  //   // In a real app, you would show different content based on the view
+  //   setMainImage(images[0])
+  // }
 
   return (
     <div>

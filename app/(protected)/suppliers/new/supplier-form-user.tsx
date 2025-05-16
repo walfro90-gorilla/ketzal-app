@@ -17,11 +17,17 @@ import { Avatar, Space, Upload } from "antd"
 import { UserOutlined } from '@ant-design/icons';
 import ImgCrop from "antd-img-crop"
 
+interface Supplier {
+    name?: string;
+    description?: string;
+    contactEmail?: string;
+    phoneNumber?: string;
+    address?: string;
+    id?: string;
+    imgLogo?: string | null;
+}
 
-
-
-
-export function SupplierFormUser({ supplier }: any) {
+export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
 
     const [imgUrl, setImgUrl] = useState<string | null>(null);
 
@@ -51,6 +57,7 @@ export function SupplierFormUser({ supplier }: any) {
     // SUBMIT FORM
     const onSubmit = handleSubmit(async (data) => {
 
+        // Fix: use a local variable instead of assigning to a constant
         const confirmed = await showDialog({
             title: "Confirma tu Seleccion ✅",
             message1: "Estas completamente segur@ en pertenecer a este Team? ",

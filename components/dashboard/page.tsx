@@ -17,9 +17,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { useUser } from "@/context/UserContext"
+// import { useUser } from "@/context/UserContext"
 import { useEffect, useState, ReactNode } from "react"
-import { set } from "date-fns"
+// import { set } from "date-fns"
 
 interface SessionType {
   user: {
@@ -43,15 +43,15 @@ interface DashboardProps {
 
 export function Dashboard({ session, children }: DashboardProps) {
 
-  const { user, setUser } = useUser()
-  const [supplier, setSupplier] = useState<SessionType["user"] | null>(null)
+  // const { user, setUser } = useUser()
+  // const [supplier, setSupplier] = useState<SessionType["user"] | null>(null)
   const [supplierData, setSupplierData] = useState(null)
 
   useEffect(() => {
     const fetchSession = async () => {
 
-      setUser(session.user)
-      setSupplier(session.user)
+      // setUser(session.user)
+      // setSupplier(session.user)
 
       if (session.user.supplierId === null) {
         return
@@ -62,7 +62,7 @@ export function Dashboard({ session, children }: DashboardProps) {
 
     }
     fetchSession()
-  }, [session.user, setUser])
+  }, [session.user])
 
 
   return (

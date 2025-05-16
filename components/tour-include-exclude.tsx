@@ -15,7 +15,6 @@ interface TourLocationProps {
 }
 
 export function TourIncludeExclude({ location, included, excluded }: TourLocationProps) {
-  const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&zoom=10`
 
   return (
     <Card>

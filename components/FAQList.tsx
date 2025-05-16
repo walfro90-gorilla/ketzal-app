@@ -4,7 +4,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons"
 import { Button } from "@/components/ui/button"
 import type { FAQListProps } from "../types/faq"
 
-const { Panel } = Collapse
+// const { Panel } = Collapse
 
 export const FAQList: React.FC<FAQListProps> = ({ faqs, onEdit, onDelete }) => {
   const items = faqs.map((faq) => ({

@@ -1,32 +1,33 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Menu, ChevronDown } from 'lucide-react'
-import { useScrollDirection } from '@/hooks/useScrollDirection'
+import { Menu } from 'lucide-react'
+// import { useScrollDirection } from '@/hooks/useScrollDirection'
 
 // Import Link from 'next/link'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Session } from 'next-auth' // Import the Session type
 
 // Import components
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
+// import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import TopBar from './TopBar'
 import ThemeToggle from './ThemeToggle'
 
 interface HeaderProps {
-  session: any;
+  session: Session | null; // Use the Session type or null if session can be absent
 }
 
 const Header = ({ session }: HeaderProps) => {
   
-  const scrollDirection = useScrollDirection()
+  // const scrollDirection = useScrollDirection()
   const [showTopBar, setShowTopBar] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)

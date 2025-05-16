@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Input, Slider, Rate, Button as AntButton, Spin, Card as AntCard } from 'antd'
+import { Input, Slider, Rate, Button as AntButton,  Card as AntCard } from 'antd'
 import { Card, CardContent } from '@/components/ui/card'
 import { getServices } from '@/app/(public)/services/services.api'
 import Link from 'next/link'
@@ -10,12 +10,28 @@ import { useLoading } from '@/components/LoadingContext'
 
 const { Search } = Input
 
+interface Tour {
+  id: string | number;
+  name: string;
+  price: number;
+  location?: string;
+  rating?: number;
+  reviewCount?: number;
+  description?: string;
+  images?: {
+    imgBanner?: string;
+    [key: string]: string | undefined;
+  };
+  serviceType?: string;
+  // Add more fields as needed
+}
+
 export default function TourPage() {
-  const [tours, setTours] = useState<any[]>([])
+  const [tours, setTours] = useState<Tour[]>([])
   const [search, setSearch] = useState('')
-  const [price, setPrice] = useState([0, 10000])
+  const [price, setPrice] = useState<[number, number]>([0, 10000])
   const [rating, setRating] = useState(0)
-  const [filtered, setFiltered] = useState<any[]>([])
+  const [filtered, setFiltered] = useState<Tour[]>([])
   const [pageLoading, setPageLoading] = useState(true)
   const { setLoading } = useLoading();
 
@@ -32,12 +48,12 @@ export default function TourPage() {
 
   useEffect(() => {
     getServices().then((data) => {
-      const onlyTours = data.filter((s: any) => s.serviceType === 'tour')
+      const onlyTours = data.filter((s: Tour) => s.serviceType === 'tour')
       setTours(onlyTours)
       setFiltered(onlyTours)
       setLoading(false)
     })
-  }, [])
+  }, [setLoading])
 
   useEffect(() => {
     let result = tours
@@ -90,7 +106,9 @@ export default function TourPage() {
                     max={10000}
                     step={100}
                     value={price}
-                    onChange={setPrice}
+                    onChange={value => {
+                      if (Array.isArray(value) && value.length === 2) setPrice([value[0], value[1]]);
+                    }}
                     marks={{ 0: <span className="text-gray-700 dark:text-gray-200">$0</span>, 10000: <span className="text-gray-700 dark:text-gray-200">$10k</span> }}
                   />
                 </div>

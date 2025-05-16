@@ -5,8 +5,11 @@ declare module "next-auth" {
     interface Session {
         user: {
             role: string;
-            supplierId: string;
+            supplierId?: string;
             id: string;
+            name?: string | null;
+            email?: string | null;
+            image?: string | null;
         } & DefaultSession["user"];
     }
 
@@ -14,6 +17,9 @@ declare module "next-auth" {
         role?: string;
         supplierId?: string;
         id: string;
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
     }
 }
 

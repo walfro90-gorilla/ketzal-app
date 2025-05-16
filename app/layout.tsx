@@ -38,6 +38,8 @@ export default async function RootLayout({
   // AUTHENTICATION
   const session = await auth()
 
+  console.log("session", session);
+
   return (
     <html lang="en">
       <body

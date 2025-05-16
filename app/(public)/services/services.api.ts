@@ -1,7 +1,23 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
 
+// Define ServiceData to match TourCardProps for SpecialOffers
+export interface ServiceData {
+  name: string;
+  location: string;
+  images: { imgAlbum: string[]; imgBanner: string };
+  availableFrom: string;
+  availableTo: string;
+  createdAt: string;
+  description: string;
+  id: string;
+  packs: { data: { description: string; name: string; price: number; qty: number }[] };
+  price: number;
+  supplierId: string;
+  cityTo: string;
+}
+
 // CREATE service
-export async function createService(serviceData: any){
+export async function createService(serviceData: ServiceData){
 
     const res = await fetch(`${BACKEND_URL}/api/services`, {
         method: 'POST',
@@ -10,7 +26,7 @@ export async function createService(serviceData: any){
         },
         body: JSON.stringify(serviceData),
     })
-    const data = await res.json()
+    await res.json()
     // console.log(data)
 }
 
@@ -28,7 +44,7 @@ export async function getService(id:string) {
 }
 
 // UPDATE service
-export async function updateService(id: string, serviceData: any){
+export async function updateService(id: string, serviceData: ServiceData){
     const res = await fetch(`${BACKEND_URL}/api/services/${id}`, {
         method: 'PATCH',
         headers: {
@@ -45,7 +61,7 @@ export async function deleteService(id: string){
     const res = await fetch(`${BACKEND_URL}/api/services/${id}`, {
         method: 'DELETE',
     })
-    const data = await res.json()
+    await res.json()
     // console.log(data)
     
 }

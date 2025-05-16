@@ -23,7 +23,7 @@ interface TourLocationProps {
   excluded: string[]
 }
 
-export function TourLocation({ itinerary, location, included, excluded }: TourLocationProps) {
+export function TourLocation({ itinerary, included, excluded }: TourLocationProps) {
   // Convert itinerary id and time/date fields to match ItineraryItem type
   const itineraryForComponent = itinerary.map(item => ({
     ...item,
@@ -33,8 +33,6 @@ export function TourLocation({ itinerary, location, included, excluded }: TourLo
     description: item.description,
     location: item.location,
   }))
-  const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&zoom=10`
-
 
   console.log("itinerary: ", itinerary)
   return (
