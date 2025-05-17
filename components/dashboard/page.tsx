@@ -67,9 +67,11 @@ export function Dashboard({ session, children }: DashboardProps) {
 
   return (
     <div className="mt-12 flex flex-col h-screen">
-
       <SidebarProvider className="mt-12">
-        <SidebarLeft user={session.user} />
+        <SidebarLeft user={{
+          role: (session.user as any)?.role || "admin",
+          supplierId: session.user?.supplierId || ""
+        }} />
         <SidebarInset>
           <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
             <div className="flex flex-1 items-center gap-2 px-3">
@@ -79,17 +81,15 @@ export function Dashboard({ session, children }: DashboardProps) {
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbPage className="line-clamp-1">
-                      Ketzal admin - Hola, {session.user.name} 👋🏻
+                      Ketzal admin - Hola, {session.user?.name || "Usuario"} 👋🏻
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
           </header>
-          <div >
-            {
-              children
-            }
+          <div>
+            {children}
           </div>
         </SidebarInset>
         <SidebarRight session={session} supplierData={supplierData || { name: "", imgLogo: "" }} />

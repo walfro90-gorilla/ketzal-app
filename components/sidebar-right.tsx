@@ -66,10 +66,10 @@ export function SidebarRight({ session, supplierData, ...props }: SidebarRightPr
     >
       <SidebarHeader className="h-16 border-b border-sidebar-border">
         <NavUser user={{
-          name: session.user.name,
-          email: session.user.email,
-          image: session.user.avatar, // map avatar to image
-          role: "user" // default role
+          name: session?.user?.name || "Usuario",
+          email: session?.user?.email || "Sin email",
+          image: session?.user?.avatar || "/placeholder.svg",
+          role: (session?.user as any)?.role || "user"
         }} />
       </SidebarHeader>
       <SidebarContent>
