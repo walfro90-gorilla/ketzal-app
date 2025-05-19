@@ -69,7 +69,7 @@ export function Dashboard({ session, children }: DashboardProps) {
     <div className="mt-12 flex flex-col h-screen">
       <SidebarProvider className="mt-12">
         <SidebarLeft user={{
-          role: (session.user as any)?.role || "admin",
+          role: session.user.role || "admin",
           supplierId: session.user?.supplierId || ""
         }} />
         <SidebarInset>

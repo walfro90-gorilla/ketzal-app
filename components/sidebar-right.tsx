@@ -30,6 +30,7 @@ type SidebarRightProps = React.ComponentProps<typeof Sidebar> & {
       email: string;
       avatar: string;
       supplierId: string;
+      role: "superadmin" | "admin" | "adminsup" | "user";
     };
     calendars: Array<{
       name: string;
@@ -69,7 +70,7 @@ export function SidebarRight({ session, supplierData, ...props }: SidebarRightPr
           name: session?.user?.name || "Usuario",
           email: session?.user?.email || "Sin email",
           image: session?.user?.avatar || "/placeholder.svg",
-          role: (session?.user as any)?.role || "user"
+          role: session?.user?.role || "user"
         }} />
       </SidebarHeader>
       <SidebarContent>
