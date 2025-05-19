@@ -44,7 +44,7 @@ const BlogSection = () => {
                   {/* Image Container */}
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
-                      src={post.image}
+                      src={post?.image? post.image : '/placeholder.svg'}
                       alt={post.title}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

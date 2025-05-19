@@ -54,7 +54,7 @@ const HeroSection = () => {
             {/* Image */}
             <div className="relative h-full w-full">
               <Image
-                src={slide.image}
+                src={slide?.image ? slide.image : '/placeholder.svg'}
                 alt={slide.title}
                 fill
                 sizes="100vw"

@@ -40,7 +40,7 @@ const PopularCategories = ({ services, categories }: PopularCategoriesProps) => 
             <Link key={category.name} href={'/tours'} className="group">
               <div className="relative overflow-hidden rounded-lg shadow-md aspect-square">
                 <Image
-                  src={category.image}
+                  src={category?.image ? category.image : '/placeholder.svg'}
                   alt={category.name}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

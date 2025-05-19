@@ -33,7 +33,7 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
                 </CardTitle>
             </CardHeader>
 
-            <img alt="" src={supplier.image} />
+            <img alt="" src={supplier?.image ? supplier.image : '/placeholder.svg'} />
             <CardContent>
                 <p>{supplier.description}</p>
 

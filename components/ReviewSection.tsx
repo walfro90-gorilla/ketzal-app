@@ -99,8 +99,8 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
           <form onSubmit={handleSubmit} className="bg-[#181818] border border-[#232323] rounded-xl p-6 flex flex-col md:flex-row items-center gap-4 mb-8">
             <div className="flex flex-col items-center md:items-start w-full md:w-1/4">
               <div className="w-16 h-16 rounded-full bg-[#232323] flex items-center justify-center mb-2 mx-auto">
-                {session.user.image ? (
-                  <img src={session.user.image} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
+                {session.user?.image ? (
+                  <img src={session.user?.image ? session.user.image : '/placeholder.svg'} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
                 ) : (
                   <span className="text-2xl text-[#bfc9d1]">{session.user?.name?.[0] ?? "?"}</span>
                 )}
