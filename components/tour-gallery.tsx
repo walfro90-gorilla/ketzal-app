@@ -8,7 +8,9 @@ import { Carousel } from 'antd'
 // type ViewOption = 'photos' | 'video' | 'map'
 
 export function TourGallery({ images }: { images: string[] }) {
-  const [mainImage, setMainImage] = useState(images[0])
+  // Filtrar imágenes inválidas
+  const validImages = images.filter((img) => typeof img === 'string' && img.length > 0)
+  const [mainImage, setMainImage] = useState(validImages[0] || '')
   // const [activeView, setActiveView] = useState<ViewOption>('photos')
 
   // const handleViewChange = (view: ViewOption) => {
@@ -21,13 +23,17 @@ export function TourGallery({ images }: { images: string[] }) {
   return (
     <div>
       <div className="gallery-container">
-        <Image
-          src={mainImage}
-          alt="Tour main image"
-          fill
-          className="gallery-main-image"
-          priority
-        />
+        {mainImage ? (
+          <Image
+            src={mainImage}
+            alt="Tour main image"
+            fill
+            className="gallery-main-image"
+            priority
+          />
+        ) : (
+          <div className="gallery-main-image bg-gray-200 flex items-center justify-center">Sin imagen</div>
+        )}
       </div>
 {/* 
       <div className="gallery-options">
@@ -53,7 +59,7 @@ export function TourGallery({ images }: { images: string[] }) {
 
 
       <Carousel autoplay className="gallery-thumbnails" dots={true} slidesToShow={4} slidesToScroll={1}>
-        {images.map((image, index) => (
+        {validImages.map((image, index) => (
               <div
               key={index}
               className={`gallery-thumbnail ${mainImage === image ? 'active' : ''}`}
