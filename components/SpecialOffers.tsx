@@ -113,6 +113,7 @@ const TourCard = ({
   const handleClick = () => {
     setLoading(true)
   }
+  const banner = images && images.imgBanner ? images.imgBanner : '/placeholder.svg'
   return (
     <Card className="group overflow-hidden bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
       <Link href={`/tours/${id}`} onClick={handleClick}>
@@ -136,7 +137,7 @@ const TourCard = ({
           {/* Image Container */}
           <div className="relative aspect-[4/3] overflow-hidden">
             <Image
-              src={images.imgBanner}
+              src={banner}
               alt={name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
