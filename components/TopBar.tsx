@@ -106,10 +106,9 @@ const TopBar = ({ session }: { session: Session | null }) => {
           {/* Login Button */}
           <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-green-700">
             {
-              !session ? (
+              !session || !session.user || !session.user.name ? (
                 <Link href="/login">
                   <div className="flex items-center">
-
                     <LogIn className="h-4 w-4 mr-1" />
                     Login
                   </div>
@@ -118,10 +117,9 @@ const TopBar = ({ session }: { session: Session | null }) => {
                 <Link href={""} >
                   <Popover placement="bottom" content={content}>
                     <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" /> {session.user?.name || "Invitado"} - {session.user?.role || "Role"}
+                      <User className="h-4 w-4 mr-1" /> {session.user.name} - {session.user.role || "Role"}
                     </div>
                   </Popover>
-
                 </Link>
               )
             }
