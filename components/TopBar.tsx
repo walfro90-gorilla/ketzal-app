@@ -118,7 +118,7 @@ const TopBar = ({ session }: { session: Session | null }) => {
                 <Link href={""} >
                   <Popover placement="bottom" content={content}>
                     <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" /> {session.user.name} - {session.user.role}
+                      <User className="h-4 w-4 mr-1" /> {session.user?.name || "Invitado"} - {session.user.role}
                     </div>
                   </Popover>
 
