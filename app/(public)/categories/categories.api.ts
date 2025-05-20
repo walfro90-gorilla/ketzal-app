@@ -1,4 +1,4 @@
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000'
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL 
 
 // Define Category type to match PopularCategories
 export interface Category {
