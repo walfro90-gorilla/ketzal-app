@@ -37,7 +37,7 @@ const Header = ({ session }: HeaderProps) => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0)
       setShowTopBar(window.scrollY < 100)
-      console.log("SEsion for navbar: ", session)
+      // console.log("SEsion for navbar: ", session)
     }
 
     window.addEventListener('scroll', handleScroll)

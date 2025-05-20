@@ -7,13 +7,16 @@ import { FaStar } from "react-icons/fa"
 import { useUser } from "@/context/UserContext";
 // import { nanoid } from 'nanoid';
 import type { Review, User } from "@/types/review";
+
 import type { Session } from "next-auth";
+
+
 
 interface ReviewSectionProps {
   serviceId: string;
   reviewsService: Review[];
   users: User[];
-  session: Session;
+  session: Session | null;
 }
 
 export default function ReviewSection({ serviceId, reviewsService, users, session }: ReviewSectionProps) {
