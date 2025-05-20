@@ -19,7 +19,8 @@ function isPublicRoute(pathname: string) {
   return (
     publicRoutes.includes(pathname) ||
     pathname.startsWith('/public') ||
-    pathname.startsWith('/tours/')
+    pathname.startsWith('/tours/') ||
+    pathname.startsWith('/api/auth') 
   );
 }
 
