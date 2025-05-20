@@ -7,7 +7,6 @@ export interface Category {
   link: string;
 }
 
-
 // CREATE category
 export async function createCategory(categoryData: Category){
     const res = await fetch(`${BACKEND_URL}/api/categories`, {
