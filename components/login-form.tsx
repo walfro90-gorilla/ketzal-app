@@ -62,6 +62,7 @@ export function LoginForm({
       const response = await loginAction({ ...values, callbackUrl })
       if (response.error) {
         setError(response.error)
+        console.log("Login failed: ",response.error)
       } else {
         router.push(response.callbackUrl || '/home')
       }
