@@ -5,7 +5,7 @@ import { Carousel, Popconfirm } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { FaStar } from "react-icons/fa"
 import { useUser } from "@/context/UserContext";
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import type { Review, User } from "@/types/review";
 import type { Session } from "next-auth";
 
@@ -31,24 +31,18 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const userId = session?.user?.id || user?.id || "";
-    // const userName = session?.user?.name || "";
-    // const userImage = session?.user?.image || undefined;
     const newReview = {
       userId,
       comment,
       rating,
       serviceId: Number(serviceId),
-      id: nanoid(),
-      createdAt: new Date(),
-      title: 'Review', // Valor por defecto, puedes personalizarlo
-      content: comment, // Usamos el comentario como contenido principal
     };
     setLoading(true);
     try {
-      await createReview(newReview);  
+      const created = await createReview(newReview); // Use backend response
       setReviews([
         ...reviews,
-        newReview,
+        created, // Use backend-generated id, createdAt, etc.
       ]);
       setComment("");
       setRating(5);
@@ -135,7 +129,11 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
                 cancelText="No"
                 disabled={!comment.trim()}
               >
-                <button type="button" disabled={loading || !comment.trim()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2 rounded-full mt-2 transition-all disabled:opacity-60">
+                <button
+                  type="button"
+                  disabled={loading || !comment.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2 rounded-full mt-2 transition-all disabled:opacity-60"
+                >
                   {loading ? "Enviando..." : "Enviar review"}
                 </button>
               </Popconfirm>

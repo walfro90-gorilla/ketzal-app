@@ -1,11 +1,11 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL 
 
 // Define a type for review data
-interface ReviewData {
-    title: string;
-    content: string;
+export interface ReviewData {
     rating: number;
-    // Add other fields as necessary
+    comment: string;
+    serviceId: number;
+    userId: string;
 }
 
 // CREATE review
@@ -18,8 +18,7 @@ export async function createReview(reviewData: ReviewData) {
         },
         body: JSON.stringify(reviewData),
     })
-    await res.json()
-    // console.log(data)
+    return await res.json(); // Return the backend response (with id, createdAt, etc)
 }
 
 // READ reviewS
