@@ -13,16 +13,20 @@ export default {
   providers: [
     Credentials({
       authorize: async (credentials, req) => {
+        
         const { data, success } = signInSchema.safeParse(credentials)
+        
         if (!success) {
           throw new Error("Invalid credentials")
         }
+
         // verificar si el USER existe
         const user = await db.user.findUnique({
           where: {
             email: data.email,
           },
         })
+        
         if (!user || !user.password) {
           throw new Error("Invalid credentials - USER")
         }

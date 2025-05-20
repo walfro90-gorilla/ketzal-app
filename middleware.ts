@@ -42,9 +42,9 @@ export default middleware((req) => {
 // Config for middleware.ts
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
+    // Excluye rutas de autenticación de NextAuth y API de la protección del middleware
+    '/((?!api/auth|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Siempre ejecuta para otras rutas API
     '/(api|trpc)(.*)',
   ],
 }
