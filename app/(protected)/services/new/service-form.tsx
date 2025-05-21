@@ -562,13 +562,13 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             {contextHolder}
 
             {/* DEBUG: Mostrar errores de validación */}
-            <pre>{JSON.stringify(
+            {/* <pre>{JSON.stringify(
               Object.fromEntries(
                 Object.entries(errors).map(([key, value]) => [key, value?.message])
               ),
               null,
               2
-            )}</pre>
+            )}</pre> */}
 
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-gray-900 text-black dark:text-white p-4 rounded-lg">
 
