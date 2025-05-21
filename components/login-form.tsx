@@ -60,6 +60,7 @@ export function LoginForm({
     startTransition(async () => {
 
       const response = await loginAction({ ...values, callbackUrl })
+      
       if (response.error) {
         setError(response.error)
         console.log("Login failed: ",response.error)

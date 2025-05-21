@@ -18,6 +18,11 @@ export default async function Service() {
     // Get the current session
     const session = await auth()
 
+
+    console.log("session: ", session)
+    console.log("services: ", services)
+    console.log("services filter: ", services.filter((service: Service) => service.supplierId === session?.user.supplierId))   
+
     return (
         <Card className="dark:bg-neutral-900">
             <div className="flex justify-between items-center mb-4">
