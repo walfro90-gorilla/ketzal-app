@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ServiceForm } from "./service-form"
-import { getService } from "@/app/(public)/services/services.api"
+import { getService } from "@/app/(protected)/services/services.api"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 
 import { auth } from "@/auth"

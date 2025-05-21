@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "./ui/button"
-import { deleteService } from "@/app/(public)/services/services.api"
+import { deleteService } from "@/app/(protected)/services/services.api"
 import { useRouter } from "next/navigation";
 
 export interface Service {
@@ -43,7 +43,11 @@ export function ServiceCard({ service }: { service: Service }) {
 
             <img alt="" src={service.images.imgBanner} />
             <CardContent>
-                <p>{service.description}</p>
+                <p>
+                    {service.description.length > 50
+                        ? service.description.slice(0, 50) + "..."
+                        : service.description}
+                </p>
 
             </CardContent>
             <CardFooter className="flex justify-between">

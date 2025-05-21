@@ -11,13 +11,13 @@ import Loader from '@/components/Loader'
 import React, { useEffect, useState } from 'react'
 
 // import Services data
-import { getServices } from './(public)/services/services.api'
+import { getServices } from './(protected)/services/services.api'
 import { getReviews } from './(public)/reviews/reviews.api'
 import { getUsers } from './(protected)/users/users.api'
 import { getCategories } from './(public)/categories/categories.api'
 
 // Types for HomePage data
-import type { ServiceData } from './(public)/services/services.api'
+import type { ServiceData } from './(protected)/services/services.api'
 import type { Review, User } from '@/types/review'
 import type { Category } from './(public)/categories/categories.api'
 

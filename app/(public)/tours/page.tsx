@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Input, Slider, Rate, Button as AntButton,  Card as AntCard } from 'antd'
 import { Card, CardContent } from '@/components/ui/card'
-import { getServices } from '@/app/(public)/services/services.api'
+import { getServices } from '@/app/(protected)/services/services.api'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
 // API Service
-import { getService } from "@/app/(public)/services/services.api";
+import { getService } from "@/app/(protected)/services/services.api";
 import { Row } from "antd";
 
 type Pack = {
