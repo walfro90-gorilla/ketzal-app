@@ -47,10 +47,12 @@ const ImageUploader = () => {
             const formData = new FormData();
             formData.append("image", file);
 
-            const response = await fetch("https://ketzal-app.vercel.app/api/upload", {
-                method: "POST",
-                body: formData,
-            });
+            const response = await fetch("https://ketzal-app.vercel.app/api/upload",
+            // const response = await fetch("http://localhost:3000/api/upload",
+                {
+                    method: "POST",
+                    body: formData,
+                });
 
             if (response.status === 200) {
                 const dataImage = await response.json();
@@ -83,7 +85,7 @@ const ImageUploader = () => {
             <Space direction="vertical" style={{ width: "100%" }} size="large">
                 {/* Upload para el banner */}
                 <ImgCrop
-                    aspect={16/ 9}
+                    aspect={16 / 9}
                 >
 
                     <Upload
@@ -107,7 +109,7 @@ const ImageUploader = () => {
 
                 {/* Upload para el álbum */}
                 <ImgCrop
-                    aspect={16/ 9}
+                    aspect={16 / 9}
                 >
                     <Upload
                         {...props}

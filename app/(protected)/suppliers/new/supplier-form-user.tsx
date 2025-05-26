@@ -101,10 +101,12 @@ export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
         const formData = new FormData();
         formData.append("image", file as Blob);
 
-        const response = await fetch("https://ketzal-app.vercel.app/api/upload", {
-            method: "POST",
-            body: formData,
-        })
+        const response = await fetch("https://ketzal-app.vercel.app/api/upload",
+        // const response = await fetch("http://localhost:3000/api/upload",
+            {
+                method: "POST",
+                body: formData,
+            })
 
         const dataImage = await response.json();
         setImgUrl(dataImage.url)

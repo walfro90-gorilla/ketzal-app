@@ -170,8 +170,8 @@ interface ServiceFormFields {
     location?: string;
     availableFrom?: Date | null;
     availableTo?: Date | null;
-    packs?: { data: { name: string; description: string; qty: number; price: number }[] }; // <-- changed
-    images?: string[];
+    packs?: { data: { name: string; description: string; qty: number; price: number }[] };
+    images?: { imgBanner: string; imgAlbum: string[] }; // <-- changed from string[] to object
     ytLink?: string;
     sizeTour?: number;
     serviceType?: string;
@@ -192,6 +192,29 @@ interface ServiceFormFields {
 interface ImagesError {
     imgBanner?: { message: string };
     imgAlbum?: { message: string };
+}
+
+// Helper to normalize images field for useForm defaultValues
+function normalizeImages(
+  images: unknown
+): { imgBanner: string; imgAlbum: string[] } {
+  if (
+    images &&
+    typeof images === "object" &&
+    !Array.isArray(images) &&
+    "imgBanner" in images &&
+    "imgAlbum" in images
+  ) {
+    const imgBanner = (images as any).imgBanner ?? "";
+    const imgAlbumRaw = (images as any).imgAlbum;
+    const imgAlbum = Array.isArray(imgAlbumRaw)
+      ? imgAlbumRaw.filter((x) => typeof x === "string")
+      : imgAlbumRaw
+      ? [String(imgAlbumRaw)]
+      : [];
+    return { imgBanner: String(imgBanner), imgAlbum };
+  }
+  return { imgBanner: "", imgAlbum: [] };
 }
 
 export function ServiceForm({ service, session }: ServiceFormProps) {
@@ -325,13 +348,18 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
         setValue("transportProviderID", transportProviderID)
         setValue("hotelProviderID", hotelProviderID)
 
-        if (images) {
-            // If imgAlbum is an array, combine banner and album into a single array
+        if (
+            images &&
+            typeof images === "object" &&
+            !Array.isArray(images) &&
+            "imgBanner" in images &&
 
-            setValue("images", [
-                ...(images.imgBanner ? [images.imgBanner] : []),
-                ...(Array.isArray(images.imgAlbum) ? images.imgAlbum : (images.imgAlbum ? [images.imgAlbum] : [])),
-            ]);
+            "imgAlbum" in images
+        ) {
+            setValue("images", {
+                imgBanner: images.imgBanner ?? "",
+                imgAlbum: Array.isArray(images.imgAlbum) ? images.imgAlbum : images.imgAlbum ? [images.imgAlbum] : [],
+            });
         }
 
         if (errors.name) {
@@ -385,7 +413,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                 availableFrom: service?.availableFrom,
                 availableTo: service?.availableTo,
                 packs: service?.packs,
-                images: service?.images,
+                images: normalizeImages(service?.images),
                 ytLink: service?.ytLink,
                 sizeTour: service?.sizeTourM,
                 serviceType: service?.serviceType,
@@ -408,6 +436,9 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
 
     // SUBMIT function to handle the form submission
     const onSubmit = async (data: ServiceFormFields) => {
+
+        console.log("Submission starts")
+
         // Adaptar los datos del formulario al formato que espera el backend
         const adaptedData: ServiceData = {
             name: data.name ?? '',
@@ -1176,8 +1207,15 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                     typeof errors.location?.message === 'string' && <Alert showIcon type="error" message={errors.location?.message} />
                 }
 
-
-
+                <pre style={{ color: "red", fontSize: 12 }}>
+                    {JSON.stringify(
+                      Object.fromEntries(
+                        Object.entries(errors).map(([key, value]) => [key, value?.message])
+                      ),
+                      null,
+                      2
+                    )}
+                </pre>
                 <Button type="submit">
                     {
                         params?.id ? "Update service" : "Create service"
