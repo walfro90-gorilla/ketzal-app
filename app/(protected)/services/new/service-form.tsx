@@ -194,6 +194,13 @@ interface ImagesError {
     imgAlbum?: { message: string };
 }
 
+// Type for possible images input
+interface ImagesInput {
+  imgBanner?: unknown;
+  imgAlbum?: unknown;
+  [key: string]: unknown;
+}
+
 // Helper to normalize images field for useForm defaultValues
 function normalizeImages(
   images: unknown
@@ -205,12 +212,12 @@ function normalizeImages(
     "imgBanner" in images &&
     "imgAlbum" in images
   ) {
-    const imgBanner = (images as any).imgBanner ?? "";
-    const imgAlbumRaw = (images as any).imgAlbum;
+    const imgBanner = (images as ImagesInput).imgBanner ?? "";
+    const imgAlbumRaw = (images as ImagesInput).imgAlbum;
     const imgAlbum = Array.isArray(imgAlbumRaw)
-      ? imgAlbumRaw.filter((x) => typeof x === "string")
-      : imgAlbumRaw
-      ? [String(imgAlbumRaw)]
+      ? imgAlbumRaw.filter((x): x is string => typeof x === "string")
+      : typeof imgAlbumRaw === "string"
+      ? [imgAlbumRaw]
       : [];
     return { imgBanner: String(imgBanner), imgAlbum };
   }
@@ -314,7 +321,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             content: content,
         });
     };
-    // const success = () => {
+       // const success = () => {
 
     //     messageApi.open({
     //         type: 'success',
