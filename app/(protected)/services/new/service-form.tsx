@@ -321,7 +321,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             content: content,
         });
     };
-       // const success = () => {
+             // const success = () => {
 
     //     messageApi.open({
     //         type: 'success',
@@ -465,7 +465,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             cityTo: data.cityTo ?? '',
         };
         try {
-            if (service) {
+            if (service && service.id) {
                 await updateService(service.id, adaptedData);
             } else {
                 await createService(adaptedData);
