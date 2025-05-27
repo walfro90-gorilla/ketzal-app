@@ -196,32 +196,32 @@ interface ImagesError {
 
 // Type for possible images input
 interface ImagesInput {
-  imgBanner?: unknown;
-  imgAlbum?: unknown;
-  [key: string]: unknown;
+    imgBanner?: unknown;
+    imgAlbum?: unknown;
+    [key: string]: unknown;
 }
 
 // Helper to normalize images field for useForm defaultValues
 function normalizeImages(
-  images: unknown
+    images: unknown
 ): { imgBanner: string; imgAlbum: string[] } {
-  if (
-    images &&
-    typeof images === "object" &&
-    !Array.isArray(images) &&
-    "imgBanner" in images &&
-    "imgAlbum" in images
-  ) {
-    const imgBanner = (images as ImagesInput).imgBanner ?? "";
-    const imgAlbumRaw = (images as ImagesInput).imgAlbum;
-    const imgAlbum = Array.isArray(imgAlbumRaw)
-      ? imgAlbumRaw.filter((x): x is string => typeof x === "string")
-      : typeof imgAlbumRaw === "string"
-      ? [imgAlbumRaw]
-      : [];
-    return { imgBanner: String(imgBanner), imgAlbum };
-  }
-  return { imgBanner: "", imgAlbum: [] };
+    if (
+        images &&
+        typeof images === "object" &&
+        !Array.isArray(images) &&
+        "imgBanner" in images &&
+        "imgAlbum" in images
+    ) {
+        const imgBanner = (images as ImagesInput).imgBanner ?? "";
+        const imgAlbumRaw = (images as ImagesInput).imgAlbum;
+        const imgAlbum = Array.isArray(imgAlbumRaw)
+            ? imgAlbumRaw.filter((x): x is string => typeof x === "string")
+            : typeof imgAlbumRaw === "string"
+                ? [imgAlbumRaw]
+                : [];
+        return { imgBanner: String(imgBanner), imgAlbum };
+    }
+    return { imgBanner: "", imgAlbum: [] };
 }
 
 export function ServiceForm({ service, session }: ServiceFormProps) {
@@ -321,7 +321,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             content: content,
         });
     };
-             // const success = () => {
+                                                 // const success = () => {
 
     //     messageApi.open({
     //         type: 'success',
@@ -461,15 +461,18 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             id: service?.id ?? '',
             packs: packs,
             price: data.price ?? 0,
-            supplierId: String(values.idSupplier ?? session?.user?.supplierId ?? ''),
+            supplierId: String(values.idSupplier ? Number(values.idSupplier) : session?.user?.supplierId ? Number(session.user.supplierId) : 0),
             cityTo: data.cityTo ?? '',
         };
         try {
             if (service && service.id) {
                 await updateService(service.id, adaptedData);
             } else {
-                await createService(adaptedData);
-                console.log('service new', adaptedData);
+                // Enviar supplierId como número solo al backend
+                const { id, supplierId, ...rest } = adaptedData;
+                const dataToSend = { ...rest, supplierId: Number(supplierId) };
+                await createService(dataToSend);
+                console.log('service new', dataToSend);
             }
             router.push("/services");
             router.refresh();
@@ -1216,11 +1219,11 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
 
                 <pre style={{ color: "red", fontSize: 12 }}>
                     {JSON.stringify(
-                      Object.fromEntries(
-                        Object.entries(errors).map(([key, value]) => [key, value?.message])
-                      ),
-                      null,
-                      2
+                        Object.fromEntries(
+                            Object.entries(errors).map(([key, value]) => [key, value?.message])
+                        ),
+                        null,
+                        2
                     )}
                 </pre>
                 <Button type="submit">
