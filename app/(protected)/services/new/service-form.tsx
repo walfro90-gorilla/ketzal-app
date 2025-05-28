@@ -391,8 +391,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             }
         }
         fetchSuppliers()
-        console.log("Transportistas: ", suppliersStateTransport)
-        console.log("Hoteles: ", suppliersStateHotel)
+
 
 
         if (selectedState) {
@@ -610,7 +609,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
 
 
 
-
+    console.log("Transportistas: ", suppliersStateTransport)
+    console.log("Hoteles: ", suppliersStateHotel)
 
     return (
         <>
