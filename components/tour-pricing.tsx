@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+import { useCart } from "@/context/CartContext";
+
 interface TourPricingProps {
   packs?: { name: string; price: number; qty: number }[],
   availableFrom: string,
@@ -17,7 +19,14 @@ export function TourPricing({ packs, availableFrom, availableTo, originalPrice, 
   const [selectedPack, setSelectedPack] = useState<string>("");
   const [selectedPacks] = useState<{ name: string; price: number; qty: number }[]>([]);
 
- 
+  const { addToCart, items } = useCart();
+
+  const handleAddPack = () => {
+    addToCart({ id: selectedPack, name: selectedPack, price: packs?.find(pack => pack.name === selectedPack)?.price || 0, quantity: 1 });
+    setSelectedPack("");
+
+    console.log("Items in cart:", items);
+  }
 
   return (
     <Card className="w-full bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
@@ -133,7 +142,10 @@ export function TourPricing({ packs, availableFrom, availableTo, originalPrice, 
                 }
               </span>
             </div>
-            <Button className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800">
+            <Button
+              className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800"
+              onClick={handleAddPack}
+              disabled={!selectedPack}>
               Reservar Ahora
             </Button>
           </div>

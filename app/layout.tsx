@@ -12,6 +12,7 @@ import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import AppWithLoader from '@/components/AppWithLoader'
 import { LoadingProvider } from '@/components/LoadingContext'
+import { CartProvider } from "@/context/CartContext";
 
 // FONTS  -  Geist and Geist Mono
 const geistSans = Geist({
@@ -35,7 +36,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   // AUTHENTICATION
   const session = await auth()
 
@@ -47,26 +48,28 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <SessionProvider session={session}>
-            <UserProvider>
-              <SupplierProvider>
-                <ServiceProvider>
-                  <LoadingProvider>
-                    <AppWithLoader>
-                      <div className="layout">
-                        <Header session={session} />
-                        <main className="main-content">
-                          {children}
-                        </main>
-                      </div>
-                    </AppWithLoader>
-                  </LoadingProvider>
-                </ServiceProvider>
-              </SupplierProvider>
-            </UserProvider>
-          </SessionProvider>
-        </ThemeProvider>
+        <CartProvider>
+          <ThemeProvider>
+            <SessionProvider session={session}>
+              <UserProvider>
+                <SupplierProvider>
+                  <ServiceProvider>
+                    <LoadingProvider>
+                      <AppWithLoader>
+                        <div className="layout">
+                          <Header session={session} />
+                          <main className="main-content">
+                            {children}
+                          </main>
+                        </div>
+                      </AppWithLoader>
+                    </LoadingProvider>
+                  </ServiceProvider>
+                </SupplierProvider>
+              </UserProvider>
+            </SessionProvider>
+          </ThemeProvider>
+        </CartProvider>
       </body>
     </html>
   );
