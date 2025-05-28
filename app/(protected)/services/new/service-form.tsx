@@ -478,8 +478,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             excludes: excludes,
             faqs: faqs,
             itinerary: activities,
-            transportProviderID: transportProviderID,
-            hotelProviderID: hotelProviderID,
+            transportProviderID: data.transportProviderID ?? transportProviderID ?? 0,
+            hotelProviderID: data.hotelProviderID ?? hotelProviderID ?? 0,
         };
         try {
             if (service && service.id) {
@@ -659,8 +659,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                             ]}
                             onChange={(value) => setValue("serviceType", value)}
                         />
-                        {typeof errors.serviceCategory?.message === 'string' && (
-                            <Alert showIcon type="error" message={errors.serviceCategory.message} />
+                        {typeof errors.serviceType?.message === 'string' && (
+                            <Alert showIcon type="error" message={errors.serviceType.message} />
                         )}
                     </Col>
 
