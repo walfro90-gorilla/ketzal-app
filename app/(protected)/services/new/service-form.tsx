@@ -384,14 +384,15 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                 const selected = suppliersData.find((supplier: { id: number }) => supplier.id === Number(session?.user?.supplierId));
                 setSelectedSupplier(selected)
 
-                console.log("Transportistas: ", suppliersStateTransport)
-                console.log("Hoteles: ", suppliersStateHotel)
+
 
             } catch (error) {
                 console.log("Failed to fetch suppliers", error)
             }
         }
         fetchSuppliers()
+        console.log("Transportistas: ", suppliersStateTransport)
+        console.log("Hoteles: ", suppliersStateHotel)
 
 
         if (selectedState) {
