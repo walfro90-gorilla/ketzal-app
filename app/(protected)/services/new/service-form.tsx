@@ -475,8 +475,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             excludes: excludes,
             faqs: faqs,
             itinerary: activities,
-            transportProviderID: transportProviderID ?? undefined,
-            hotelProviderID: hotelProviderID ?? undefined,
+            transportProviderID: transportProviderID ,
+            hotelProviderID: hotelProviderID ,
         };
         try {
             if (service && service.id) {
