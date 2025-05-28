@@ -21,8 +21,8 @@ import { getUsers } from '@/app/(protected)/users/users.api'
 import { auth } from '@/auth'
 import type { Service } from '@/components/service-card'
 
-export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function TourPage({ params }: { params: { id: string } }) {
+  const { id } = params;
 
   // Fetch services
   const service = await getService(id)
