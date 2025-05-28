@@ -461,7 +461,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             // id: service?.id ?? '',
             packs: packs,
             price: data.price ?? 0,
-            supplierId: values.idSupplier ?? session?.user?.supplierId ?? '',
+            supplierId: Number(values.idSupplier ?? session?.user?.supplierId ?? 0),
             cityTo: data.cityTo ?? '',
         };
         try {
