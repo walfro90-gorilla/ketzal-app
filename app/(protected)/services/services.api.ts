@@ -16,9 +16,23 @@ export interface ServiceData {
     supplierId: string;
     cityTo: string;
 }
+export interface ServiceDataNew {
+    name: string;
+    location: string;
+    images: { imgAlbum: string[]; imgBanner: string };
+    availableFrom: string;
+    availableTo: string;
+    createdAt: string;
+    description: string;
+    // id: string;
+    packs: { data: { description: string; name: string; price: number; qty: number }[] };
+    price: number;
+    supplierId: number;
+    cityTo: string;
+}
 
 // CREATE service
-export async function createService(serviceData: ServiceData) {
+export async function createService(serviceData: ServiceDataNew) {
     try {
         const res = await fetch(`${BACKEND_URL}/api/services`, {
             method: 'POST',

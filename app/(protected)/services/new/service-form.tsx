@@ -11,7 +11,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useSuppliers } from "@/context/SupplierContext"
 
 // API services import
-import { createService, updateService, ServiceData } from "../services.api"
+import { createService, ServiceDataNew } from "../services.api"
 import { DatePickerWithRange } from "@/components/date-picker-with-range"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 import { useEffect, useState } from "react"
@@ -321,7 +321,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             content: content,
         });
     };
-                                                 // const success = () => {
+    // const success = () => {
 
     //     messageApi.open({
     //         type: 'success',
@@ -447,7 +447,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
         console.log("Submission starts")
 
         // Adaptar los datos del formulario al formato que espera el backend
-        const adaptedData: ServiceData = {
+        const adaptedData: ServiceDataNew = {
             name: data.name ?? '',
             location: data.location ?? '',
             images: {
@@ -458,21 +458,18 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             availableTo: data.availableTo ? new Date(data.availableTo).toISOString() : '',
             createdAt: new Date().toISOString(),
             description: data.description ?? '',
-            id: service?.id ?? '',
+            // id: service?.id ?? '',
             packs: packs,
             price: data.price ?? 0,
-            supplierId: String(values.idSupplier ? Number(values.idSupplier) : session?.user?.supplierId ? Number(session.user.supplierId) : 0),
+            supplierId: values.idSupplier ?? session?.user?.supplierId ?? '',
             cityTo: data.cityTo ?? '',
         };
         try {
             if (service && service.id) {
-                await updateService(service.id, adaptedData);
+                // await updateService(service.id, adaptedData);
             } else {
-                // Enviar supplierId como número solo al backend
-                const { id, supplierId, ...rest } = adaptedData;
-                const dataToSend = { ...rest, supplierId: Number(supplierId) };
-                await createService(dataToSend);
-                console.log('service new', dataToSend);
+                await createService(adaptedData);
+                console.log('service new', adaptedData);
             }
             router.push("/services");
             router.refresh();
