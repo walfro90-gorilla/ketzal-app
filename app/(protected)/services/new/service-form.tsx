@@ -463,6 +463,20 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             price: data.price ?? 0,
             supplierId: Number(values.idSupplier ?? session?.user?.supplierId ?? 0),
             cityTo: data.cityTo ?? '',
+            // Campos agregados según defaultValues
+            ytLink: data.ytLink ?? '',
+            sizeTour: data.sizeTour ?? undefined,
+            serviceType: data.serviceType ?? '',
+            serviceCategory: data.serviceCategory ?? '',
+            stateFrom: data.stateFrom ?? selectedState ?? '',
+            cityFrom: data.cityFrom ?? selectedCity ?? '',
+            stateTo: data.stateTo ?? selectedStateTo ?? '',
+            includes: includes,
+            excludes: excludes,
+            faqs: faqs,
+            itinerary: activities,
+            transportProviderID: transportProviderID ?? undefined,
+            hotelProviderID: hotelProviderID ?? undefined,
         };
         try {
             if (service && service.id) {
