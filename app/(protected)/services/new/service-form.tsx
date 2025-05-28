@@ -384,6 +384,9 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                 const selected = suppliersData.find((supplier: { id: number }) => supplier.id === Number(session?.user?.supplierId));
                 setSelectedSupplier(selected)
 
+                console.log("Transportistas: ", suppliersStateTransport)
+                console.log("Hoteles: ", suppliersStateHotel)
+
             } catch (error) {
                 console.log("Failed to fetch suppliers", error)
             }
@@ -475,8 +478,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             excludes: excludes,
             faqs: faqs,
             itinerary: activities,
-            transportProviderID: transportProviderID ,
-            hotelProviderID: hotelProviderID ,
+            transportProviderID: transportProviderID,
+            hotelProviderID: hotelProviderID,
         };
         try {
             if (service && service.id) {
@@ -940,6 +943,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                 </Row>
 
                 <Row gutter={16}>
+
+
                     <Col span={12}>
                         <Label>Transporte:</Label>
                         <Select
@@ -954,6 +959,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                             <Alert showIcon type="error" message={errors.transportProviderID.message} />
                         )}
                     </Col>
+
                     <Col span={12}>
                         <Label>Hotel:</Label>
                         <Select
@@ -968,6 +974,8 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                             <Alert showIcon type="error" message={errors.hotelProviderID.message} />
                         )}
                     </Col>
+
+
                 </Row>
 
 
