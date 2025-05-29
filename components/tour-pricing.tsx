@@ -10,19 +10,21 @@ interface TourPricingProps {
   packs?: { name: string; price: number; qty: number }[],
   availableFrom: string,
   availableTo: string | null,
-  price: number
-  originalPrice?: number
-  discount?: number
+  price: number,
+  originalPrice?: number,
+  discount?: number,
+  title?: string,
+  idService?: string,
 }
 
-export function TourPricing({ packs, availableFrom, availableTo, originalPrice, discount = 10 }: TourPricingProps) {
+export function TourPricing({ packs, availableFrom, availableTo, originalPrice, title, idService, discount = 10 }: TourPricingProps) {
   const [selectedPack, setSelectedPack] = useState<string>("");
   const [selectedPacks] = useState<{ name: string; price: number; qty: number }[]>([]);
 
   const { addToCart, items } = useCart();
 
   const handleAddPack = () => {
-    addToCart({ id: selectedPack, name: selectedPack, price: packs?.find(pack => pack.name === selectedPack)?.price || 0, quantity: 1 });
+    addToCart({ id: idService ? idService : "", name: title ? title : "", price: packs?.find(pack => pack.name === selectedPack)?.price || 0, quantity: 1 });
     setSelectedPack("");
 
     console.log("Items in cart:", items);

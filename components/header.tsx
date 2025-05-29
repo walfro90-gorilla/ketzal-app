@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Menu } from 'lucide-react'
-// import { useScrollDirection } from '@/hooks/useScrollDirection'
+import { ShoppingCart } from 'lucide-react'
+import { useCart } from '@/context/CartContext'
 
 // Import Link from 'next/link'
 import Link from 'next/link'
@@ -31,7 +32,8 @@ const Header = ({ session }: HeaderProps) => {
   const [showTopBar, setShowTopBar] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
+  const { items } = useCart();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +47,7 @@ const Header = ({ session }: HeaderProps) => {
   }, [])
 
   useEffect(() => {
-    setIsMounted(true)
+    setIsMounted(true);
   }, [])
 
   return (
@@ -78,7 +80,6 @@ const Header = ({ session }: HeaderProps) => {
                   className="object-contain"
                 />
               </div>
-              {/* <span className="text-2xl font-bold text-green-600">Ketzal app</span> */}
             </Link>
 
             {/* Main Navigation Links - Desktop */}
@@ -86,15 +87,20 @@ const Header = ({ session }: HeaderProps) => {
               <Link href="/" className="text-gray-600 dark:text-gray-200 font-medium">Inicio</Link>
               <Link href="/tours" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tours</Link>
               <Link href="/contact" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Contacto</Link>
-              {/* <div className="ml-4"><ThemeToggle /></div> */}
             </nav>
 
-            {/* Search and Mobile Menu */}
+            {/* Search, Cart and Mobile Menu */}
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              {/* <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-              </Button> */}
+              {/* Carrito de compras */}
+              <Link href="/cart" className="relative">
+                <ShoppingCart className="h-6 w-6 text-gray-600 dark:text-gray-200" />
+                {isMounted && items.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                    {items.reduce((acc, item) => acc + item.quantity, 0)}
+                  </span>
+                )}
+              </Link>
               <Button
                 variant="ghost"
                 size="icon"

@@ -136,6 +136,8 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 availableTo={tourData.availableTo}
                 price={tourData.price}
                 originalPrice={tourData.originalPrice}
+                title={tourData.name}
+                idService={tourData.id}
               />
               <OrganizedBy
 

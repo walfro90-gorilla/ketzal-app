@@ -7,6 +7,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   image?: string;
+  service?: string; // Si es un servicio, puede tener un campo adicional
   // ...otros campos relevantes
 };
 
@@ -15,12 +16,14 @@ type CartContextType = {
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
+  isHydrated: boolean;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+
 
   const addToCart = (item: CartItem) => {
     setItems((prev) => {
@@ -38,7 +41,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => setItems([]);
 
   return (
-    <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, isHydrated: true }}>
       {children}
     </CartContext.Provider>
   );

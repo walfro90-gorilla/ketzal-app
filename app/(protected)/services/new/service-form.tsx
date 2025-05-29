@@ -31,11 +31,7 @@ import { cn } from "@/lib/utils"
 
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, XCircle } from "lucide-react"
-
-
-
 import { PlusCircleOutlined } from "@ant-design/icons"
-
 import { FAQModal } from "@/components/FAQModal"
 import { FAQList } from "@/components/FAQList"
 import { useFAQs } from "@/hooks/useFAQs"
@@ -224,6 +220,12 @@ function normalizeImages(
     return { imgBanner: "", imgAlbum: [] };
 }
 
+// Tipo para los rangos de fechas
+interface ServiceDateRange {
+  availableFrom: Date;
+  availableTo: Date;
+}
+
 export function ServiceForm({ service, session }: ServiceFormProps) {
 
 
@@ -245,6 +247,10 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
 
     const [includes, setIncludes] = useState<string[]>([])
     const [excludes, setexcludes] = useState<string[]>([])
+
+    // RANGOS DE FECHAS
+    const [dateRanges, setDateRanges] = useState<ServiceDateRange[]>([]);
+    const [currentRange, setCurrentRange] = useState<{ availableFrom: Date | null; availableTo: Date | null }>({ availableFrom: null, availableTo: null });
 
 
 
@@ -307,10 +313,11 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
     const [packs, setPacks] = useState<{ data: { name: string, description: string, qty: number, price: number }[] }>({ data: [] })
 
     // STATE FOR suppliers
-    // const [suppliersState, setSuppliersState] = useState<{ id: number, name: string }[]>([])
     const [suppliersStateTransport, setSuppliersStateTransport] = useState<{ id: number, name: string }[]>([])
     const [suppliersStateHotel, setSuppliersStateHotel] = useState<{ id: number, name: string }[]>([])
     const [selectedSupplier, setSelectedSupplier] = useState<{ id: number, name: string } | undefined>(undefined)
+
+      
 
     // // // MESSAGE API from antd
     const [messageApi, contextHolder] = message.useMessage();
@@ -480,6 +487,12 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
             itinerary: activities,
             transportProviderID: data.transportProviderID ?? transportProviderID ?? 0,
             hotelProviderID: data.hotelProviderID ?? hotelProviderID ?? 0,
+            dates: dateRanges
+                .filter(range => range.availableFrom && range.availableTo)
+                .map(range => ({
+                    availableFrom: range.availableFrom.toISOString(),
+                    availableTo: range.availableTo.toISOString(),
+                })),
         };
         try {
             if (service && service.id) {
@@ -600,12 +613,18 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
 
     // -------------------------------------------------------------------- FUNCTIONS  ----------------------------------------------------------- //
 
+    // Función para agregar un nuevo rango de fechas
+const addDateRange = () => {
+  if (currentRange.availableFrom && currentRange.availableTo) {
+    setDateRanges([...dateRanges, { availableFrom: currentRange.availableFrom, availableTo: currentRange.availableTo }]);
+    setCurrentRange({ availableFrom: null, availableTo: null });
+  }
+};
 
-
-
-
-
-
+// Función para eliminar un rango de fechas
+const removeDateRange = (index: number) => {
+  setDateRanges(dateRanges.filter((_, i) => i !== index));
+};
 
 
 
@@ -1251,6 +1270,34 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                         params?.id ? "Update service" : "Create service"
                     }
                 </Button>
+
+                <div>
+      <Label>Fechas disponibles (puedes agregar varias):</Label>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <DatePickerWithRange
+          value={currentRange.availableFrom}
+          onChange={(date) => setCurrentRange({ ...currentRange, availableFrom: date })}
+        />
+        <span>a</span>
+        <DatePickerWithRange
+          value={currentRange.availableTo}
+          onChange={(date) => setCurrentRange({ ...currentRange, availableTo: date })}
+        />
+        <Button type="button" onClick={addDateRange}>
+          <PlusCircleOutlined style={{ marginRight: 4 }} /> Agregar
+        </Button>
+      </div>
+      <ul>
+        {dateRanges.map((range, idx) => (
+          <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {range.availableFrom.toLocaleDateString()} - {range.availableTo.toLocaleDateString()}
+            <Button type="button" onClick={() => removeDateRange(idx)} variant="outline" size="icon">
+              <XCircle className="w-4 h-4" />
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
             </form>
 
 

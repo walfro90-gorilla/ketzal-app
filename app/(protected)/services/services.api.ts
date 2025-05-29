@@ -17,6 +17,11 @@ export interface ServiceData {
 
     cityTo: string;
 }
+export interface ServiceDateRange {
+    availableFrom: string;
+    availableTo: string;
+}
+
 export interface ServiceDataNew {
     // id: string;
     supplierId: number;
@@ -47,6 +52,7 @@ export interface ServiceDataNew {
 
     transportProviderID?: number;
     hotelProviderID?: number;
+    dates?: ServiceDateRange[];
 
 
 }
