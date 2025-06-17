@@ -14,7 +14,7 @@ async function ServicesNewPage({ params }: { params: Promise< { id: string }> })
 
     const session = await auth()
 
-    console.log("SERVICE:", service)
+    // console.log("SERVICE:", service)
 
 
     return (

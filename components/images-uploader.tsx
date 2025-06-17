@@ -21,13 +21,19 @@ const ImageUploader = () => {
     const props: UploadProps = {
         beforeUpload: (file) => {
             const isPNG = file.type === "image/png";
-            const isJPG = file.type === "image/jpeg";
-            const sizeFile = file.size <= 10 * 1024 * 1024; // Límite de 5MB
+            const isJPG = file.type === "image/jpeg" || file.type === "image/jpg";
+            const isSVG = file.type === "image/svg+xml";
+            const sizeFile = file.size <= 10 * 1024 * 1024; // Límite de 10MB
 
-            if (!isPNG && !isJPG && sizeFile) {
-                messageApi.error(`File is not a valid image file`);
+            if (!(isPNG || isJPG || isSVG)) {
+                messageApi.error(`Solo se permiten archivos .png, .jpg, .jpeg y .svg`);
+                return Upload.LIST_IGNORE;
             }
-            return isPNG || isJPG || sizeFile || Upload.LIST_IGNORE;
+            if (!sizeFile) {
+                messageApi.error(`El archivo excede el tamaño máximo permitido (10MB)`);
+                return Upload.LIST_IGNORE;
+            }
+            return true;
         },
         onChange: (info) => {
             console.log(info.fileList);
@@ -47,8 +53,8 @@ const ImageUploader = () => {
             const formData = new FormData();
             formData.append("image", file);
 
-            const response = await fetch("https://ketzal-app.vercel.app/api/upload",
-            // const response = await fetch("http://localhost:3000/api/upload",
+            // const response = await fetch("https://ketzal-app.vercel.app/api/upload",
+            const response = await fetch("http://localhost:3000/api/upload",
                 {
                     method: "POST",
                     body: formData,
@@ -101,9 +107,10 @@ const ImageUploader = () => {
                         onRemove={() => {
                             setImages((prev) => ({ ...prev, imgBanner: null }));
                         }}
+                        disabled={isUploading} // Deshabilita el botón mientras sube
                     >
 
-                        <Button icon={<UploadOutlined />}>Banner (Max: 1)</Button>
+                        <Button icon={<UploadOutlined />} disabled={isUploading}>Banner (Max: 1)</Button>
                     </Upload>
                 </ImgCrop>
 
@@ -138,8 +145,9 @@ const ImageUploader = () => {
                                 imgAlbum: prev.imgAlbum.filter((url) => url !== file.url),
                             }));
                         }}
+                        disabled={isUploading} // Deshabilita el botón mientras sube
                     >
-                        <Button icon={<UploadOutlined />}>Album (Max: 9)</Button>
+                        <Button icon={<UploadOutlined />} disabled={isUploading}>Album (Max: 9)</Button>
                     </Upload>
                 </ImgCrop>
 
