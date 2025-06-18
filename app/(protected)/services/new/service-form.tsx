@@ -740,16 +740,31 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                     </Col>
 
 
-                    <Col span={4}>
+                    <Col span={3}>
                         <Label>
                             <h1>Tamaño:</h1>
-                        </Label>
+                        </Label>    
                         <Input
                             {...register("sizeTour", {
-                                setValueAs: value => parseFloat(value)
+                                setValueAs: value => {
+                                    // Limita a 3 cifras
+                                    const num = parseInt(value, 10);
+                                    if (isNaN(num)) return undefined;
+                                    return Math.max(0, Math.min(num, 999));
+                                }
                             })}
+                            
                             type="number"
                             min={1}
+                            max={999}
+                            maxLength={3}
+                            onInput={e => {
+                                // Limita a 3 caracteres en el input
+                                const target = e.target as HTMLInputElement;
+                                if (target.value.length > 3) {
+                                    target.value = target.value.slice(0, 3);
+                                }
+                            }}
                         />
                         {typeof errors.sizeTour?.message === 'string' && (
                             <Alert showIcon type="error" message={errors.sizeTour.message} />

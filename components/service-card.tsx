@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "./ui/button"
-import { deleteService } from "@/app/(protected)/services/services.api"
+import { deleteService, checkServiceDependencies } from "@/app/(protected)/services/services.api"
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useState } from "react"
@@ -28,11 +28,52 @@ export function ServiceCard({ service }: { service: Service }) {
     const [loading, setLoading] = useState(false)
 
     async function handleRemoveService(id: string) {
-        setLoading(true)
-        await deleteService(id)
-        setLoading(false)
-        setOpen(false)
-        router.refresh()
+        try {
+            setLoading(true);
+            console.log("Checking dependencies for service", id);
+            
+            // First check dependencies
+            const dependencies = await checkServiceDependencies(id);
+            
+            if (dependencies.hasReviews) {
+                alert(
+                    `❌ No se puede eliminar el servicio "${service.name}".\n\n` +
+                    `Tiene ${dependencies.reviewsCount} reseña(s) asociada(s).\n\n` +
+                    `Para eliminar este servicio, primero debe:\n` +
+                    `• Eliminar todas las reseñas asociadas`
+                );
+                setLoading(false);
+                setOpen(false);
+                return;
+            }
+
+            // If no dependencies, confirm deletion
+            const confirmed = confirm(
+                `¿Estás seguro de que quieres eliminar el servicio "${service.name}"?\n\n` +
+                `Esta acción no se puede deshacer.`
+            );
+
+            if (!confirmed) {
+                setLoading(false);
+                setOpen(false);
+                return;
+            }
+
+            console.log("Proceeding to delete service", id);
+            await deleteService(id);
+            
+            alert(`✅ Servicio "${service.name}" eliminado exitosamente.`);
+            setLoading(false);
+            setOpen(false);
+            router.refresh();
+            
+        } catch (error) {
+            console.error("Error removing service:", error);
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            alert(`❌ Error al eliminar el servicio: ${errorMessage}`);
+            setLoading(false);
+            setOpen(false);
+        }
     }
     return (
         <>

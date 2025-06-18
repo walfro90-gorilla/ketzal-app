@@ -36,6 +36,8 @@ export function SupplierForm({ supplier }: { supplier?: Supplier }) {
     const router = useRouter()
     const params = useParams<{ id: string }>()
 
+    console.log("Params:", params)
+
 
     const onSubmit = handleSubmit(async (data) => {
 
@@ -43,7 +45,7 @@ export function SupplierForm({ supplier }: { supplier?: Supplier }) {
             await updateSupplier(params.id, data)
             console.log('update')
         } else {
-            console.log(data)
+            console.log("create", data)
             await createSupplier(data)
         }
 

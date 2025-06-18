@@ -15,7 +15,7 @@ interface ProfileCardProps {
 
 export default function ProfileCard({
   // email = "walfre.am@gmail.com",
-  name = "Walfre",
+  name = "Waaalfre",
   avatarUrl = "/placeholder.svg",
   // onClose
 }: ProfileCardProps) {

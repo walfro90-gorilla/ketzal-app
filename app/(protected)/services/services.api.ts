@@ -102,10 +102,46 @@ export async function updateService(id: string, serviceData: ServiceData) {
 
 // DELETE service
 export async function deleteService(id: string) {
-    const res = await fetch(`${BACKEND_URL}/api/services/${id}`, {
-        method: 'DELETE',
-    })
-    await res.json()
-    // console.log(data)
+    try {
+        // First check dependencies
+        const dependencies = await checkServiceDependencies(id);
+        
+        if (dependencies.hasReviews) {
+            throw new Error(
+                `Cannot delete service. It has ${dependencies.reviewsCount} review(s) associated. ` +
+                `Please remove the reviews first.`
+            );
+        }
 
+        const res = await fetch(`${BACKEND_URL}/api/services/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || 'Failed to delete service');
+        }
+
+        return await res.json();
+    } catch (error) {
+        console.error('Error deleting service:', error);
+        throw error;
+    }
+}
+
+// Check service dependencies before deletion
+export async function checkServiceDependencies(id: string) {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/services/${id}/dependencies`);
+        
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || 'Failed to check service dependencies');
+        }
+
+        return await res.json();
+    } catch (error) {
+        console.error('Error checking service dependencies:', error);
+        throw error;
+    }
 }

@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
 import { useForm } from "react-hook-form"
 
-import { createSupplier, updateSupplier } from "@/app/(protected)/suppliers/suppliers.api"
+import { createSupplier, updateSupplier, searchSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 import { useParams, useRouter } from "next/navigation"
 import { useDialog } from "@/components/dialog-supplier"
 import { updateIdSupplier } from "@/actions/user-action"
-import { useUser } from "@/context/UserContext"
+import { useSession } from "next-auth/react"
 import { signOut } from "next-auth/react"
 import { useAlertDialog } from "@/components/alert-dialog"
 import { useState } from "react"
@@ -31,8 +31,9 @@ export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
 
     const [imgUrl, setImgUrl] = useState<string | null>(null);
 
-
-    const { user } = useUser()
+    const { data: session } = useSession();
+    const user = session?.user;
+    
     const { register, handleSubmit, setValue } = useForm({
         defaultValues: {
             name: supplier?.name,
@@ -68,21 +69,62 @@ export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
 
         if (!confirmed) {
             return;
-        }
-
-        if (params?.id) {
+        }        if (params?.id) {
             await updateSupplier(params.id, data);
-        } else {
-            console.log("DATA:", data)
+        } else {            console.log("DATA:", data);
+            console.log("Current user from session:", user);
+            
+            try {
+                // Check if supplier with same name or email already exists
+                const existingByName = await searchSuppliers(data.name);
+                const existingByEmail = await searchSuppliers(undefined, data.contactEmail);
+                
+                console.log('Search by name result:', existingByName);
+                console.log('Search by email result:', existingByEmail);
+                
+                if (existingByName && existingByName.length > 0) {
+                    console.error(`Ya existe un proveedor con el nombre "${data.name}"`);
+                    alert(`Ya existe un proveedor con el nombre "${data.name}"`);
+                    return;
+                }
+                
+                if (existingByEmail && existingByEmail.length > 0) {
+                    console.error(`Ya existe un proveedor con el email "${data.contactEmail}"`);
+                    alert(`Ya existe un proveedor con el email "${data.contactEmail}"`);
+                    return;
+                }
 
-            const dataUpdate = await createSupplier(data);
-            if (user && dataUpdate && dataUpdate.id) {
-                await updateIdSupplier({ id: dataUpdate.id }, user);
-            } else if (!user) {
-                console.error("User is null. Cannot update supplier ID.");
-                return;
-            } else {
-                console.error("Supplier creation failed or missing id.");
+                // Remove undefined fields before sending to backend
+                const cleanData = {
+                    name: data.name,
+                    description: data.description,
+                    contactEmail: data.contactEmail,
+                    phoneNumber: data.phoneNumber,
+                    address: data.address,
+                    imgLogo: data.imgLogo
+                };                console.log('Clean data being sent:', cleanData);
+                const dataUpdate = await createSupplier(cleanData);
+                
+                if (user && dataUpdate && dataUpdate.id) {
+                    // Format user data for the updateIdSupplier function
+                    const userForUpdate = {
+                        id: user.id
+                    };
+                    
+                    await updateIdSupplier({ id: dataUpdate.id.toString() }, userForUpdate);
+                    console.log('✅ Supplier created and user updated successfully');
+                } else if (!user) {
+                    console.error("User is null. Cannot update supplier ID.");
+                    alert("Error: Usuario no autenticado. No se puede asignar el proveedor.");
+                    return;
+                } else {
+                    console.error("Supplier creation failed or missing id.");
+                    alert("Error: No se pudo crear el proveedor.");
+                    return;
+                }} catch (error) {
+                console.error("Error creating supplier:", error);
+                const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+                alert(`Error al crear el proveedor: ${errorMessage}`);
                 return;
             }
             await signOut({

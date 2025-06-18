@@ -59,6 +59,12 @@ export function SidebarRight({ session, supplierData, ...props }: SidebarRightPr
     return <div>Loading...</div>;
   }
 
+  // Show supplierData in console when component displays
+  // console.log("supplierData:", supplierData);
+  // console.log("Session:", session);
+  // console.log("Supplier ID:", session.user.supplierId);
+  // console.log("Role:", session.user.role);
+
   return (
     <Sidebar
       collapsible="none"
@@ -76,7 +82,7 @@ export function SidebarRight({ session, supplierData, ...props }: SidebarRightPr
       <SidebarContent>
 
         {
-          supplierData ? (
+          session.user.supplierId ? (
             <ProfileCard email="wal@gmail.com" name={supplierData.name} avatarUrl={supplierData.imgLogo} />
           ) : (
             <ProfileCardNew />
