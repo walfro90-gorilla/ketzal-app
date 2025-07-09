@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-// Configuración de Cloudinary
+// 🚀 MEJORADO: Configuración usando variables de entorno con fallback
 cloudinary.config({
-  cloud_name: "dgmmzh8nb",
-  api_key: "766325626977677",
-  api_secret: "g0qgbgJNL8rsG2Ng4X9rP6oxpow",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dgmmzh8nb",
+  api_key: process.env.CLOUDINARY_API_KEY || "766325626977677",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "g0qgbgJNL8rsG2Ng4X9rP6oxpow",
 });
 
 const MAX_SIZE = 3 * 1024 * 1024; // 3 MB en bytes

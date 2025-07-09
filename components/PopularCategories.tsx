@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import OptimizedImage from './OptimizedImage'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
@@ -38,13 +38,12 @@ const PopularCategories = ({ services, categories }: PopularCategoriesProps) => 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((category) => (
             <Link key={category.name} href={'/tours'} className="group">
-              <div className="relative overflow-hidden rounded-lg shadow-md aspect-square">
-                <Image
+              <div className="relative overflow-hidden rounded-lg shadow-md">
+                <OptimizedImage
                   src={category?.image ? category.image : '/placeholder.svg'}
                   alt={category.name}
-                  fill
+                  aspectRatio="square"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  style={{ objectFit: 'cover' }}
                   className="rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 dark:bg-opacity-60 flex items-center justify-center">

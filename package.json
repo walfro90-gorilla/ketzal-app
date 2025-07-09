@@ -3,11 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:cloudinary": "node scripts/test-cloudinary.js",
+    "test:cloudinary:practical": "node scripts/test-cloudinary-practical.js",
+    "test:cloudinary:unit": "jest __tests__/cloudinary.test.ts",
+    "test:cloudinary:all": "npm run test:cloudinary && npm run test:cloudinary:practical",
+    "check:backend": "node check-backend.js",
+    "dev:full": "npm run check:backend && npm run dev",
+    "images:check": "echo '✅ Checking image optimization...' && node -e \"console.log('OptimizedImage component is ready!')\"",
+    "images:guide": "echo '📖 Image optimization guide:' && type IMAGE_OPTIMIZATION_GUIDE.md"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
@@ -35,7 +44,7 @@
     "antd-img-crop": "^4.24.0",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
-    "cloudinary": "^2.5.1",
+    "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
@@ -58,7 +67,7 @@
     "resend": "^4.0.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.1"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

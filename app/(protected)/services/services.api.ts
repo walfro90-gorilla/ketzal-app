@@ -1,5 +1,6 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 
+console.log('BACKEND_URL from services.api.ts:', BACKEND_URL)
 
 // Define ServiceData to match TourCardProps for SpecialOffers
 export interface ServiceData {
@@ -76,6 +77,8 @@ export async function createService(serviceData: ServiceDataNew) {
 
 // READ serviceS
 export async function getServices() {
+    console.log('getServices - BACKEND_URL:', BACKEND_URL)
+    console.log('getServices - Full URL:', `${BACKEND_URL}/api/services`)
     const res = await fetch(`${BACKEND_URL}/api/services`)
     const data = await res.json()
     return data

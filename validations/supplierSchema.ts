@@ -46,15 +46,13 @@ export const supplierSchema = z.object({
         }).max(255, {
             message: "Dirección muy larga"
         }),
-
-
     type: z.enum(types, {
         errorMap: () => ({ message: "Seleccione un tipo" })
-    }),
-
-    imgLogo: z
+    }),    imgLogo: z
         .string()
-        .url({
+        .optional()
+        .refine((val) => !val || z.string().url().safeParse(val).success, {
             message: "URL de imagen inválida"
         })
+        .transform((val) => val || "")
 });

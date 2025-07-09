@@ -1,23 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
+import OptimizedImage from './OptimizedImage'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const slides = [
   {
-    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054726/if2mczlahxvuce1fiili.png',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1745054726/if2mczlahxvuce1fiili.png',
     title: 'Tours & Viajes',
     subtitle: 'Agenda tu próxima aventura con nosotros',
   },
   {
-    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054794/kf4ebaedkpzoxq7zlci3.png',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1745054798/rarnxbktkbcxillzavwg.png',
     title: 'Las Mejores Playas',
     subtitle: 'Descubre el Paraíso en la Tierra',
    
   },
   {
-    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054798/rarnxbktkbcxillzavwg.png',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1745054794/kf4ebaedkpzoxq7zlci3.png',
     title: 'Reconecta con la Naturaleza',
     subtitle: 'Explora los paisajes más hermosos del mundo',
   
@@ -53,13 +53,12 @@ const HeroSection = () => {
           >
             {/* Image */}
             <div className="relative h-full w-full">
-              <Image
+              <OptimizedImage
                 src={slide?.image ? slide.image : '/placeholder.svg'}
                 alt={slide.title}
-                fill
+                aspectRatio="16/9"
                 sizes="100vw"
-                style={{ objectFit: 'cover' }}
-                className="object-cover"
+                className="object-cover h-screen w-full"
                 priority={index === 0}
               />
               {/* Gradient Overlay */}

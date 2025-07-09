@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import OptimizedImage from './OptimizedImage'
 import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart } from 'lucide-react'
@@ -135,13 +135,12 @@ const TourCard = ({
           )}
 
           {/* Image Container */}
-          <div className="relative aspect-[4/3] overflow-hidden">
-            <Image
+          <div className="relative overflow-hidden">
+            <OptimizedImage
               src={banner}
               alt={name}
-              fill
+              aspectRatio="4/3"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              style={{ objectFit: 'cover' }}
               className="transition-transform duration-300 group-hover:scale-110"
             />
           </div>

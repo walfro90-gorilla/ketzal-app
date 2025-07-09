@@ -1,5 +1,19 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL 
 
+// CHECK for duplicate suppliers
+export async function checkDuplicateSupplier(name?: string, email?: string, excludeId?: string) {
+    const params = new URLSearchParams();
+    if (name) params.append('name', name);
+    if (email) params.append('email', email);
+    if (excludeId) params.append('excludeId', excludeId);
+    
+    const res = await fetch(`${BACKEND_URL}/api/suppliers/check-duplicate?${params.toString()}`);
+    if (!res.ok) {
+        throw new Error('Error checking for duplicates');
+    }
+    return await res.json();
+}
+
 // SEARCH suppliers by name or email
 export async function searchSuppliers(name?: string, email?: string) {
     const params = new URLSearchParams();
