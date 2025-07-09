@@ -83,6 +83,16 @@ export async function getServices() {
     const data = await res.json()
     return data
 }
+
+// READ services with review statistics
+export async function getServicesWithReviews() {
+    console.log('getServicesWithReviews - BACKEND_URL:', BACKEND_URL)
+    console.log('getServicesWithReviews - Full URL:', `${BACKEND_URL}/api/services/with-reviews`)
+    const res = await fetch(`${BACKEND_URL}/api/services/with-reviews`)
+    const data = await res.json()
+    return data
+}
+
 // READ service
 export async function getService(id: string) {
     const res = await fetch(`${BACKEND_URL}/api/services/${id}`)

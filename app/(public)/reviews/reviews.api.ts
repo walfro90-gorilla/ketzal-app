@@ -10,15 +10,22 @@ export interface ReviewData {
 
 // CREATE review
 export async function createReview(reviewData: ReviewData) {
-
     const res = await fetch(`${BACKEND_URL}/api/reviews`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(reviewData),
-    })
-    return await res.json(); // Return the backend response (with id, createdAt, etc)
+    });
+    
+    if (!res.ok) {
+        const errorData = await res.text();
+        console.error('❌ Backend error response:', errorData);
+        throw new Error(`Error ${res.status}: ${errorData}`);
+    }
+    
+    const result = await res.json();
+    return result;
 }
 
 // READ reviewS

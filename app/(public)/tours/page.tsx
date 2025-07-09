@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input, Slider, Rate, Button as AntButton,  Card as AntCard } from 'antd'
 import { Card, CardContent } from '@/components/ui/card'
-import { getServices } from '@/app/(protected)/services/services.api'
+import { getServicesWithReviews } from '@/app/(protected)/services/services.api'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
@@ -49,7 +49,7 @@ export default function TourPage() {
   }, [])
 
   useEffect(() => {
-    getServices().then((data) => {
+    getServicesWithReviews().then((data) => {
       const onlyTours = data.filter((s: Tour) => s.serviceType === 'tour')
       setTours(onlyTours)
       setFiltered(onlyTours)

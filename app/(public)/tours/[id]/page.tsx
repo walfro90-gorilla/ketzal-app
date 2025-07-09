@@ -54,10 +54,20 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
   const durationInMilliseconds = availableTo.getTime() - availableFrom.getTime();
   const durationInDays = durationInMilliseconds / (1000 * 60 * 60 * 24);
 
+  // Calculate average rating and review count dynamically
+  const averageRating = reviewsService.length > 0 
+    ? reviewsService.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / reviewsService.length 
+    : 0;
+  const reviewCount = reviewsService.length;
+
+  // Map users to correct type for ReviewSection
+  const mappedUsers = users.map((user) => ({
+    id: user.id,
+    name: user.name || 'Usuario desconocido', // Handle null name
+    image: user.image || '/default-avatar.png', // Handle null image
+  }));
+
   const tourData = {
-
-
-
     id: id,
     name: service.name,
     bannerImage: service.images.imgBanner,
@@ -65,7 +75,6 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
     itinerary: service.itinerary,
 
     images: service.images.imgAlbum.map((img: string) => img),
-
 
     fromCity: service.cityFrom,
     toCity: service.cityTo,
@@ -88,11 +97,11 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
     language: "English, Spanish",
     price: 5.88,
     originalPrice: service.price,
-    rating: 5,
+    rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
     availableFrom: service.availableFrom,
     availableTo: service.availableTo,
     packs: service.packs.data,
-    reviewCount: 1,
+    reviewCount: reviewCount,
     organizer: {
       id: provider.id,
       name: provider.name,
@@ -183,7 +192,7 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                   <ReviewSection
                     serviceId={tourData.id}
                     reviewsService={reviewsService}
-                    users={users}
+                    users={mappedUsers}
                     session={session} // Pass session as Session | null
                   />
 

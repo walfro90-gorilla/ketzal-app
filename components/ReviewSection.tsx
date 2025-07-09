@@ -33,26 +33,47 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     const userId = session?.user?.id || user?.id || "";
+    
+    // Validación frontend
+    if (!userId) {
+      setError("Debes estar logueado para crear una reseña");
+      return;
+    }
+    
+    if (!comment.trim()) {
+      setError("El comentario es requerido");
+      return;
+    }
+    
+    if (!rating || rating < 1 || rating > 5) {
+      setError("La calificación debe ser entre 1 y 5 estrellas");
+      return;
+    }
+
     const newReview = {
       userId,
-      comment,
-      rating,
+      comment: comment.trim(),
+      rating: Number(rating),
       serviceId: Number(serviceId),
     };
+    
     setLoading(true);
+    setError(""); // Limpiar errores previos
+    
     try {
-      const created = await createReview(newReview); // Use backend response
+      const created = await createReview(newReview);
+      
       setReviews([
         ...reviews,
-        created, // Use backend-generated id, createdAt, etc.
+        created,
       ]);
       setComment("");
       setRating(5);
     } catch (err) {
-      console.error("Error creating review: ", err);
-      setError("Error creating review. Please try again later.");
-      console.log(error);
+      console.error("❌ Error creating review:", err);
+      setError("Error al crear la reseña. Por favor intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -66,8 +87,8 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
       <div>
         {reviews.length === 0 && <div className="text-[#bfc9d1]">No hay reseñas aún.</div>}
         <Carousel dots={true} autoplay className="space-y-4 mb-8">
-          {reviews.map(r => (
-            <div key={r.id} className="bg-[#232323] border border-[#2c2c2c] rounded-xl p-6 flex flex-col items-center gap-6 mx-auto w-full md:w-3/4">
+          {reviews.map((r, index) => (
+            <div key={r.id || `review-${index}-${r.userId}-${Date.now()}`} className="bg-[#232323] border border-[#2c2c2c] rounded-xl p-6 flex flex-col items-center gap-6 mx-auto w-full md:w-3/4">
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-full bg-[#2c2c2c] flex items-center justify-center mb-2">
                   {users.find((user) => user.id === r.userId)?.image ? (
@@ -124,6 +145,13 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
                 className="w-full bg-[#232323] border-none rounded-lg p-3 text-[#bfc9d1] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none mb-2"
                 rows={2}
               />
+              
+              {/* Mostrar errores */}
+              {error && (
+                <div className="text-red-400 text-sm mb-2 text-center">
+                  {error}
+                </div>
+              )}
 
               <Popconfirm
                 title="¿Estás seguro de que deseas enviar esta reseña?"
