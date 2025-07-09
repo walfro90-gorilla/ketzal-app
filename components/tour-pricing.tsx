@@ -15,18 +15,33 @@ interface TourPricingProps {
   discount?: number,
   title?: string,
   idService?: string,
+  bannerImage?: string,
 }
 
-export function TourPricing({ packs, availableFrom, availableTo, originalPrice, title, idService, discount = 10 }: TourPricingProps) {
+export function TourPricing({ packs, availableFrom, availableTo, originalPrice, title, idService, bannerImage, discount = 10 }: TourPricingProps) {
   const [selectedPack, setSelectedPack] = useState<string>("");
   const [selectedPacks] = useState<{ name: string; price: number; qty: number }[]>([]);
 
   const { addToCart, items } = useCart();
 
   const handleAddPack = () => {
-    addToCart({ id: idService ? idService : "", name: title ? title : "", price: packs?.find(pack => pack.name === selectedPack)?.price || 0, quantity: 1 });
+    const selectedPackData = packs?.find(pack => pack.name === selectedPack);
+    if (!selectedPackData || !idService || !title) return;
+
+    addToCart({
+      id: `${idService}_${selectedPackData.name}`, // Se generará automáticamente en el context
+      serviceId: idService,
+      serviceName: title,
+      packageType: selectedPackData.name,
+      packageDescription: `Paquete ${selectedPackData.name}`, // Descripción básica
+      price: selectedPackData.price,
+      quantity: 1,
+      availableQty: selectedPackData.qty,
+      imgBanner: bannerImage,
+    });
     setSelectedPack("");
 
+    console.log("Adding to cart with bannerImage:", bannerImage);
     console.log("Items in cart:", items);
   }
 

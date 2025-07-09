@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { Card, CardContent, CardDescription,  CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
 // import { Label } from "@/components/ui/label"
 
 import {
@@ -129,7 +130,14 @@ export function LoginForm({
               error && <FormMessage>{error}</FormMessage>
             }
 
-            <Button disabled={isPending} type="submit">Ingresar</Button>
+            <Button disabled={isPending} type="submit">
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Iniciando sesión...
+                </>
+              ) : 'Ingresar'}
+            </Button>
           </form>
         </Form>
 

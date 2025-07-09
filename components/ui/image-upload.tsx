@@ -66,7 +66,10 @@ export function ImageUpload({ value, onChange, onBlur, error, disabled, placehol
                 setIsValidatingUrl(false);
             }
         }, 1000);
-    }, [validateImageUrl]);    // Upload a Cloudinary real    const uploadToCloudinary = async (file: File): Promise<string> => {
+    }, [validateImageUrl]);
+
+    // Upload a Cloudinary real
+    const uploadToCloudinary = async (file: File): Promise<string> => {
         try {
             // Usar la función optimizada que ya funciona
             return await uploadToCloudinaryBrowser(file);
@@ -74,10 +77,9 @@ export function ImageUpload({ value, onChange, onBlur, error, disabled, placehol
             console.error('Error uploading to Cloudinary:', error);
             throw new Error('Failed to upload image');
         }
-    };const handleFileSelect = async (file: File) => {
-        if (!file.type.startsWith('image/')) {
-            return;
-        }    const handleFileSelect = async (file: File) => {
+    };
+
+    const handleFileSelect = async (file: File) => {
         if (!file.type.startsWith('image/')) {
             return;
         }

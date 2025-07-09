@@ -138,6 +138,7 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 originalPrice={tourData.originalPrice}
                 title={tourData.name}
                 idService={tourData.id}
+                bannerImage={tourData.bannerImage}
               />
               <OrganizedBy
 
