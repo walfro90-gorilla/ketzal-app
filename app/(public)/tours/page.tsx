@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Input, Slider, Rate, Button as AntButton,  Card as AntCard } from 'antd'
 import { Card, CardContent } from '@/components/ui/card'
 import { getServices } from '@/app/(protected)/services/services.api'
@@ -34,6 +35,7 @@ export default function TourPage() {
   const [filtered, setFiltered] = useState<Tour[]>([])
   const [pageLoading, setPageLoading] = useState(true)
   const { setLoading } = useLoading();
+  const router = useRouter();
 
   useEffect(() => {
     // Espera a que el DOM esté listo
@@ -140,8 +142,8 @@ export default function TourPage() {
                   className="overflow-hidden shadow border-0 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100"
                   styles={{ body: { background: 'inherit', color: 'inherit' } }}
                   onClick={() => {
-                  setLoading(true);
-                  window.location.href = `/tours/${tour.id}`;
+                    setLoading(true);
+                    router.push(`/tours/${tour.id}`);
                   }}
                 >
                   <div className="flex flex-col gap-2">
