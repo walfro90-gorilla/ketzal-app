@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type CartItem = {
   id: string;                    // serviceId + packageType para unicidad (ej: "service_123_Doble")
@@ -27,8 +27,49 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Clave para localStorage
+const CART_STORAGE_KEY = 'ketzal-cart';
+
+// Funciones auxiliares para localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    return savedCart ? JSON.parse(savedCart) : [];
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+    return [];
+  }
+};
+
+const saveCartToStorage = (items: CartItem[]): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
+};
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Cargar el carrito desde localStorage al montar el componente
+  useEffect(() => {
+    const savedItems = loadCartFromStorage();
+    console.log('🛒 Carrito cargado desde localStorage:', savedItems);
+    setItems(savedItems);
+    setIsHydrated(true);
+  }, []);
+
+  // Guardar el carrito en localStorage cada vez que cambie
+  useEffect(() => {
+    if (isHydrated) {
+      console.log('💾 Guardando carrito en localStorage:', items);
+      saveCartToStorage(items);
+    }
+  }, [items, isHydrated]);
 
 
   const addToCart = (item: CartItem) => {
@@ -50,7 +91,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
-  const clearCart = () => setItems([]);
+  
+  const clearCart = () => {
+    setItems([]);
+    // Limpiar también el localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    }
+  };
 
   const updateQuantity = (id: string, quantity: number) => {
     if (quantity <= 0) {
@@ -77,7 +125,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart, getGroupedItems, isHydrated: true }}>
+    <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart, getGroupedItems, isHydrated }}>
       {children}
     </CartContext.Provider>
   );
