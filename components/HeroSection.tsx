@@ -56,9 +56,9 @@ const HeroSection = () => {
               <OptimizedImage
                 src={slide?.image ? slide.image : '/placeholder.svg'}
                 alt={slide.title}
-                aspectRatio="16/9"
+                aspectRatio="auto"
                 sizes="100vw"
-                className="object-cover h-screen w-full"
+                className="object-cover h-full w-full"
                 priority={index === 0}
               />
               {/* Gradient Overlay */}

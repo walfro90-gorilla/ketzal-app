@@ -86,17 +86,39 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     )
   }
 
-  // Para imágenes con dimensiones específicas
+  // Para imágenes con dimensiones específicas o auto que deben llenar el contenedor
+  if (width && height) {
+    return (
+      <div className="relative" style={style}>
+        {isLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        )}
+        <Image
+          src={src || placeholderSrc}
+          alt={alt}
+          width={width}
+          height={height}
+          sizes={sizes}
+          priority={priority}
+          className={className}
+          onError={handleError}
+          onLoad={handleLoad}
+          unoptimized
+        />
+      </div>
+    )
+  }
+
+  // Para imágenes auto que deben llenar todo el contenedor padre
   return (
-    <div className="relative" style={style}>
+    <div className="relative h-full w-full" style={style}>
       {isLoading && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse" />
       )}
       <Image
         src={src || placeholderSrc}
         alt={alt}
-        width={width || 400}
-        height={height || 300}
+        fill
         sizes={sizes}
         priority={priority}
         className={className}
