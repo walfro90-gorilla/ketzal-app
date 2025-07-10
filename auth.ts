@@ -1,17 +1,19 @@
 import NextAuth from "next-auth"
 
-import { PrismaAdapter } from "@auth/prisma-adapter"
+// No necesitamos PrismaAdapter cuando usamos JWT strategy
+// import { PrismaAdapter } from "@auth/prisma-adapter"
 
 // IMPORTING AUTH CONFIG
 import authConfig from "@/auth.config"
-import { db } from "@/lib/db"
+// import { db } from "@/lib/db"
 
 
 
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(db),
+  // No usar PrismaAdapter con JWT strategy
+  // adapter: PrismaAdapter(db),
   ...authConfig,
   session: { strategy: "jwt" },
   callbacks: {

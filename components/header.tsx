@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Menu } from 'lucide-react'
+import { Menu, Wallet } from 'lucide-react'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 
@@ -101,6 +101,12 @@ const Header = ({ session }: HeaderProps) => {
                   </span>
                 )}
               </Link>
+              {/* Wallet */}
+              {session && (
+                <Link href="/wallet" className="relative" title="Mi Monedero">
+                  <Wallet className="h-6 w-6 text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400" />
+                </Link>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -133,6 +139,9 @@ const Header = ({ session }: HeaderProps) => {
                 <Link href="/" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Inicio</Link>
                 <Link href="/tours" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tours</Link>
                 <Link href="/contact" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Contacto</Link>
+                {session && (
+                  <Link href="/wallet" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Mi Monedero</Link>
+                )}
               </nav>
             </div>
           </div>

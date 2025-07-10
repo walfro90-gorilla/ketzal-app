@@ -6,6 +6,7 @@ import { SupplierProvider } from "@/context/SupplierContext";
 import { UserProvider } from "@/context/UserContext";
 import { ServiceProvider } from "@/context/ServiceContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { WalletProvider } from "@/context/WalletContext";
 
 import Header from "@/components/header";
 import { auth } from "@/auth";
@@ -13,6 +14,8 @@ import { SessionProvider } from "next-auth/react";
 import AppWithLoader from '@/components/AppWithLoader'
 import { LoadingProvider } from '@/components/LoadingContext'
 import { CartProvider } from "@/context/CartContext";
+// TOOLS DE DEBUGGING (disponibles para activar si es necesario):
+// import SessionDebugger from "@/components/SessionDebugger";
 
 // FONTS  -  Geist and Geist Mono
 const geistSans = Geist({
@@ -37,11 +40,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  // AUTHENTICATION
+  // AUTHENTICATION - Solo sesión para header, no se pasa al cliente
   const session = await auth()
 
+  // DEBUGGING: Descomentar para logs de session en layout
   // console.log("session layout", session);
-  // console.log("LAyout after session")
 
   return (
     <html lang="en">
@@ -50,22 +53,26 @@ export default async function RootLayout({
       >
         <CartProvider>
           <ThemeProvider>
-            <SessionProvider session={session}>
+            <SessionProvider>
               <UserProvider>
-                <SupplierProvider>
-                  <ServiceProvider>
-                    <LoadingProvider>
-                      <AppWithLoader>
-                        <div className="layout">
-                          <Header session={session} />
-                          <main className="main-content">
-                            {children}
-                          </main>
-                        </div>
-                      </AppWithLoader>
-                    </LoadingProvider>
-                  </ServiceProvider>
-                </SupplierProvider>
+                <WalletProvider>
+                  <SupplierProvider>
+                    <ServiceProvider>
+                      <LoadingProvider>
+                        <AppWithLoader>
+                          <div className="layout">
+                            <Header session={session} />
+                            <main className="main-content">
+                              {children}
+                            </main>
+                            {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
+                            {/* <SessionDebugger /> */}
+                          </div>
+                        </AppWithLoader>
+                      </LoadingProvider>
+                    </ServiceProvider>
+                  </SupplierProvider>
+                </WalletProvider>
               </UserProvider>
             </SessionProvider>
           </ThemeProvider>
