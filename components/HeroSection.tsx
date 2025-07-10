@@ -6,26 +6,58 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const slides = [
   {
-    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1745054726/if2mczlahxvuce1fiili.png',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054726/if2mczlahxvuce1fiili.png',
     title: 'Tours & Viajes',
     subtitle: 'Agenda tu próxima aventura con nosotros',
   },
   {
-    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1745054798/rarnxbktkbcxillzavwg.png',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054798/rarnxbktkbcxillzavwg.png',
     title: 'Las Mejores Playas',
     subtitle: 'Descubre el Paraíso en la Tierra',
    
   },
   {
-    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/c_fill,w_1920,h_1080,q_auto,f_auto/v1745054794/kf4ebaedkpzoxq7zlci3.png',
+    image: 'https://res.cloudinary.com/dgmmzh8nb/image/upload/v1745054794/kf4ebaedkpzoxq7zlci3.png',
     title: 'Reconecta con la Naturaleza',
     subtitle: 'Explora los paisajes más hermosos del mundo',
   
   }
 ]
 
+// Función para generar URLs optimizadas para diferentes dispositivos
+const getOptimizedImageUrl = (baseUrl: string, isMobile: boolean = false) => {
+  const cloudinaryBase = 'https://res.cloudinary.com/dgmmzh8nb/image/upload/'
+  const imageId = baseUrl.split('/').pop()
+  
+  if (isMobile) {
+    // Para móviles: menor resolución, orientación vertical optimizada
+    return `${cloudinaryBase}c_fill,w_768,h_1024,q_auto,f_auto,dpr_auto/${imageId}`
+  } else {
+    // Para escritorio: alta resolución, orientación horizontal
+    return `${cloudinaryBase}c_fill,w_1920,h_1080,q_auto,f_auto,dpr_auto/${imageId}`
+  }
+}
+
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
+  // Distancia mínima para considerar un swipe
+  const minSwipeDistance = 50
+
+  // Detectar si es dispositivo móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length)
@@ -35,13 +67,42 @@ const HeroSection = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
+  // Manejo de gestos táctiles
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe) {
+      nextSlide()
+    } else if (isRightSwipe) {
+      prevSlide()
+    }
+  }
+
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000) // Auto advance every 5 seconds
     return () => clearInterval(timer)
   }, [])
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div 
+      className="relative h-screen w-full overflow-hidden"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Slides */}
       <div className="relative h-full w-full">
         {slides.map((slide, index) => (
@@ -54,10 +115,10 @@ const HeroSection = () => {
             {/* Image */}
             <div className="relative h-full w-full">
               <OptimizedImage
-                src={slide?.image ? slide.image : '/placeholder.svg'}
+                src={getOptimizedImageUrl(slide?.image ? slide.image : '/placeholder.svg', isMobile)}
                 alt={slide.title}
                 aspectRatio="auto"
-                sizes="100vw"
+                sizes={isMobile ? '100vw' : '(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw'}
                 className="object-cover h-full w-full"
                 priority={index === 0}
               />
@@ -66,16 +127,16 @@ const HeroSection = () => {
             </div>
 
             {/* Content */}
-            <div className="absolute inset-0 flex flex-col justify-center px-12">
+            <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-8 md:px-12 lg:px-16">
               <div className="max-w-4xl">
                 <h1 
-                  className={`text-5xl md:text-7xl font-bold text-white mb-4 transform transition-all duration-1000 delay-300
+                  className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-2 sm:mb-4 transform transition-all duration-1000 delay-300 leading-tight
                     ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
                 >
                   {slide.title}
                 </h1>
                 <p 
-                  className={`text-xl md:text-2xl text-white mb-8 transform transition-all duration-1000 delay-500
+                  className={`text-sm sm:text-base md:text-xl lg:text-2xl text-white mb-4 sm:mb-6 md:mb-8 transform transition-all duration-1000 delay-500 leading-relaxed
                     ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
                 >
                   {slide.subtitle}
@@ -89,28 +150,31 @@ const HeroSection = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full border-2 border-white/50 bg-black/20 hover:bg-black/40 transition-colors flex items-center justify-center group"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full border-2 border-white/50 bg-black/20 hover:bg-black/40 transition-colors flex items-center justify-center group backdrop-blur-sm"
+        aria-label="Anterior imagen"
       >
-        <ChevronLeft className="h-8 w-8 text-white opacity-50 group-hover:opacity-100" />
+        <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white opacity-50 group-hover:opacity-100" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full border-2 border-white/50 bg-black/20 hover:bg-black/40 transition-colors flex items-center justify-center group"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full border-2 border-white/50 bg-black/20 hover:bg-black/40 transition-colors flex items-center justify-center group backdrop-blur-sm"
+        aria-label="Siguiente imagen"
       >
-        <ChevronRight className="h-8 w-8 text-white opacity-50 group-hover:opacity-100" />
+        <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white opacity-50 group-hover:opacity-100" />
       </button>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`h-2 w-2 rounded-full transition-all ${
+            className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-all ${
               index === currentSlide 
-                ? 'w-8 bg-white' 
+                ? 'w-6 sm:w-8 bg-white' 
                 : 'bg-white/50 hover:bg-white/75'
             }`}
+            aria-label={`Ir a imagen ${index + 1}`}
           />
         ))}
       </div>

@@ -13,6 +13,7 @@ interface OptimizedImageProps {
   sizes?: string
   priority?: boolean
   style?: React.CSSProperties
+  placeholder?: 'blur' | 'empty'
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -25,6 +26,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   sizes = '100vw',
   priority = false,
   style,
+  placeholder = 'blur',
 }) => {
   const [imageError, setImageError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -56,6 +58,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   const placeholderSrc = '/placeholder.svg'
 
+  // Crear un placeholder blur para mejor UX
+  const blurDataURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjwvc3ZnPg=='
+
   if (imageError) {
     return (
       <div className={`bg-gray-200 flex items-center justify-center ${getAspectRatioClass()} ${className}`} style={style}>
@@ -68,7 +73,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   if (aspectRatio !== 'auto') {
     return (
       <div className={`relative ${getAspectRatioClass()} overflow-hidden`} style={style}>
-        {isLoading && (
+        {isLoading && placeholder === 'blur' && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
         <Image
@@ -77,9 +82,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           fill
           sizes={sizes}
           priority={priority}
-          className={`object-cover ${className}`}
+          className={`object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
           onError={handleError}
           onLoad={handleLoad}
+          placeholder={placeholder === 'blur' ? 'blur' : 'empty'}
+          blurDataURL={placeholder === 'blur' ? blurDataURL : undefined}
           unoptimized
         />
       </div>
@@ -90,7 +97,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   if (width && height) {
     return (
       <div className="relative" style={style}>
-        {isLoading && (
+        {isLoading && placeholder === 'blur' && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
         <Image
@@ -100,9 +107,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           height={height}
           sizes={sizes}
           priority={priority}
-          className={className}
+          className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
           onError={handleError}
           onLoad={handleLoad}
+          placeholder={placeholder === 'blur' ? 'blur' : 'empty'}
+          blurDataURL={placeholder === 'blur' ? blurDataURL : undefined}
           unoptimized
         />
       </div>
@@ -112,7 +121,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Para imágenes auto que deben llenar todo el contenedor padre
   return (
     <div className="relative h-full w-full" style={style}>
-      {isLoading && (
+      {isLoading && placeholder === 'blur' && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse" />
       )}
       <Image
@@ -121,9 +130,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         fill
         sizes={sizes}
         priority={priority}
-        className={className}
+        className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
         onError={handleError}
         onLoad={handleLoad}
+        placeholder={placeholder === 'blur' ? 'blur' : 'empty'}
+        blurDataURL={placeholder === 'blur' ? blurDataURL : undefined}
         unoptimized
       />
     </div>
