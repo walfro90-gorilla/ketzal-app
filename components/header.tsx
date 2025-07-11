@@ -21,6 +21,7 @@ import { Session } from 'next-auth' // Import the Session type
 import { Button } from "@/components/ui/button"
 import TopBar from './TopBar'
 import ThemeToggle from './ThemeToggle'
+import TravelPlannerSidebar from './travel-planner/TravelPlannerSidebar'
 
 interface HeaderProps {
   session: Session | null; // Use the Session type or null if session can be absent
@@ -86,12 +87,21 @@ const Header = ({ session }: HeaderProps) => {
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="/" className="text-gray-600 dark:text-gray-200 font-medium">Inicio</Link>
               <Link href="/tours" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tours</Link>
+              {session && (
+                <Link href="/planners" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Mis Planners</Link>
+              )}
               <Link href="/contact" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Contacto</Link>
             </nav>
 
-            {/* Search, Cart and Mobile Menu */}
+            {/* Search, Cart, Planner and Mobile Menu */}
             <div className="flex items-center space-x-4">
               <ThemeToggle />
+              
+              {/* Travel Planner */}
+              {session && (
+                <TravelPlannerSidebar />
+              )}
+              
               {/* Carrito de compras */}
               <Link href="/cart" className="relative">
                 <ShoppingCart className="h-6 w-6 text-gray-600 dark:text-gray-200" />

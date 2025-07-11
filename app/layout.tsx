@@ -7,6 +7,7 @@ import { UserProvider } from "@/context/UserContext";
 import { ServiceProvider } from "@/context/ServiceContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { WalletProvider } from "@/context/WalletContext";
+import { TravelPlannerProvider } from "@/context/TravelPlannerContext";
 
 import Header from "@/components/header";
 import { auth } from "@/auth";
@@ -56,22 +57,24 @@ export default async function RootLayout({
             <SessionProvider>
               <UserProvider>
                 <WalletProvider>
-                  <SupplierProvider>
-                    <ServiceProvider>
-                      <LoadingProvider>
-                        <AppWithLoader>
-                          <div className="layout">
-                            <Header session={session} />
-                            <main className="main-content">
-                              {children}
-                            </main>
-                            {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
-                            {/* <SessionDebugger /> */}
-                          </div>
-                        </AppWithLoader>
-                      </LoadingProvider>
-                    </ServiceProvider>
-                  </SupplierProvider>
+                  <TravelPlannerProvider>
+                    <SupplierProvider>
+                      <ServiceProvider>
+                        <LoadingProvider>
+                          <AppWithLoader>
+                            <div className="layout">
+                              <Header session={session} />
+                              <main className="main-content">
+                                {children}
+                              </main>
+                              {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
+                              {/* <SessionDebugger /> */}
+                            </div>
+                          </AppWithLoader>
+                        </LoadingProvider>
+                      </ServiceProvider>
+                    </SupplierProvider>
+                  </TravelPlannerProvider>
                 </WalletProvider>
               </UserProvider>
             </SessionProvider>

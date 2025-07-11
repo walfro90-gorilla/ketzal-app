@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { useCart } from "@/context/CartContext";
+import AddToPlannerButton from "@/components/travel-planner/AddToPlannerButton";
 
 interface TourPricingProps {
   packs?: { name: string; price: number; qty: number }[],
@@ -159,12 +160,29 @@ export function TourPricing({ packs, availableFrom, availableTo, originalPrice, 
                 }
               </span>
             </div>
-            <Button
-              className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800"
-              onClick={handleAddPack}
-              disabled={!selectedPack}>
-              Reservar Ahora
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800"
+                onClick={handleAddPack}
+                disabled={!selectedPack}>
+                Reservar Ahora
+              </Button>
+              <div className="flex-1">
+                {idService && title && selectedPack && (
+                  <AddToPlannerButton 
+                    serviceId={idService}
+                    serviceName={title}
+                    price={packs?.find(pack => pack.name === selectedPack)?.price || 0}
+                    imgBanner={bannerImage}
+                    packageType={selectedPack}
+                    packageDescription={`Paquete ${selectedPack}`}
+                    type="accommodation"
+                    variant="outline"
+                    size="default"
+                  />
+                )}
+              </div>
+            </div>
           </div>
 
         </div>

@@ -8,6 +8,7 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
 import { useLoading } from '@/components/LoadingContext'
+import AddToPlannerButton from '@/components/travel-planner/AddToPlannerButton'
 
 const { Search } = Input
 
@@ -157,9 +158,24 @@ export default function TourPage() {
                     <span className="text-xs text-gray-400 dark:text-gray-500">({tour.reviewCount || 0})</span>
                   </div>
                   <div className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">{tour.description}</div>
-                  <Link href={`/tours/${tour.id}`} className="block">
-                    <AntButton type="primary" className="w-full" onClick={(e) => { e.stopPropagation(); setLoading(true); }}>Ver detalles</AntButton>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link href={`/tours/${tour.id}`} className="flex-1">
+                      <AntButton type="primary" className="w-full" onClick={(e) => { e.stopPropagation(); setLoading(true); }}>Ver detalles</AntButton>
+                    </Link>
+                    <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                      <AddToPlannerButton 
+                        serviceId={tour.id.toString()}
+                        serviceName={tour.name}
+                        price={tour.price}
+                        imgBanner={tour.images?.imgBanner}
+                        location={tour.location}
+                        description={tour.description}
+                        type="tour"
+                        variant="outline"
+                        size="default"
+                      />
+                    </div>
+                  </div>
                   </div>
                 </AntCard>
               ))}
