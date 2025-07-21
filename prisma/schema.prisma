@@ -105,26 +105,55 @@ model Supplier {
   extras                                        Json?
   info                                          Json?
   supplierSubType                               String?
+  
+  // Campos de aprobación y relación con User
+  userId                                        String?
+  isApproved                                    Boolean   @default(false)
+  isPending                                     Boolean   @default(true)
+  approvedAt                                    DateTime?
+  approvedBy                                    String?
+  rejectedAt                                    DateTime?
+  rejectionReason                               String?
+  
+  // Relaciones
+  User                                          User?     @relation("SupplierOwner", fields: [userId], references: [id])
+  ApprovedBy                                    User?     @relation("SupplierApprover", fields: [approvedBy], references: [id])
   Service_Service_hotelProviderIDToSupplier     Service[] @relation("Service_hotelProviderIDToSupplier")
   Service_Service_supplierIdToSupplier          Service[] @relation("Service_supplierIdToSupplier")
   Service_Service_transportProviderIDToSupplier Service[] @relation("Service_transportProviderIDToSupplier")
-  User                                          User[]
+  UserSuppliers                                 User[]    @relation("UserSupplier")
 }
 
 model User {
-  id            String    @id
-  name          String?
-  email         String    @unique
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  role          Role      @default(admin)
-  supplierId    Int?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime
-  Account       Account[]
-  Review        Review[]
-  Supplier      Supplier? @relation(fields: [supplierId], references: [id])
+  id               String     @id @default(cuid())
+  name             String?
+  email            String     @unique
+  password         String?
+  emailVerified    DateTime?
+  image            String?
+  role             Role       @default(user)
+  status           UserStatus @default(PENDING_EMAIL_VERIFICATION)
+  supplierId       Int?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  
+  // Campos para solicitud de administrador (mantener por compatibilidad)
+  adminRequest     Boolean?   @default(false)
+  company          String?
+  serviceType      String?
+  city             String?
+  documentation    String?
+  rejectionReason  String?
+  approvedAt       DateTime?
+  rejectedAt       DateTime?
+  approvedBy       String?
+  
+  // Relaciones
+  Account          Account[]
+  Review           Review[]
+  Supplier         Supplier?  @relation("UserSupplier", fields: [supplierId], references: [id])
+  OwnedSuppliers   Supplier[] @relation("SupplierOwner")
+  ApprovedSuppliers Supplier[] @relation("SupplierApprover")
 }
 
 model VerificationToken {
@@ -134,7 +163,7 @@ model VerificationToken {
 }
 
 model global_locations {
-  id      BigInt @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   country String
   state   String
   city    String
@@ -144,4 +173,13 @@ enum Role {
   user
   admin
   superadmin
+}
+
+enum UserStatus {
+  PENDING_EMAIL_VERIFICATION
+  ACTIVE
+  PENDING_ADMIN_APPROVAL
+  ADMIN_APPROVED
+  ADMIN_REJECTED
+  SUSPENDED
 }

@@ -18,6 +18,7 @@ export type CartItem = {
 type CartContextType = {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
+  addItem: (item: { id: string; name: string; price: number; image?: string; quantity: number; category?: string }) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -90,6 +91,32 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // Función simplificada para productos físicos
+  const addItem = (item: { id: string; name: string; price: number; image?: string; quantity: number; category?: string }) => {
+    setItems((prev) => {
+      const cartItem: CartItem = {
+        id: item.id,
+        serviceId: item.id,
+        serviceName: item.name,
+        packageType: 'product', // Tipo especial para productos físicos
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        service: item.category || 'product'
+      };
+      
+      const found = prev.find((i) => i.id === item.id);
+      if (found) {
+        // Si ya existe, incrementar cantidad
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+        );
+      }
+      // Si no existe, agregar nuevo item
+      return [...prev, cartItem];
+    });
+  };
+
   const removeFromCart = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
   
   const clearCart = () => {
@@ -125,7 +152,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart, getGroupedItems, isHydrated }}>
+    <CartContext.Provider value={{ items, addToCart, addItem, removeFromCart, updateQuantity, clearCart, getGroupedItems, isHydrated }}>
       {children}
     </CartContext.Provider>
   );

@@ -8,10 +8,13 @@ const publicRoutes = [
   '/',
   '/login',
   '/register',
+  '/register-admin',
   "/api/auth/verify-email",
   '/tours/',
   '/tours',
   '/contact',
+  '/api/locations',
+  '/api/test-simple',
 ]
 
 function isPublicRoute(pathname: string) {
@@ -20,7 +23,8 @@ function isPublicRoute(pathname: string) {
     publicRoutes.includes(pathname) ||
     pathname.startsWith('/public') ||
     pathname.startsWith('/tours/') ||
-    pathname.startsWith('/api/auth') 
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/')
   );
 }
 

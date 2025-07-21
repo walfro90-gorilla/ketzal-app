@@ -179,6 +179,8 @@ export function TourPricing({ packs, availableFrom, availableTo, originalPrice, 
                     type="accommodation"
                     variant="outline"
                     size="default"
+                    availableFrom={availableFrom}
+                    availableTo={availableTo}
                   />
                 )}
               </div>

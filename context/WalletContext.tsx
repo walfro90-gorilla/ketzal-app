@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Wallet, WalletTransaction, AddFundsRequest, TransferRequest, ConvertCurrencyRequest } from '@/types/wallet';
-import { getWallet, addFunds, transferFunds, getTransactions, convertCurrency } from '@/app/(protected)/wallet/wallet.api';
+import { getWallet, addFunds, transferFunds, getTransactions, convertCurrency } from '@/lib/wallet-api';
 import { useAuthDetection } from '@/hooks/useAuthDetection';
 
 // 🐛 DEBUGGING - Cambiar a true para activar logs detallados del wallet

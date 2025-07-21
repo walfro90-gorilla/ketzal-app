@@ -1,5 +1,6 @@
 'use client'
-import { useEffect, useState } from 'react'
+
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input, Slider, Rate, Button as AntButton,  Card as AntCard } from 'antd'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,12 +9,11 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
 import { useLoading } from '@/components/LoadingContext'
-import AddToPlannerButton from '@/components/travel-planner/AddToPlannerButton'
 
 const { Search } = Input
 
 interface Tour {
-  id: string | number;
+  id: number;
   name: string;
   price: number;
   location?: string;
@@ -25,6 +25,11 @@ interface Tour {
     [key: string]: string | undefined;
   };
   serviceType?: string;
+  // Propiedades necesarias del API
+  availableFrom?: string;
+  availableTo?: string | null;
+  packageType?: string;
+  packageDescription?: string;
   // Add more fields as needed
 }
 
@@ -159,22 +164,9 @@ export default function TourPage() {
                   </div>
                   <div className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">{tour.description}</div>
                   <div className="flex gap-2">
-                    <Link href={`/tours/${tour.id}`} className="flex-1">
+                    <Link href={`/tours/${tour.id}`} className="w-full">
                       <AntButton type="primary" className="w-full" onClick={(e) => { e.stopPropagation(); setLoading(true); }}>Ver detalles</AntButton>
                     </Link>
-                    <div className="flex-1" onClick={(e) => e.stopPropagation()}>
-                      <AddToPlannerButton 
-                        serviceId={tour.id.toString()}
-                        serviceName={tour.name}
-                        price={tour.price}
-                        imgBanner={tour.images?.imgBanner}
-                        location={tour.location}
-                        description={tour.description}
-                        type="tour"
-                        variant="outline"
-                        size="default"
-                      />
-                    </div>
                   </div>
                   </div>
                 </AntCard>

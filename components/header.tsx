@@ -87,6 +87,7 @@ const Header = ({ session }: HeaderProps) => {
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="/" className="text-gray-600 dark:text-gray-200 font-medium">Inicio</Link>
               <Link href="/tours" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tours</Link>
+              <Link href="/store" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tienda</Link>
               {session && (
                 <Link href="/planners" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Mis Planners</Link>
               )}
@@ -148,6 +149,7 @@ const Header = ({ session }: HeaderProps) => {
               <nav className="flex flex-col space-y-4">
                 <Link href="/" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Inicio</Link>
                 <Link href="/tours" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tours</Link>
+                <Link href="/store" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tienda</Link>
                 <Link href="/contact" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Contacto</Link>
                 {session && (
                   <Link href="/wallet" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Mi Monedero</Link>

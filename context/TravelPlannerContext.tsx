@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { 
   TravelPlanner, 
   PlannerItem, 
+  PlannerCart,
   CreatePlannerRequest, 
   UpdatePlannerRequest,
   AddToPlannerRequest,
@@ -147,15 +148,18 @@ export const TravelPlannerProvider: React.FC<TravelPlannerProviderProps> = ({ ch
     const savedPlanners = loadPlannersFromStorage();
     const activeId = loadActivePlannerFromStorage();
     
+    // Migrar planners sin carrito
+    const migratedPlanners = migratePlannersWithoutCart(savedPlanners);
+    
     if (DEBUG_PLANNER) {
-      console.log('📦 Planners cargados desde localStorage:', savedPlanners);
+      console.log('📦 Planners cargados desde localStorage:', migratedPlanners);
       console.log('🎯 Active planner ID:', activeId);
     }
     
-    setPlanners(savedPlanners);
+    setPlanners(migratedPlanners);
     
     if (activeId) {
-      const activePlannerFound = savedPlanners.find(p => p.id === activeId);
+      const activePlannerFound = migratedPlanners.find(p => p.id === activeId);
       setActiveplannerState(activePlannerFound || null);
     }
     
@@ -178,14 +182,30 @@ export const TravelPlannerProvider: React.FC<TravelPlannerProviderProps> = ({ ch
     setError(null);
     
     try {
+      const plannerId = `planner_${Date.now()}`;
+      
+      // Crear carrito vacío para el planner
+      const emptyCart: PlannerCart = {
+        id: `cart_${plannerId}`,
+        plannerId: plannerId,
+        items: [],
+        subtotal: 0,
+        taxes: 0,
+        discount: 0,
+        total: 0,
+        currency: request.currency || 'MXN',
+        updatedAt: new Date()
+      };
+      
       const newPlanner: TravelPlanner = {
-        id: `planner_${Date.now()}`,
+        id: plannerId,
         name: request.name,
         description: request.description,
         destination: request.destination,
         startDate: request.startDate,
         endDate: request.endDate,
         budget: request.budget,
+        cart: emptyCart, // 🛒 Carrito integrado
         totalEstimated: 0,
         totalPaid: 0,
         items: [],
@@ -197,7 +217,13 @@ export const TravelPlannerProvider: React.FC<TravelPlannerProviderProps> = ({ ch
         autoGenerateItinerary: true
       };
 
-      setPlanners(prev => [...prev, newPlanner]);
+      setPlanners(prev => {
+        const updatedPlanners = [...prev, newPlanner];
+        // Guardar inmediatamente en localStorage para asegurar persistencia
+        savePlannersToStorage(updatedPlanners);
+        if (DEBUG_PLANNER) console.log('💾 Planners guardados inmediatamente:', updatedPlanners.length);
+        return updatedPlanners;
+      });
       setActiveplannerState(newPlanner);
       saveActivePlannerToStorage(newPlanner.id);
       
@@ -587,23 +613,50 @@ export const TravelPlannerProvider: React.FC<TravelPlannerProviderProps> = ({ ch
     for (const cartItem of migration.cartItems) {
       await addToPlanner({
         item: {
-          type: 'tour', // Default, podríamos inferir del cartItem
-          serviceId: cartItem.serviceId,
-          serviceName: cartItem.serviceName,
-          packageType: cartItem.packageType,
-          packageDescription: cartItem.packageDescription,
+          type: 'product', // Cambiar a product para consistencia con cart items
+          serviceId: cartItem.serviceId || cartItem.productId || '',
+          serviceName: cartItem.name,
+          packageType: cartItem.type,
+          packageDescription: cartItem.description || '',
           price: cartItem.price,
           quantity: cartItem.quantity,
-          availableQty: cartItem.availableQty,
+          availableQty: undefined,
           image: cartItem.image,
-          imgBanner: cartItem.imgBanner,
-          description: `Migrado desde carrito - ${cartItem.packageType}`
+          imgBanner: undefined,
+          description: `Migrado desde carrito - ${cartItem.name}`
         },
         plannerId
       });
     }
 
     return plannerId;
+  };
+
+  // Función para migrar planners sin carrito
+  const migratePlannersWithoutCart = (planners: TravelPlanner[]): TravelPlanner[] => {
+    return planners.map(planner => {
+      if (!planner.cart) {
+        if (DEBUG_PLANNER) console.log(`🔄 Migrando planner sin carrito: ${planner.name}`);
+        
+        const emptyCart: PlannerCart = {
+          id: `cart_${planner.id}`,
+          plannerId: planner.id,
+          items: [],
+          subtotal: 0,
+          taxes: 0,
+          discount: 0,
+          total: 0,
+          currency: planner.currency || 'MXN',
+          updatedAt: new Date()
+        };
+        
+        return {
+          ...planner,
+          cart: emptyCart
+        };
+      }
+      return planner;
+    });
   };
 
   // Funciones placeholder para funcionalidades futuras

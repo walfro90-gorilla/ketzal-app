@@ -1,0 +1,15 @@
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('PENDING_EMAIL_VERIFICATION', 'ACTIVE', 'PENDING_ADMIN_APPROVAL', 'ADMIN_APPROVED', 'ADMIN_REJECTED', 'SUSPENDED');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "adminRequest" BOOLEAN DEFAULT false,
+ADD COLUMN     "approvedAt" TIMESTAMP(3),
+ADD COLUMN     "approvedBy" TEXT,
+ADD COLUMN     "city" TEXT,
+ADD COLUMN     "company" TEXT,
+ADD COLUMN     "documentation" TEXT,
+ADD COLUMN     "rejectedAt" TIMESTAMP(3),
+ADD COLUMN     "rejectionReason" TEXT,
+ADD COLUMN     "serviceType" TEXT,
+ADD COLUMN     "status" "UserStatus" NOT NULL DEFAULT 'PENDING_EMAIL_VERIFICATION',
+ALTER COLUMN "role" SET DEFAULT 'user';

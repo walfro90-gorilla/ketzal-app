@@ -8,6 +8,7 @@ import { ServiceProvider } from "@/context/ServiceContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { WalletProvider } from "@/context/WalletContext";
 import { TravelPlannerProvider } from "@/context/TravelPlannerContext";
+import { PlannerCartProvider } from "@/context/PlannerCartContext";
 
 import Header from "@/components/header";
 import { auth } from "@/auth";
@@ -58,22 +59,24 @@ export default async function RootLayout({
               <UserProvider>
                 <WalletProvider>
                   <TravelPlannerProvider>
-                    <SupplierProvider>
-                      <ServiceProvider>
-                        <LoadingProvider>
-                          <AppWithLoader>
-                            <div className="layout">
-                              <Header session={session} />
-                              <main className="main-content">
-                                {children}
-                              </main>
-                              {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
-                              {/* <SessionDebugger /> */}
-                            </div>
-                          </AppWithLoader>
-                        </LoadingProvider>
-                      </ServiceProvider>
-                    </SupplierProvider>
+                    <PlannerCartProvider>
+                      <SupplierProvider>
+                        <ServiceProvider>
+                          <LoadingProvider>
+                            <AppWithLoader>
+                              <div className="layout">
+                                <Header session={session} />
+                                <main className="main-content">
+                                  {children}
+                                </main>
+                                {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
+                                {/* <SessionDebugger /> */}
+                              </div>
+                            </AppWithLoader>
+                          </LoadingProvider>
+                        </ServiceProvider>
+                      </SupplierProvider>
+                    </PlannerCartProvider>
                   </TravelPlannerProvider>
                 </WalletProvider>
               </UserProvider>

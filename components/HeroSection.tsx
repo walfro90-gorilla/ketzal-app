@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import OptimizedImage from './OptimizedImage'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ShoppingBag, Calendar, Compass } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const slides = [
   {
@@ -141,6 +143,31 @@ const HeroSection = () => {
                 >
                   {slide.subtitle}
                 </p>
+                
+                {/* Action Buttons */}
+                <div 
+                  className={`flex flex-wrap gap-3 sm:gap-4 transform transition-all duration-1000 delay-700
+                    ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                >
+                  <Link href="/tours">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Explorar Tours
+                    </Button>
+                  </Link>
+                  <Link href="/store">
+                    <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      Visitar Tienda
+                    </Button>
+                  </Link>
+                  <Link href="/planners">
+                    <Button variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
+                      <Compass className="h-4 w-4 mr-2" />
+                      Crear Planner
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

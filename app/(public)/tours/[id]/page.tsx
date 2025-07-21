@@ -1,7 +1,7 @@
 import { TourGallery } from '@/components/tour-gallery'
 import { TourHeader } from '@/components/tour-header'
 import { TourInfo } from '@/components/tour-info'
-import { TourPricing } from '@/components/tour-pricing'
+import { TourPricingWithSeats } from '@/components/tour-pricing-with-seats'
 import { TourLocation } from '@/components/tour-location'
 // import { TourBookingForm } from '@/components/tour-booking-form'
 import { LocalHighlights } from '@/components/local-highlights'
@@ -59,6 +59,19 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
     ? reviewsService.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / reviewsService.length 
     : 0;
   const reviewCount = reviewsService.length;
+
+  // Detectar automáticamente si el tour incluye transporte en bus
+  const hasBusTransport = 
+    service.description?.toLowerCase().includes('bus') ||
+    service.description?.toLowerCase().includes('transporte') ||
+    service.name?.toLowerCase().includes('tour') ||
+    transportProvider?.name?.toLowerCase().includes('bus') ||
+    transportProvider?.name?.toLowerCase().includes('transporte') ||
+    service.includes?.some((include: string) => 
+      include.toLowerCase().includes('transporte') || 
+      include.toLowerCase().includes('bus')
+    ) ||
+    false;
 
   // Map users to correct type for ReviewSection
   const mappedUsers = users.map((user) => ({
@@ -139,7 +152,7 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
               <TourGallery images={tourData.images} />
             </div>
             <div className="lg:col-span-4 space-y-6">
-              <TourPricing
+              <TourPricingWithSeats
                 packs={tourData.packs}
                 availableFrom={tourData.availableFrom}
                 availableTo={tourData.availableTo}
@@ -148,6 +161,13 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 title={tourData.name}
                 idService={tourData.id}
                 bannerImage={tourData.bannerImage}
+                hasBusTransport={hasBusTransport} // Detectado automáticamente
+                location={`${tourData.fromCity} - ${tourData.toCity}`}
+                description={tourData.description}
+                organizer={{
+                  name: tourData.organizer.name,
+                  logo: tourData.organizer.avatar
+                }}
               />
               <OrganizedBy
 

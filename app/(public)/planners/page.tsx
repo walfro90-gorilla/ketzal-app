@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,8 @@ import {
   Users, 
   Edit, 
   Trash2, 
-  Plus
+  Plus,
+  Eye
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -31,14 +33,16 @@ const PlannerCard: React.FC<{ planner: TravelPlanner; onEdit: (planner: TravelPl
   planner, 
   onEdit 
 }) => {
+  const router = useRouter();
   const { deletePlanner } = useTravelPlanner();
 
   const getStatusColor = (status: PlannerStatus) => {
     switch (status) {
       case 'draft': return 'bg-gray-100 text-gray-800 border-gray-300';
-      case 'active': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'completed': return 'bg-green-100 text-green-800 border-green-300';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-300';
+      case 'planning': return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'confirmed': return 'bg-green-100 text-green-800 border-green-300';
+      case 'paid': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+      case 'completed': return 'bg-purple-100 text-purple-800 border-purple-300';
       default: return 'bg-gray-100 text-gray-800 border-gray-300';
     }
   };
@@ -46,9 +50,10 @@ const PlannerCard: React.FC<{ planner: TravelPlanner; onEdit: (planner: TravelPl
   const getStatusText = (status: PlannerStatus) => {
     switch (status) {
       case 'draft': return 'Borrador';
-      case 'active': return 'Activo';
+      case 'planning': return 'Planificando';
+      case 'confirmed': return 'Confirmado';
+      case 'paid': return 'Pagado';
       case 'completed': return 'Completado';
-      case 'cancelled': return 'Cancelado';
       default: return 'Desconocido';
     }
   };
@@ -65,7 +70,6 @@ const PlannerCard: React.FC<{ planner: TravelPlanner; onEdit: (planner: TravelPl
         toast({
           title: "Error",
           description: "No se pudo eliminar el planner. Inténtalo de nuevo.",
-          variant: "destructive",
         });
       }
     }
@@ -89,7 +93,16 @@ const PlannerCard: React.FC<{ planner: TravelPlanner; onEdit: (planner: TravelPl
             <Button
               variant="outline"
               size="sm"
+              onClick={() => router.push(`/planners/${planner.id}`)}
+              title="Ver detalles"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => onEdit(planner)}
+              title="Editar"
             >
               <Edit className="h-4 w-4" />
             </Button>
@@ -98,6 +111,7 @@ const PlannerCard: React.FC<{ planner: TravelPlanner; onEdit: (planner: TravelPl
               size="sm"
               onClick={handleDelete}
               className="text-red-600 hover:text-red-700"
+              title="Eliminar"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -124,12 +138,12 @@ const PlannerCard: React.FC<{ planner: TravelPlanner; onEdit: (planner: TravelPl
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-gray-500" />
               <span className="text-gray-600">
-                ${planner.totalCost?.toLocaleString() || '0'}
+                ${planner.cart?.total?.toLocaleString() || '0'}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-600">{planner.participants || 1} personas</span>
+              <span className="text-gray-600">{planner.travelers || 1} personas</span>
             </div>
           </div>
 
@@ -162,7 +176,7 @@ const PlannerForm: React.FC<{
     startDate: planner?.startDate ? new Date(planner.startDate) : undefined,
     endDate: planner?.endDate ? new Date(planner.endDate) : undefined,
     budget: planner?.budget || 0,
-    participants: planner?.participants || 1,
+    travelers: planner?.travelers || 1,
     status: planner?.status || 'draft' as PlannerStatus,
   });
 
@@ -170,8 +184,8 @@ const PlannerForm: React.FC<{
     e.preventDefault();
     onSave({
       ...formData,
-      startDate: formData.startDate?.toISOString(),
-      endDate: formData.endDate?.toISOString(),
+      startDate: formData.startDate,
+      endDate: formData.endDate,
     });
   };
 
@@ -264,12 +278,12 @@ const PlannerForm: React.FC<{
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="participants">Participantes</Label>
+          <Label htmlFor="travelers">Viajeros</Label>
           <Input
-            id="participants"
+            id="travelers"
             type="number"
-            value={formData.participants}
-            onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) || 1 })}
+            value={formData.travelers}
+            onChange={(e) => setFormData({ ...formData, travelers: parseInt(e.target.value) || 1 })}
             min="1"
           />
         </div>
@@ -309,7 +323,6 @@ export default function PlannersPage() {
       toast({
         title: "Error",
         description: "No se pudo crear el planner. Inténtalo de nuevo.",
-        variant: "destructive",
       });
     }
   };
@@ -329,7 +342,6 @@ export default function PlannersPage() {
       toast({
         title: "Error",
         description: "No se pudo actualizar el planner. Inténtalo de nuevo.",
-        variant: "destructive",
       });
     }
   };
@@ -393,11 +405,11 @@ export default function PlannersPage() {
             Borradores ({planners.filter(p => p.status === 'draft').length})
           </Button>
           <Button
-            variant={filter === 'active' ? 'default' : 'outline'}
+            variant={filter === 'planning' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setFilter('active')}
+            onClick={() => setFilter('planning')}
           >
-            Activos ({planners.filter(p => p.status === 'active').length})
+            Planificando ({planners.filter(p => p.status === 'planning').length})
           </Button>
           <Button
             variant={filter === 'completed' ? 'default' : 'outline'}
@@ -414,7 +426,7 @@ export default function PlannersPage() {
             <div className="text-center">
               <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                {filter === 'all' ? 'No tienes planners de viaje' : `No tienes planners ${filter === 'draft' ? 'en borrador' : filter === 'active' ? 'activos' : 'completados'}`}
+                {filter === 'all' ? 'No tienes planners de viaje' : `No tienes planners ${filter === 'draft' ? 'en borrador' : filter === 'planning' ? 'planificando' : 'completados'}`}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Crea tu primer planner para comenzar a organizar tu próximo viaje

@@ -1,481 +1,194 @@
-'use client'
+"use client"
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, MapPin, Plus, Clock } from 'lucide-react';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-
-import { useTravelPlanner } from '@/context/TravelPlannerContext';
-import { PlannerItemType } from '@/types/travel-planner';
-import { toast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { usePlannerCart } from "@/context/PlannerCartContext";
+import { useTravelPlanner } from "@/context/TravelPlannerContext";
+import { CheckCircle2, Calendar } from "lucide-react";
 
 interface AddToPlannerButtonProps {
   serviceId: string;
   serviceName: string;
+  price: number;
+  imgBanner?: string;
   packageType?: string;
   packageDescription?: string;
-  price: number;
-  image?: string;
-  imgBanner?: string;
+  type: string;
+  variant?: "default" | "outline";
+  size?: "default" | "sm" | "lg";
+  // Fechas del servicio
+  availableFrom?: string;
+  availableTo?: string | null;
+  // Props adicionales para tours
   location?: string;
-  duration?: string;
   description?: string;
-  type?: PlannerItemType;
-  className?: string;
-  variant?: 'default' | 'outline' | 'secondary' | 'ghost';
-  size?: 'sm' | 'default' | 'lg';
 }
 
-const AddToPlannerButton: React.FC<AddToPlannerButtonProps> = ({
+export default function AddToPlannerButton({
   serviceId,
   serviceName,
-  packageType,
-  packageDescription,
   price,
-  image,
   imgBanner,
-  location,
-  duration,
-  description,
-  type = 'tour',
-  className,
-  variant = 'default',
-  size = 'default'
-}) => {
-  const { 
-    planners, 
-    activePlanner, 
-    addToPlanner, 
-    createPlanner,
-    setActivePlanner 
-  } = useTravelPlanner();
+  packageType = "Servicio",
+  packageDescription = "",
+  type,
+  variant = "default",
+  size = "default",
+  availableFrom,
+  availableTo,
+  location = "",
+  description = "",
+}: AddToPlannerButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [plannedTime, setPlannedTime] = useState('');
-  const [notes, setNotes] = useState('');
-  const [isCreatingPlanner, setIsCreatingPlanner] = useState(false);
-  const [newPlannerName, setNewPlannerName] = useState('');
-  const [newPlannerDestination, setNewPlannerDestination] = useState('');
+  const { addToCart, setActivePlanner: setCartActivePlanner } = usePlannerCart();
+  const { activePlanner, addToPlanner } = useTravelPlanner();
 
-  // Función para agregar directamente al planner activo
-  const handleQuickAdd = async () => {
-    if (!activePlanner) {
-      setIsDialogOpen(true);
+  // Determinar si es un servicio turístico (va al timeline) o producto (va al carrito)
+  const isService = type === 'service' || type === 'tour' || type === 'hotel' || type === 'transport' || type === 'activity';
+  const buttonText = isService ? "Agregar a Itinerario" : "Agregar al Planner";
+
+  const handleAddToPlanner = async () => {
+    if (!activePlanner?.id) {
+      console.error('❌ No hay planner activo seleccionado');
       return;
     }
 
-    const success = await addToPlanner({
-      item: {
-        type,
-        serviceId,
-        serviceName,
-        packageType,
-        packageDescription,
-        price,
-        quantity: 1,
-        image,
-        imgBanner,
-        location,
-        duration,
-        description: description || `${serviceName} - ${packageType || 'Servicio'}`
-      }
-    });
-
-    if (success) {
-      toast({
-        title: '¡Agregado al planner!',
-        description: `${serviceName} fue agregado a "${activePlanner.name}"`,
-      });
-    } else {
-      toast({
-        title: 'Error',
-        description: 'No se pudo agregar al planner',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // Función para agregar a un planner específico
-  const handleAddToSpecificPlanner = async (plannerId: string) => {
-    const success = await addToPlanner({
-      item: {
-        type,
-        serviceId,
-        serviceName,
-        packageType,
-        packageDescription,
-        price,
-        quantity: 1,
-        image,
-        imgBanner,
-        location,
-        duration,
-        description: description || `${serviceName} - ${packageType || 'Servicio'}`
-      },
-      plannerId,
-      plannedDate: selectedDate,
-      notes
-    });
-
-    if (success) {
-      const planner = planners.find(p => p.id === plannerId);
-      toast({
-        title: '¡Agregado al planner!',
-        description: `${serviceName} fue agregado a "${planner?.name}"`,
-      });
-      setIsDialogOpen(false);
-      resetForm();
-    } else {
-      toast({
-        title: 'Error',
-        description: 'No se pudo agregar al planner',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // Función para crear nuevo planner
-  const handleCreateNewPlanner = async () => {
-    if (!newPlannerName.trim() || !newPlannerDestination.trim()) {
-      toast({
-        title: 'Campos requeridos',
-        description: 'Por favor completa el nombre y destino del planner',
-        variant: 'destructive'
-      });
+    // Si es un servicio turístico, agregar al timeline
+    if (isService) {
+      await handleAddToTimeline();
       return;
     }
 
-    const plannerId = await createPlanner({
-      name: newPlannerName,
-      destination: newPlannerDestination
-    });
-
-    if (plannerId) {
-      // Agregar el item al nuevo planner
-      await handleAddToSpecificPlanner(plannerId);
-      setIsCreatingPlanner(false);
-      setNewPlannerName('');
-      setNewPlannerDestination('');
-    } else {
-      toast({
-        title: 'Error',
-        description: 'No se pudo crear el planner',
-        variant: 'destructive'
-      });
-    }
+    // Si es un producto, agregar directamente al carrito
+    await handleAddToCart();
   };
 
-  const resetForm = () => {
-    setSelectedDate(undefined);
-    setPlannedTime('');
-    setNotes('');
-  };
-
-  // Si no hay planners, mostrar opción de crear
-  if (planners.length === 0) {
-    return (
-      <>
-        <Button
-          onClick={() => setIsDialogOpen(true)}
-          className={className}
-          variant={variant}
-          size={size}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Crear Planner
-        </Button>
-
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Crear tu primer Travel Planner</DialogTitle>
-            </DialogHeader>
-            
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="plannerName">Nombre del planner</Label>
-                <Input
-                  id="plannerName"
-                  value={newPlannerName}
-                  onChange={(e) => setNewPlannerName(e.target.value)}
-                  placeholder="ej. Viaje a Oaxaca 2025"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="destination">Destino</Label>
-                <Input
-                  id="destination"
-                  value={newPlannerDestination}
-                  onChange={(e) => setNewPlannerDestination(e.target.value)}
-                  placeholder="ej. Oaxaca, México"
-                />
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  onClick={handleCreateNewPlanner}
-                  className="flex-1"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Crear y Agregar
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </>
-    );
-  }
-
-  // Si hay un planner activo, mostrar botón con dropdown
-  return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            className={className}
-            variant={variant}
-            size={size}
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            {activePlanner ? `Agregar a ${activePlanner.name}` : 'Agregar a Planner'}
-          </Button>
-        </DropdownMenuTrigger>
+  const handleAddToCart = async () => {
+    try {
+      setIsLoading(true);
+      console.log('🔍 handleAddToCart iniciado - Producto');
+      
+      // 🔧 SINCRONIZACIÓN FORZADA: Asegurar que PlannerCartContext esté sincronizado
+      if (activePlanner?.id) {
+        console.log('🔄 Sincronizando PlannerCartContext con activePlanner:', activePlanner.id);
+        setCartActivePlanner(activePlanner.id);
         
-        <DropdownMenuContent align="end" className="w-56">
-          {activePlanner && (
-            <DropdownMenuItem onClick={handleQuickAdd}>
-              <Plus className="h-4 w-4 mr-2" />
-              Agregar a &ldquo;{activePlanner.name}&rdquo;
-            </DropdownMenuItem>
-          )}
-          
-          <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-            <Calendar className="h-4 w-4 mr-2" />
-            Agregar con fecha específica
-          </DropdownMenuItem>
-          
-          {planners.length > 1 && activePlanner && (
-            <>
-              <hr className="my-1" />
-              {planners
-                .filter(p => p.id !== activePlanner.id)
-                .map(planner => (
-                  <DropdownMenuItem 
-                    key={planner.id}
-                    onClick={() => handleAddToSpecificPlanner(planner.id)}
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    Agregar a &ldquo;{planner.name}&rdquo;
-                  </DropdownMenuItem>
-                ))
-              }
-            </>
-          )}
-          
-          <hr className="my-1" />
-          <DropdownMenuItem onClick={() => setIsCreatingPlanner(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Crear nuevo planner
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        // Pequeña pausa para permitir que la sincronización se complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
 
-      {/* Dialog para agregar con detalles */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Agregar al Planner</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Información del servicio */}
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <h4 className="font-medium text-sm">{serviceName}</h4>
-              {packageType && (
-                <p className="text-sm text-gray-600">{packageType}</p>
-              )}
-              <p className="text-lg font-bold text-green-600">
-                ${price.toLocaleString()} MXN
-              </p>
-            </div>
+      const newItem = {
+        serviceId,
+        name: serviceName,
+        price,
+        quantity: 1,
+        type: type as "product" | "service",
+        image: imgBanner || '',
+        packageType,
+        description: packageDescription,
+        paymentOption: 'cash' as const
+      };
 
-            {/* Selector de planner */}
-            <div>
-              <Label>Planner de destino</Label>
-              <div className="space-y-2 mt-1">
-                {planners.map(planner => (
-                  <div
-                    key={planner.id}
-                    className={`p-2 border rounded cursor-pointer hover:bg-gray-50 ${
-                      planner.id === activePlanner?.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                    }`}
-                    onClick={() => setActivePlanner(planner.id)}
-                  >
-                    <div className="font-medium text-sm">{planner.name}</div>
-                    <div className="text-xs text-gray-500">{planner.destination}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+      const success = await addToCart(newItem, activePlanner!.id);
+      
+      if (success) {
+        console.log('✅ Producto agregado exitosamente al carrito');
+        console.log('🎯 PlannerId usado:', activePlanner!.id);
+        console.log('📦 Item agregado:', newItem);
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
+      } else {
+        console.error('❌ Error: No se pudo agregar el producto al carrito');
+      }
+    } catch (error) {
+      console.error('❌ Error en handleAddToCart:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-            {/* Fecha planificada */}
-            <div>
-              <Label>Fecha planificada (opcional)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal mt-1"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? (
-                      format(selectedDate, "PPP", { locale: es })
-                    ) : (
-                      "Seleccionar fecha"
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+  const handleAddToTimeline = async () => {
+    if (!availableFrom) {
+      console.error('❌ El servicio no tiene fecha de inicio disponible');
+      return;
+    }
 
-            {/* Hora planificada */}
-            {selectedDate && (
-              <div>
-                <Label htmlFor="plannedTime">Hora planificada (opcional)</Label>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Clock className="h-4 w-4 text-gray-400" />
-                  <Input
-                    id="plannedTime"
-                    type="time"
-                    value={plannedTime}
-                    onChange={(e) => setPlannedTime(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
+    try {
+      setIsLoading(true);
+      console.log('🔍 handleAddToTimeline iniciado - Servicio turístico', {
+        serviceId,
+        serviceName,
+        availableFrom,
+        availableTo
+      });
 
-            {/* Notas */}
-            <div>
-              <Label htmlFor="notes">Notas (opcional)</Label>
-              <Input
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Agregar notas sobre este item..."
-                className="mt-1"
-              />
-            </div>
+      // Usar las fechas del servicio directamente
+      const startDateTime = new Date(availableFrom);
 
-            <div className="flex gap-2 pt-4">
-              <Button 
-                onClick={() => activePlanner && handleAddToSpecificPlanner(activePlanner.id)}
-                className="flex-1"
-                disabled={!activePlanner}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar al Planner
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setIsDialogOpen(false);
-                  resetForm();
-                }}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      // Extraer horas por defecto (09:00 para inicio, 17:00 para fin)
+      const startTime = "09:00";
+      const endTime = "17:00";
 
-      {/* Dialog para crear nuevo planner */}
-      <Dialog open={isCreatingPlanner} onOpenChange={setIsCreatingPlanner}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Crear Nuevo Planner</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="newPlannerName">Nombre del planner</Label>
-              <Input
-                id="newPlannerName"
-                value={newPlannerName}
-                onChange={(e) => setNewPlannerName(e.target.value)}
-                placeholder="ej. Viaje a Oaxaca 2025"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="newDestination">Destino</Label>
-              <Input
-                id="newDestination"
-                value={newPlannerDestination}
-                onChange={(e) => setNewPlannerDestination(e.target.value)}
-                placeholder="ej. Oaxaca, México"
-              />
-            </div>
+      const request = {
+        item: {
+          type: type as "tour" | "hotel" | "transport" | "activity" | "service" | "product",
+          serviceId,
+          serviceName,
+          packageType,
+          packageDescription,
+          price,
+          quantity: 1,
+          plannedDate: startDateTime,
+          plannedTime: startTime,
+          priority: 'medium' as const,
+          image: imgBanner,
+          imgBanner,
+          location: packageDescription || location || '',
+          duration: `${startTime} - ${endTime}`,
+          description: packageDescription || description || '',
+          isConfirmed: false,
+          isPaid: false
+        },
+        plannedDate: startDateTime
+      };
 
-            <div className="flex gap-2 pt-4">
-              <Button 
-                onClick={handleCreateNewPlanner}
-                className="flex-1"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Crear Planner
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setIsCreatingPlanner(false);
-                  setNewPlannerName('');
-                  setNewPlannerDestination('');
-                }}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+      const success = await addToPlanner(request);
+      
+      if (success) {
+        console.log('✅ Servicio agregado exitosamente al timeline');
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
+      }
+    } catch (error) {
+      console.error('❌ Error en handleAddToTimeline:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      onClick={handleAddToPlanner}
+      disabled={isLoading || !activePlanner?.id}
+      className="w-full"
+    >
+      {isLoading ? (
+        "Agregando..."
+      ) : isAdded ? (
+        <>
+          <CheckCircle2 className="w-4 h-4 mr-2" />
+          Agregado
+        </>
+      ) : (
+        <>
+          {isService && <Calendar className="w-4 h-4 mr-2" />}
+          {buttonText}
+        </>
+      )}
+    </Button>
   );
-};
-
-export default AddToPlannerButton;
+}
