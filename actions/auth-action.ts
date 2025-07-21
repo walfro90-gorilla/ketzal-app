@@ -65,8 +65,9 @@ export const registerAction = async (
         // HASH PASSWORD
         const passwordHash = await bcrypt.hash(data.password, 10)
 
-        // Determinar el rol y estado inicial
+        // Determinar el rol inicial
         const isAdminRequest = values.adminRequest === true
+        const userRole = isAdminRequest ? 'admin' : 'user'
         
         // CREAR USUARIO
         const newUser = await db.user.create({
@@ -74,9 +75,9 @@ export const registerAction = async (
                 email: data.email,
                 name: data.name,
                 password: passwordHash,
-                adminRequest: isAdminRequest,
-                status: 'PENDING_EMAIL_VERIFICATION',
-                role: 'user' // Siempre inicia como user, se cambia a admin después de aprobación
+                role: userRole,
+                // emailVerified se mantiene null hasta que verifiquen el email
+                // axoCoinsEarned usa el default de 50
             }
         })
 
@@ -267,20 +268,38 @@ export const registerAdminAction = async (
         // HASH PASSWORD
         const passwordHash = await bcrypt.hash(data.password, 10)
 
-        // CREAR USUARIO ADMINISTRADOR
-        const newUser = await db.user.create({
-            data: {
-                email: data.email,
-                name: data.name,
-                password: passwordHash,
-                adminRequest: true,
-                company: data.company,
-                serviceType: data.serviceType,
-                city: data.city,
-                documentation: data.documentation,
-                status: 'PENDING_EMAIL_VERIFICATION',
-                role: 'user' // Inicia como user, se promociona después de aprobación
-            }
+        // Usar transacción para crear Usuario y Supplier
+        const result = await db.$transaction(async (tx) => {
+            // 1. Crear el Supplier primero
+            const newSupplier = await tx.supplier.create({
+                data: {
+                    name: data.company,
+                    contactEmail: data.email,
+                    phoneNumber: "", // Se puede actualizar después
+                    address: data.city,
+                    description: `Supplier for ${data.company}`,
+                    supplierType: data.serviceType,
+                    // documentation info se puede agregar en extras como JSON
+                    extras: {
+                        documentation: data.documentation,
+                        registrationInfo: "Admin registration"
+                    }
+                }
+            })
+
+            // 2. Crear el Usuario vinculado al Supplier
+            const newUser = await tx.user.create({
+                data: {
+                    email: data.email,
+                    name: data.name,
+                    password: passwordHash,
+                    role: 'admin',
+                    supplierId: newSupplier.id,
+                    // emailVerified se mantiene null hasta que verifiquen el email
+                }
+            })
+
+            return { user: newUser, supplier: newSupplier }
         })
 
         // Crear token de verificación y enviar email
