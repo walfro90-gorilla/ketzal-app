@@ -161,30 +161,38 @@ export const registerAdminActionV2 = async (
 
         // Usar transacción para crear ambos registros
         const result = await db.$transaction(async (tx) => {
-            // 1. Crear USUARIO (activo para navegar)
+            // 1. Crear USUARIO (inicia como user normal)
             const newUser = await tx.user.create({
                 data: {
                     email: data.email,
                     name: data.name,
                     password: passwordHash,
-                    status: 'PENDING_EMAIL_VERIFICATION', // Activo después de verificar email
-                    role: 'user', // Inicia como user normal
-                    adminRequest: true // Flag para saber que solicitó ser admin
+                    role: 'user', // Inicia como user normal, se promociona después de aprobación
+                    // emailVerified se mantiene null hasta verificación
                 }
             })
 
-            // 2. Crear SUPPLIER (pendiente de aprobación)
+            // 2. Crear SUPPLIER (usar extras para campos adicionales)
             const newSupplier = await tx.supplier.create({
                 data: {
                     name: data.company,
                     contactEmail: data.email,
-                    phoneNumber: data.phone,
+                    phoneNumber: data.phone || "",
                     description: data.documentation,
                     supplierType: data.serviceType,
                     address: data.city,
-                    userId: newUser.id,
-                    isApproved: false,
-                    isPending: true
+                    // Usar extras para información adicional
+                    extras: {
+                        isApproved: false,
+                        isPending: true,
+                        registrationData: {
+                            company: data.company,
+                            serviceType: data.serviceType,
+                            city: data.city,
+                            documentation: data.documentation
+                        },
+                        registrationDate: new Date().toISOString()
+                    }
                 }
             })
 
@@ -192,12 +200,7 @@ export const registerAdminActionV2 = async (
             await tx.user.update({
                 where: { id: newUser.id },
                 data: { 
-                    supplierId: newSupplier.id,
-                    // Mantener campos por compatibilidad
-                    company: data.company,
-                    serviceType: data.serviceType,
-                    city: data.city,
-                    documentation: data.documentation
+                    supplierId: newSupplier.id
                 }
             })
 
