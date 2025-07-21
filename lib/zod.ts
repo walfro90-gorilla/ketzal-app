@@ -10,6 +10,30 @@ export const signInSchema = object({
     .max(32, "Contraseña debe tener menos de 32 caractres"),
 })
 
+// Schema para solicitud de reset de contraseña
+export const forgotPasswordSchema = object({
+  email: string({ required_error: "Email es requerido" })
+    .min(1, "Email es requerido")
+    .email("Email invalido"),
+})
+
+// Schema para reset de contraseña con token
+export const resetPasswordSchema = object({
+  token: string({ required_error: "Token es requerido" })
+    .min(1, "Token es requerido"),
+  password: string({ required_error: "Nueva contraseña requerida" })
+    .min(1, "Nueva contraseña requerida")
+    .min(8, "La contraseña debe tener al menos 8 caracteres")
+    .max(32, "La contraseña debe tener menos de 32 caracteres"),
+  confirmPassword: string({ required_error: "Confirmación de contraseña requerida" })
+    .min(1, "Confirmación de contraseña requerida")
+    .min(8, "Confirmación de contraseña debe tener al menos 8 caracteres")
+    .max(32, "Confirmación de contraseña debe tener menos de 32 caracteres"),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+})
+
 export const signUpSchema = object({
   email: string({ required_error: "Email es requerido" })
     .min(1, "Email es requerido")

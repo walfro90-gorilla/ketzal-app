@@ -2,12 +2,12 @@
 
 import { signIn } from "@/auth";
 import { db } from "@/lib/db";
-import { signInSchema, signUpSchema, signUpAdminSchema } from "@/lib/zod";
+import { signInSchema, signUpSchema, signUpAdminSchema, forgotPasswordSchema, resetPasswordSchema } from "@/lib/zod";
 import { AuthError } from "next-auth";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
-import { sendEmailVerification } from "@/lib/mail";
+import { sendEmailVerification, sendPasswordResetEmail } from "@/lib/mail";
 
 export const loginAction = async (
     values: z.infer<typeof signInSchema> & { callbackUrl?: string }
@@ -317,4 +317,150 @@ export const registerAdminAction = async (
         return { error: "Ocurrió un error inesperado durante el registro de administrador. Inténtalo de nuevo." }
     }
 
+}
+
+// ===== FUNCIONES PARA RESET DE CONTRASEÑA =====
+
+export const forgotPasswordAction = async (
+    values: z.infer<typeof forgotPasswordSchema>
+) => {
+    try {
+        const { data, success } = forgotPasswordSchema.safeParse(values)
+        if (!success) {
+            return {
+                error: "Email no válido"
+            }
+        }
+
+        // Verificar si el usuario existe
+        const user = await db.user.findUnique({
+            where: {
+                email: data.email
+            }
+        })
+
+        // Por seguridad, siempre devolvemos el mismo mensaje aunque el usuario no exista
+        const successMessage = "Si existe una cuenta con este email, recibirás un enlace para restablecer tu contraseña."
+
+        if (!user) {
+            return {
+                success: true,
+                message: successMessage
+            }
+        }
+
+        // Crear token de reset (más corto que verificación, 1 hora)
+        const resetToken = nanoid()
+        
+        // Eliminar tokens de reset anteriores para este email
+        await db.passwordResetToken.deleteMany({
+            where: {
+                identifier: data.email
+            }
+        })
+
+        // Crear nuevo token de reset
+        await db.passwordResetToken.create({
+            data: {
+                identifier: data.email,
+                token: resetToken,
+                expires: new Date(Date.now() + 1000 * 60 * 60), // 1 hora
+            }
+        })
+
+        // Enviar email de reset
+        const emailResult = await sendPasswordResetEmail(data.email, resetToken)
+        
+        if (emailResult?.error) {
+            return {
+                error: "Error al enviar el email. Inténtalo de nuevo más tarde."
+            }
+        }
+
+        return {
+            success: true,
+            message: successMessage
+        }
+
+    } catch (error) {
+        console.log("forgot password error", error)
+        return { 
+            error: "Ocurrió un error inesperado. Inténtalo de nuevo." 
+        }
+    }
+}
+
+export const resetPasswordAction = async (
+    values: z.infer<typeof resetPasswordSchema>
+) => {
+    try {
+        const { data, success } = resetPasswordSchema.safeParse(values)
+        if (!success) {
+            return {
+                error: "Los datos proporcionados no son válidos"
+            }
+        }
+
+        // Verificar que el token existe y no ha expirado
+        const resetToken = await db.passwordResetToken.findFirst({
+            where: {
+                token: data.token,
+                expires: {
+                    gt: new Date()
+                }
+            }
+        })
+
+        if (!resetToken) {
+            return {
+                error: "El enlace de restablecimiento es inválido o ha expirado. Solicita uno nuevo."
+            }
+        }
+
+        // Buscar el usuario por email del token
+        const user = await db.user.findUnique({
+            where: {
+                email: resetToken.identifier
+            }
+        })
+
+        if (!user) {
+            return {
+                error: "Usuario no encontrado. Solicita un nuevo enlace de restablecimiento."
+            }
+        }
+
+        // Hash de la nueva contraseña
+        const newPasswordHash = await bcrypt.hash(data.password, 10)
+
+        // Usar transacción para actualizar contraseña y eliminar token
+        await db.$transaction(async (tx) => {
+            // Actualizar contraseña
+            await tx.user.update({
+                where: { id: user.id },
+                data: {
+                    password: newPasswordHash,
+                    updatedAt: new Date()
+                }
+            })
+
+            // Eliminar el token usado y otros tokens del mismo email
+            await tx.passwordResetToken.deleteMany({
+                where: {
+                    identifier: resetToken.identifier
+                }
+            })
+        })
+
+        return {
+            success: true,
+            message: "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña."
+        }
+
+    } catch (error) {
+        console.log("reset password error", error)
+        return { 
+            error: "Ocurrió un error inesperado. Inténtalo de nuevo." 
+        }
+    }
 }

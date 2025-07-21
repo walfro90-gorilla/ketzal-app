@@ -36,14 +36,21 @@ model Categories {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  description String?
-  price       Float
-  stock       Int
-  image       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
+  id             Int            @id @default(autoincrement())
+  name           String         @unique
+  description    String?
+  price          Float
+  stock          Int
+  image          String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+  category       String?
+  images         Json?
+  priceAxo       Float?
+  specifications Json?
+  tags           Json?
+  PlannerItem    PlannerItem[]
+  WishlistItem   WishlistItem[]
 }
 
 model Review {
@@ -58,7 +65,7 @@ model Review {
 }
 
 model Service {
-  id                                             Int       @id @default(autoincrement())
+  id                                             Int            @id @default(autoincrement())
   supplierId                                     Int
   name                                           String
   description                                    String?
@@ -66,7 +73,7 @@ model Service {
   location                                       String?
   availableFrom                                  DateTime?
   availableTo                                    DateTime?
-  createdAt                                      DateTime  @default(now())
+  createdAt                                      DateTime       @default(now())
   packs                                          Json?
   images                                         Json?
   ytLink                                         String?
@@ -81,13 +88,20 @@ model Service {
   excludes                                       Json?
   faqs                                           Json?
   itinerary                                      Json?
-  hotelProviderID                                Int?
   transportProviderID                            Int?
   dates                                          Json?
+  hotelProviderID                                Int?
+  addOns                                         Json?
+  currentBookings                                Int?           @default(0)
+  maxCapacity                                    Int?
+  priceAxo                                       Float?
+  seasonalPrices                                 Json?
+  PlannerItem                                    PlannerItem[]
   Review                                         Review[]
-  Supplier_Service_hotelProviderIDToSupplier     Supplier? @relation("Service_hotelProviderIDToSupplier", fields: [hotelProviderID], references: [id])
-  Supplier_Service_supplierIdToSupplier          Supplier  @relation("Service_supplierIdToSupplier", fields: [supplierId], references: [id])
-  Supplier_Service_transportProviderIDToSupplier Supplier? @relation("Service_transportProviderIDToSupplier", fields: [transportProviderID], references: [id])
+  Supplier_Service_hotelProviderIDToSupplier     Supplier?      @relation("Service_hotelProviderIDToSupplier", fields: [hotelProviderID], references: [id])
+  Supplier_Service_supplierIdToSupplier          Supplier       @relation("Service_supplierIdToSupplier", fields: [supplierId], references: [id])
+  Supplier_Service_transportProviderIDToSupplier Supplier?      @relation("Service_transportProviderIDToSupplier", fields: [transportProviderID], references: [id])
+  WishlistItem                                   WishlistItem[]
 }
 
 model Supplier {
@@ -105,19 +119,6 @@ model Supplier {
   extras                                        Json?
   info                                          Json?
   supplierSubType                               String?
-  
-  // Campos de aprobación y relación con User
-  userId                                        String?
-  isApproved                                    Boolean   @default(false)
-  isPending                                     Boolean   @default(true)
-  approvedAt                                    DateTime?
-  approvedBy                                    String?
-  rejectedAt                                    DateTime?
-  rejectionReason                               String?
-  
-  // Relaciones
-  User                                          User?     @relation("SupplierOwner", fields: [userId], references: [id])
-  ApprovedBy                                    User?     @relation("SupplierApprover", fields: [approvedBy], references: [id])
   Service_Service_hotelProviderIDToSupplier     Service[] @relation("Service_hotelProviderIDToSupplier")
   Service_Service_supplierIdToSupplier          Service[] @relation("Service_supplierIdToSupplier")
   Service_Service_transportProviderIDToSupplier Service[] @relation("Service_transportProviderIDToSupplier")
@@ -125,38 +126,34 @@ model Supplier {
 }
 
 model User {
-  id               String     @id @default(cuid())
-  name             String?
-  email            String     @unique
-  password         String?
-  emailVerified    DateTime?
-  image            String?
-  role             Role       @default(user)
-  status           UserStatus @default(PENDING_EMAIL_VERIFICATION)
-  supplierId       Int?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  
-  // Campos para solicitud de administrador (mantener por compatibilidad)
-  adminRequest     Boolean?   @default(false)
-  company          String?
-  serviceType      String?
-  city             String?
-  documentation    String?
-  rejectionReason  String?
-  approvedAt       DateTime?
-  rejectedAt       DateTime?
-  approvedBy       String?
-  
-  // Relaciones
-  Account          Account[]
-  Review           Review[]
-  Supplier         Supplier?  @relation("UserSupplier", fields: [supplierId], references: [id])
-  OwnedSuppliers   Supplier[] @relation("SupplierOwner")
-  ApprovedSuppliers Supplier[] @relation("SupplierApprover")
+  id             String          @id @default(cuid())
+  name           String?
+  email          String          @unique
+  password       String?
+  emailVerified  DateTime?
+  image          String?
+  role           Role            @default(admin)
+  supplierId     Int?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  axoCoinsEarned Float?          @default(50)
+  referralCode   String?
+  Account        Account[]
+  Payment        Payment[]
+  Review         Review[]
+  TravelPlanner  TravelPlanner[]
+  Supplier       Supplier?       @relation("UserSupplier", fields: [supplierId], references: [id])
+  Wallet         Wallet?
+  Wishlist       Wishlist[]
 }
 
 model VerificationToken {
+  identifier String   @id @unique
+  token      String
+  expires    DateTime
+}
+
+model PasswordResetToken {
   identifier String   @id @unique
   token      String
   expires    DateTime
@@ -169,17 +166,134 @@ model global_locations {
   city    String
 }
 
+model Payment {
+  id                 String         @id
+  plannerId          String?
+  userId             String
+  amountMXN          Float
+  amountAxo          Float?
+  status             PaymentStatus  @default(PENDING)
+  installments       Int            @default(1)
+  currentInstallment Int            @default(1)
+  dueDate            DateTime?
+  paidAt             DateTime?
+  paymentMethod      String?
+  transactionId      String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime
+  TravelPlanner      TravelPlanner? @relation(fields: [plannerId], references: [id])
+  User               User           @relation(fields: [userId], references: [id])
+}
+
+model PlannerItem {
+  id            String        @id
+  plannerId     String
+  serviceId     Int?
+  productId     Int?
+  quantity      Int           @default(1)
+  priceMXN      Float
+  priceAxo      Float?
+  selectedDate  DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  TravelPlanner TravelPlanner @relation(fields: [plannerId], references: [id], onDelete: Cascade)
+  Product       Product?      @relation(fields: [productId], references: [id])
+  Service       Service?      @relation(fields: [serviceId], references: [id])
+}
+
+model TravelPlanner {
+  id          String        @id
+  userId      String
+  name        String
+  destination String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      PlannerStatus @default(PLANNING)
+  totalMXN    Float         @default(0)
+  totalAxo    Float         @default(0)
+  isPublic    Boolean       @default(false)
+  shareCode   String?       @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  Payment     Payment[]
+  PlannerItem PlannerItem[]
+  User        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Wallet {
+  id                String              @id
+  userId            String              @unique
+  balanceMXN        Float               @default(0)
+  balanceAxo        Float               @default(0)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  User              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  WalletTransaction WalletTransaction[]
+}
+
+model WalletTransaction {
+  id          String                @id
+  walletId    String
+  type        WalletTransactionType
+  amountMXN   Float?
+  amountAxo   Float?
+  description String
+  reference   String?
+  createdAt   DateTime              @default(now())
+  Wallet      Wallet                @relation(fields: [walletId], references: [id], onDelete: Cascade)
+}
+
+model Wishlist {
+  id           String         @id
+  userId       String
+  name         String         @default("Mi Lista de Deseos")
+  isPublic     Boolean        @default(false)
+  shareCode    String?        @unique
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  User         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  WishlistItem WishlistItem[]
+}
+
+model WishlistItem {
+  id         String   @id
+  wishlistId String
+  serviceId  Int?
+  productId  Int?
+  priceAlert Float?
+  createdAt  DateTime @default(now())
+  Product    Product? @relation(fields: [productId], references: [id])
+  Service    Service? @relation(fields: [serviceId], references: [id])
+  Wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+}
+
 enum Role {
   user
   admin
   superadmin
 }
 
-enum UserStatus {
-  PENDING_EMAIL_VERIFICATION
-  ACTIVE
-  PENDING_ADMIN_APPROVAL
-  ADMIN_APPROVED
-  ADMIN_REJECTED
-  SUSPENDED
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  COMPLETED
+  REFUNDED
+}
+
+enum PlannerStatus {
+  PLANNING
+  RESERVED
+  CONFIRMED
+  TRAVELLING
+  COMPLETED
+}
+
+enum WalletTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  PURCHASE
+  REFUND
+  TRANSFER_SENT
+  TRANSFER_RECEIVED
+  REWARD
 }
