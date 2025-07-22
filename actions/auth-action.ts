@@ -8,6 +8,74 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { sendEmailVerification, sendPasswordResetEmail } from "@/lib/mail";
+import { createNotification, NotificationType, NotificationPriority } from "@/app/api/notifications/notifications.api";
+
+// Función auxiliar para obtener el super admin
+async function getSuperAdmin() {
+    return await db.user.findFirst({
+        where: {
+            role: 'superadmin'
+        }
+    });
+}
+
+// Función auxiliar para crear notificaciones de bienvenida para nuevos usuarios
+async function createWelcomeNotifications(userId: string, userEmail: string, userName: string, userRole: string) {
+    try {
+        const currentDate = new Date();
+        const coinsExpirationDate = new Date();
+        coinsExpirationDate.setDate(currentDate.getDate() + 365); // Los coins expiran en 1 año
+
+        // 1. Notificación de AXO Coins de Bienvenida
+        await createNotification({
+            userId: userId,
+            title: '🎁 ¡50 AXO Coins de Bienvenida!',
+            message: '¡Bienvenido a Ketzal! Te hemos regalado 50 AXO Coins para que comiences a explorar. Úsalos en tus próximas reservas y descubre experiencias increíbles.',
+            type: NotificationType.WELCOME_BONUS,
+            priority: NotificationPriority.HIGH,
+            metadata: {
+                coinsAmount: 50,
+                coinsGrantedDate: currentDate.toISOString(),
+                coinsExpirationDate: coinsExpirationDate.toISOString(),
+                welcomeBonus: true,
+                userId: userId,
+                userEmail: userEmail,
+                userName: userName,
+                userRole: userRole
+            },
+            actionUrl: '/wallet'
+        });
+
+        // 2. Notificación de Bienvenida General
+        await createNotification({
+            userId: userId,
+            title: '👋 ¡Bienvenido a Ketzal!',
+            message: 'Estamos emocionados de tenerte en nuestra comunidad. Explora destinos increíbles, vive experiencias únicas y conecta con los mejores proveedores de servicios turísticos.',
+            type: NotificationType.WELCOME_MESSAGE,
+            priority: NotificationPriority.NORMAL,
+            metadata: {
+                welcomeMessage: true,
+                userId: userId,
+                userEmail: userEmail,
+                userName: userName,
+                userRole: userRole,
+                registrationDate: currentDate.toISOString(),
+                tutorialLinks: {
+                    gettingStarted: '/help/getting-started',
+                    howToBook: '/help/how-to-book',
+                    axoCoins: '/help/axo-coins-guide'
+                }
+            },
+            actionUrl: userRole === 'admin' ? '/admin/dashboard' : '/explore'
+        });
+
+        console.log(`✅ Notificaciones de bienvenida creadas para usuario: ${userName} (${userEmail})`);
+        return true;
+    } catch (error) {
+        console.error('❌ Error creando notificaciones de bienvenida:', error);
+        return false;
+    }
+}
 
 export const loginAction = async (
     values: z.infer<typeof signInSchema> & { callbackUrl?: string }
@@ -93,6 +161,47 @@ export const registerAction = async (
         
         // Enviar email de verificación
         await sendEmailVerification(data.email, token)
+
+        // Enviar notificación a super-admin sobre nuevo registro de usuario
+        try {
+            const superAdmin = await getSuperAdmin();
+            if (superAdmin) {
+                const notificationTitle = isAdminRequest 
+                    ? '👤 Nueva Solicitud de Cuenta Administrador'
+                    : '🎉 Nuevo Usuario Registrado';
+                
+                const notificationMessage = isAdminRequest
+                    ? `${data.name} (${data.email}) ha solicitado una cuenta de administrador. Requiere revisión y aprobación.`
+                    : `${data.name} se ha registrado como nuevo usuario en la plataforma. Email: ${data.email}`;
+                
+                const notificationPriority = isAdminRequest ? NotificationPriority.HIGH : NotificationPriority.NORMAL;
+                
+                await createNotification({
+                    userId: superAdmin.id,
+                    title: notificationTitle,
+                    message: notificationMessage,
+                    type: NotificationType.USER_REGISTRATION,
+                    priority: notificationPriority,
+                    metadata: {
+                        userId: newUser.id,
+                        userName: data.name,
+                        userEmail: data.email,
+                        userRole: userRole,
+                        isAdminRequest: isAdminRequest,
+                        registrationDate: new Date().toISOString(),
+                        requiresApproval: isAdminRequest
+                    },
+                    actionUrl: isAdminRequest ? `/admin/users/${newUser.id}` : `/admin/users`
+                });
+                
+                console.log(`✅ Notificación enviada al super admin (${superAdmin.email}) sobre nuevo ${isAdminRequest ? 'admin' : 'usuario'}: ${data.name}`);
+            } else {
+                console.log('⚠️  No se encontró super admin para enviar notificación');
+            }
+        } catch (notificationError) {
+            console.error('❌ Error enviando notificación al super admin:', notificationError);
+            // No fallar el registro si la notificación falla
+        }
 
         // Mensaje de respuesta diferente para admin vs user
         const message = isAdminRequest
@@ -241,7 +350,34 @@ export const registerAdminActionV2 = async (
         // Enviar email de verificación
         await sendEmailVerification(data.email, token)
 
-        // TODO: Enviar notificación a super-admin sobre nueva solicitud de proveedor
+        // Enviar notificación a super-admin sobre nueva solicitud de proveedor
+        try {
+            const superAdmin = await getSuperAdmin();
+            if (superAdmin) {
+                await createNotification({
+                    userId: superAdmin.id,
+                    title: '🏢 Nueva Solicitud de Proveedor Turístico',
+                    message: `${data.name} (${data.company}) ha solicitado convertirse en proveedor de servicios turísticos. Tipo: ${data.serviceType}. Requiere aprobación.`,
+                    type: NotificationType.SUPPLIER_APPROVAL,
+                    priority: NotificationPriority.HIGH,
+                    metadata: {
+                        supplierId: result.supplier.id,
+                        userId: result.user.id,
+                        supplierName: data.company,
+                        supplierEmail: data.email,
+                        serviceType: data.serviceType,
+                        registrationDate: new Date().toISOString()
+                    },
+                    actionUrl: `/admin/suppliers/${result.supplier.id}` // URL para revisar la solicitud
+                });
+                console.log(`✅ Notificación enviada al super admin (${superAdmin.email}) sobre nueva solicitud de proveedor: ${data.company}`);
+            } else {
+                console.log('⚠️  No se encontró super admin para enviar notificación');
+            }
+        } catch (notificationError) {
+            console.error('❌ Error enviando notificación al super admin:', notificationError);
+            // No fallar el registro si la notificación falla
+        }
         
         return { 
             success: true, 
