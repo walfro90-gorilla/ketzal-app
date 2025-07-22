@@ -32,7 +32,7 @@ model Categories {
   image       String?
   description String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime @updatedAt
 }
 
 model Product {
@@ -145,6 +145,7 @@ model User {
   Supplier       Supplier?       @relation("UserSupplier", fields: [supplierId], references: [id])
   Wallet         Wallet?
   Wishlist       Wishlist[]
+  Notification   Notification[]
 }
 
 model VerificationToken {
@@ -296,4 +297,51 @@ enum WalletTransactionType {
   TRANSFER_SENT
   TRANSFER_RECEIVED
   REWARD
+}
+
+enum UserStatus {
+  PENDING_EMAIL_VERIFICATION
+  ACTIVE
+  PENDING_ADMIN_APPROVAL
+  ADMIN_APPROVED
+  ADMIN_REJECTED
+  SUSPENDED
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean  @default(false)
+  priority  NotificationPriority @default(NORMAL)
+  metadata  Json?
+  actionUrl String?
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  SUPPLIER_APPROVAL
+  BOOKING_UPDATE
+  SYSTEM_UPDATE
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }

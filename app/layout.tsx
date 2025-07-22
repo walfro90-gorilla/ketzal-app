@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 import { SupplierProvider } from "@/context/SupplierContext";
 import { UserProvider } from "@/context/UserContext";
@@ -69,6 +70,12 @@ export default async function RootLayout({
                                 <main className="main-content">
                                   {children}
                                 </main>
+                                <Toaster 
+                                  position="top-right" 
+                                  richColors 
+                                  closeButton
+                                  duration={4000}
+                                />
                                 {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
                                 {/* <SessionDebugger /> */}
                               </div>

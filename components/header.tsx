@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button"
 import TopBar from './TopBar'
 import ThemeToggle from './ThemeToggle'
 import TravelPlannerSidebar from './travel-planner/TravelPlannerSidebar'
+import NotificationBell from './notification-bell'
 
 interface HeaderProps {
   session: Session | null; // Use the Session type or null if session can be absent
@@ -117,6 +118,11 @@ const Header = ({ session }: HeaderProps) => {
                 <Link href="/wallet" className="relative" title="Mi Monedero">
                   <Wallet className="h-6 w-6 text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400" />
                 </Link>
+              )}
+              
+              {/* Notifications Bell */}
+              {session?.user?.id && (
+                <NotificationBell userId={session.user.id} />
               )}
               <Button
                 variant="ghost"

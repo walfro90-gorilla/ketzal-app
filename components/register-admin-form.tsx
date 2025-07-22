@@ -394,12 +394,45 @@ export default function RegisterAdminForm() {
                       <span>Teléfono de Contacto</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="+52 614 123 4567"
-                        type='tel'
-                        className="h-11"
-                        {...field}
-                      />
+                      <div className="flex space-x-2">
+                        {/* Selector de código de país */}
+                        <Select
+                          defaultValue="+52"
+                          onValueChange={(value) => {
+                            // Al cambiar el código de país, actualiza el valor del campo phone con el nuevo prefijo si no está presente
+                            if (!field.value?.startsWith(value)) {
+                              field.onChange(value + ' ' + (field.value?.replace(/^\+\d+\s*/, '') || ''));
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="h-11 w-32 min-w-[110px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="+52">🇲🇽 +52 MX</SelectItem>
+                            <SelectItem value="+1">🇺🇸 +1 USA</SelectItem>
+                            <SelectItem value="+57">🇨🇴 +57 Colombia</SelectItem>
+                            <SelectItem value="+34">🇪🇸 +34 España</SelectItem>
+                            <SelectItem value="+51">🇵🇪 +51 Perú</SelectItem>
+                            <SelectItem value="+54">🇦🇷 +54 Argentina</SelectItem>
+                            <SelectItem value="+56">🇨🇱 +56 Chile</SelectItem>
+                            {/* Agrega más países si lo deseas */}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          placeholder="614 123 4567"
+                          type='tel'
+                          className="h-11 flex-1"
+                          {...field}
+                          value={field.value?.replace(/^\+\d+\s*/, '') || ''}
+                          onChange={e => {
+                            // Mantener el prefijo seleccionado al editar el número
+                            const prefixMatch = field.value?.match(/^\+\d+/);
+                            const prefix = prefixMatch ? prefixMatch[0] : '+52';
+                            field.onChange(prefix + ' ' + e.target.value);
+                          }}
+                        />
+                      </div>
                     </FormControl>
                     <p className="text-xs text-gray-500">
                       📱 Este número será usado para WhatsApp y llamadas de soporte
