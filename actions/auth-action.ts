@@ -181,7 +181,7 @@ export const registerAdminActionV2 = async (
                     description: data.documentation,
                     supplierType: data.serviceType,
                     address: data.city,
-                    // Usar extras para información adicional
+                    // Usar extras para información adicional y digitalPresence para redes sociales
                     extras: {
                         isApproved: false,
                         isPending: true,
@@ -189,9 +189,30 @@ export const registerAdminActionV2 = async (
                             company: data.company,
                             serviceType: data.serviceType,
                             city: data.city,
-                            documentation: data.documentation
+                            documentation: data.documentation,
+                            // Información adicional
+                            experienceYears: data.experienceYears || null,
+                            businessLanguages: data.businessLanguages || null,
+                            taxId: data.taxId || null,
+                            whatsappBusiness: data.whatsappBusiness || null
                         },
                         registrationDate: new Date().toISOString()
+                    },
+                    // Usar info para almacenar la presencia digital (redes sociales)
+                    info: {
+                        digitalPresence: {
+                            website: data.website || null,
+                            facebook: data.facebook || null,
+                            instagram: data.instagram || null,
+                            tiktok: data.tiktok || null,
+                            youtube: data.youtube || null
+                        },
+                        businessInfo: {
+                            languages: data.businessLanguages ? data.businessLanguages.split(',').map(lang => lang.trim()) : [],
+                            experience: data.experienceYears || null,
+                            taxId: data.taxId || null,
+                            whatsappBusiness: data.whatsappBusiness || null
+                        }
                     }
                 }
             })

@@ -35,13 +35,24 @@ const TopBar = ({ session }: { session: Session | null }) => {
         </div>
       </Link>
       <br />
-      <Link href={""} onClick={async () => await signOut()}>
-        <div className="flex items-center">
-          <LogOut className="h-4 w-4 mr-1" />
-          Logout
-        </div>
-
-      </Link>
+      <button 
+        onClick={async () => {
+          try {
+            await signOut({
+              callbackUrl: '/login',
+              redirect: true
+            });
+          } catch (error) {
+            console.error('Error during logout:', error);
+            // En caso de error, redirigir manualmente
+            window.location.href = '/login';
+          }
+        }}
+        className="flex items-center hover:bg-gray-100 p-1 rounded cursor-pointer"
+      >
+        <LogOut className="h-4 w-4 mr-1" />
+        Logout
+      </button>
 
     </div>
   );

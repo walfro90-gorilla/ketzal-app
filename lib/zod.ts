@@ -71,7 +71,7 @@ export const signUpAdminSchema = object({
     .min(1, "Nombre de usuario es obligatorio.")
     .max(32, "El nombre debe tener menos de 32 caracteres"),
   
-  // Campos adicionales para administradores
+  // Campos adicionales para administradores (requeridos)
   company: string({ required_error: "Nombre de la empresa es requerido" })
     .min(1, "Nombre de la empresa es requerido")
     .max(100, "El nombre de la empresa debe tener menos de 100 caracteres"),
@@ -85,6 +85,17 @@ export const signUpAdminSchema = object({
     .max(15, "El número debe tener máximo 15 dígitos")
     .regex(/^[\+]?[\d\s\-\(\)]+$/, "Formato de teléfono inválido"),
   documentation: string().optional(),
+  
+  // Campos opcionales - Presencia Digital y Datos Adicionales
+  website: string().url("URL de sitio web inválida").optional().or(string().length(0)),
+  facebook: string().url("URL de Facebook inválida").optional().or(string().length(0)),
+  instagram: string().optional(), // Puede ser handle (@usuario) o URL
+  tiktok: string().optional(), // Puede ser handle (@usuario) o URL
+  youtube: string().url("URL de YouTube inválida").optional().or(string().length(0)),
+  whatsappBusiness: string().optional(),
+  experienceYears: string().optional(),
+  businessLanguages: string().optional(), // JSON string con array de idiomas
+  taxId: string().optional(), // RFC, RUC, Tax ID
 }).refine(data => data.password === data.confirmPassword, {
   message: "La contraseña no es valida",
   path: ["confirmPassword"],

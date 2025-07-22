@@ -11,16 +11,17 @@ const LogoutButton = () => {
     const handleClick = async () => {
         try {
             setIsLoading(true)
-            // Logout sin redirección automática
+            // Logout con redirección a login
             await signOut({
-                redirect: false
+                callbackUrl: '/login',
+                redirect: true
             })
-            // Redirección forzada al home usando window.location
-            window.location.href = '/'
         } catch (error) {
             console.error('Error during logout:', error)
-            // En caso de error, también redirigir al home
-            window.location.href = '/'
+            // En caso de error, también redirigir al login
+            window.location.href = '/login'
+        } finally {
+            setIsLoading(false)
         }
     }
 

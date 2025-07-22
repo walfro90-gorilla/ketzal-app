@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Building2, Briefcase, Mail, Lock, User, FileText, Shield, Phone, Check, X, Loader2 } from "lucide-react";
+import { MapPin, Building2, Briefcase, Mail, Lock, User, FileText, Shield, Phone, Check, X, Loader2, Globe, Facebook, Instagram, Music, Youtube, MessageCircle, Calendar, Languages, FileCheck, ChevronDown, ChevronUp } from "lucide-react";
 
 import {
   Form,
@@ -39,6 +39,18 @@ export default function RegisterAdminForm() {
     isChecking: boolean;
   }>({ available: null, message: '', isChecking: false });
 
+  const [emailStatus, setEmailStatus] = useState<{
+    available: boolean | null;
+    message: string;
+    isChecking: boolean;
+  }>({ available: null, message: '', isChecking: false });
+
+  const [phoneStatus, setPhoneStatus] = useState<{
+    available: boolean | null;
+    message: string;
+    isChecking: boolean;
+  }>({ available: null, message: '', isChecking: false });
+
   const [locations, setLocations] = useState<{
     countries: { value: string; label: string }[];
     states: { value: string; label: string }[];
@@ -46,6 +58,9 @@ export default function RegisterAdminForm() {
     selectedCountry: string;
     selectedState: string;
   }>({ countries: [], states: [], cities: [], selectedCountry: '', selectedState: '' });
+
+  // Estado para controlar la sección desplegable opcional
+  const [isOptionalSectionExpanded, setIsOptionalSectionExpanded] = useState(false);
 
   // FLAG PARA PROBAR NUEVA FUNCIONALIDAD
   const USE_NEW_VERSION = true; // Cambiar a false para usar versión anterior
@@ -62,6 +77,16 @@ export default function RegisterAdminForm() {
       city: '',
       phone: '',
       documentation: '',
+      // Nuevos campos opcionales
+      website: '',
+      facebook: '',
+      instagram: '',
+      tiktok: '',
+      youtube: '',
+      whatsappBusiness: '',
+      experienceYears: '',
+      businessLanguages: '',
+      taxId: '',
     },
   });
 
@@ -93,24 +118,127 @@ export default function RegisterAdminForm() {
     }
   }, []);
 
-  // Debounce para la validación del nombre de empresa
+  // Función para validar email
+  const checkEmail = useCallback(async (email: string) => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailStatus({ available: null, message: '', isChecking: false });
+      return;
+    }
+
+    setEmailStatus(prev => ({ ...prev, isChecking: true }));
+
+    try {
+      const response = await fetch(`/api/check-user-email?email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+      
+      setEmailStatus({
+        available: data.available,
+        message: data.message,
+        isChecking: false
+      });
+    } catch (error) {
+      console.error('Error checking email:', error);
+      setEmailStatus({
+        available: null,
+        message: 'Error al verificar email',
+        isChecking: false
+      });
+    }
+  }, []);
+
+  // Función para validar teléfono
+  const checkPhone = useCallback(async (phone: string) => {
+    if (!phone || phone.length < 8) {
+      setPhoneStatus({ available: null, message: '', isChecking: false });
+      return;
+    }
+
+    setPhoneStatus(prev => ({ ...prev, isChecking: true }));
+
+    try {
+      const response = await fetch(`/api/check-user-phone?phone=${encodeURIComponent(phone)}`);
+      const data = await response.json();
+      
+      setPhoneStatus({
+        available: data.available,
+        message: data.message,
+        isChecking: false
+      });
+    } catch (error) {
+      console.error('Error checking phone:', error);
+      setPhoneStatus({
+        available: null,
+        message: 'Error al verificar teléfono',
+        isChecking: false
+      });
+    }
+  }, []);
+
+  // Debounce para la validación del nombre de empresa - solo observa el campo company
   useEffect(() => {
-    const subscription = form.watch((value) => {
-      const companyName = value.company;
-      if (!companyName) {
-        setCompanyNameStatus({ available: null, message: '', isChecking: false });
-        return;
+    const subscription = form.watch((value, { name }) => {
+      // Solo procesar si el campo que cambió es 'company'
+      if (name === 'company') {
+        const companyName = value.company;
+        if (!companyName) {
+          setCompanyNameStatus({ available: null, message: '', isChecking: false });
+          return;
+        }
+
+        const timeoutId = setTimeout(() => {
+          checkCompanyName(companyName);
+        }, 500); // 500ms de debounce
+
+        return () => clearTimeout(timeoutId);
       }
-
-      const timeoutId = setTimeout(() => {
-        checkCompanyName(companyName);
-      }, 500); // 500ms de debounce
-
-      return () => clearTimeout(timeoutId);
     });
 
     return () => subscription.unsubscribe();
   }, [checkCompanyName, form]);
+
+  // Debounce para la validación del email - solo observa el campo email
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      // Solo procesar si el campo que cambió es 'email'
+      if (name === 'email') {
+        const email = value.email;
+        if (!email) {
+          setEmailStatus({ available: null, message: '', isChecking: false });
+          return;
+        }
+
+        const timeoutId = setTimeout(() => {
+          checkEmail(email);
+        }, 500); // 500ms de debounce
+
+        return () => clearTimeout(timeoutId);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [checkEmail, form]);
+
+  // Debounce para la validación del teléfono - solo observa el campo phone
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      // Solo procesar si el campo que cambió es 'phone'
+      if (name === 'phone') {
+        const phone = value.phone;
+        if (!phone) {
+          setPhoneStatus({ available: null, message: '', isChecking: false });
+          return;
+        }
+
+        const timeoutId = setTimeout(() => {
+          checkPhone(phone);
+        }, 500); // 500ms de debounce
+
+        return () => clearTimeout(timeoutId);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [checkPhone, form]);
 
   // Cargar países al montar el componente
   useEffect(() => {
@@ -251,13 +379,35 @@ export default function RegisterAdminForm() {
                           <span>Email</span>
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="tu@empresa.com"
-                            type='email'
-                            className="h-11"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              placeholder="tu@empresa.com"
+                              type='email'
+                              className={`h-11 pr-8 ${
+                                emailStatus.available === true ? 'border-green-500 bg-green-50' :
+                                emailStatus.available === false ? 'border-red-500 bg-red-50' : ''
+                              }`}
+                              {...field}
+                            />
+                            {emailStatus.isChecking && (
+                              <Loader2 className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                            )}
+                            {!emailStatus.isChecking && emailStatus.available === true && (
+                              <Check className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+                            )}
+                            {!emailStatus.isChecking && emailStatus.available === false && (
+                              <X className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
+                            )}
+                          </div>
                         </FormControl>
+                        {emailStatus.message && (
+                          <p className={`text-xs mt-1 ${
+                            emailStatus.available === true ? 'text-green-600' : 
+                            emailStatus.available === false ? 'text-red-600' : 'text-gray-500'
+                          }`}>
+                            {emailStatus.message}
+                          </p>
+                        )}
                         <FormDescription>
                           Este será tu email para acceder a la plataforma.
                         </FormDescription>
@@ -419,21 +569,43 @@ export default function RegisterAdminForm() {
                             {/* Agrega más países si lo deseas */}
                           </SelectContent>
                         </Select>
-                        <Input
-                          placeholder="614 123 4567"
-                          type='tel'
-                          className="h-11 flex-1"
-                          {...field}
-                          value={field.value?.replace(/^\+\d+\s*/, '') || ''}
-                          onChange={e => {
-                            // Mantener el prefijo seleccionado al editar el número
-                            const prefixMatch = field.value?.match(/^\+\d+/);
-                            const prefix = prefixMatch ? prefixMatch[0] : '+52';
-                            field.onChange(prefix + ' ' + e.target.value);
-                          }}
-                        />
+                        <div className="relative flex-1">
+                          <Input
+                            placeholder="614 123 4567"
+                            type='tel'
+                            className={`h-11 pr-8 ${
+                              phoneStatus.available === true ? 'border-green-500 bg-green-50' :
+                              phoneStatus.available === false ? 'border-red-500 bg-red-50' : ''
+                            }`}
+                            {...field}
+                            value={field.value?.replace(/^\+\d+\s*/, '') || ''}
+                            onChange={e => {
+                              // Mantener el prefijo seleccionado al editar el número
+                              const prefixMatch = field.value?.match(/^\+\d+/);
+                              const prefix = prefixMatch ? prefixMatch[0] : '+52';
+                              field.onChange(prefix + ' ' + e.target.value);
+                            }}
+                          />
+                          {phoneStatus.isChecking && (
+                            <Loader2 className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                          )}
+                          {!phoneStatus.isChecking && phoneStatus.available === true && (
+                            <Check className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+                          )}
+                          {!phoneStatus.isChecking && phoneStatus.available === false && (
+                            <X className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
+                          )}
+                        </div>
                       </div>
                     </FormControl>
+                    {phoneStatus.message && (
+                      <p className={`text-xs mt-1 ${
+                        phoneStatus.available === true ? 'text-green-600' : 
+                        phoneStatus.available === false ? 'text-red-600' : 'text-gray-500'
+                      }`}>
+                        {phoneStatus.message}
+                      </p>
+                    )}
                     <p className="text-xs text-gray-500">
                       📱 Este número será usado para WhatsApp y llamadas de soporte
                     </p>
@@ -499,6 +671,292 @@ export default function RegisterAdminForm() {
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* Sección Opcional Desplegable - Presencia Digital y Datos Adicionales */}
+            <div className="border border-blue-200 rounded-lg bg-blue-50/30 p-1">
+              <button
+                type="button"
+                onClick={() => setIsOptionalSectionExpanded(!isOptionalSectionExpanded)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <Globe className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      📱 Presencia Digital y Datos Adicionales
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Opcional pero ayuda significativamente a acelerar tu aprobación
+                    </p>
+                  </div>
+                </div>
+                {isOptionalSectionExpanded ? (
+                  <ChevronUp className="h-5 w-5 text-blue-600" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-blue-600" />
+                )}
+              </button>
+
+              {isOptionalSectionExpanded && (
+                <div className="px-4 pb-4 space-y-6 border-t border-blue-200 bg-white rounded-lg mx-4 mb-4">
+                  <div className="pt-4 space-y-6">
+                    
+                    {/* Redes Sociales y Sitio Web */}
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <Globe className="h-4 w-4 text-blue-600" />
+                        <h4 className="font-medium text-gray-900">Presencia Digital</h4>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Website */}
+                        <FormField
+                          control={form.control}
+                          name="website"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Globe className="h-4 w-4 text-gray-500" />
+                                <span>Sitio Web</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="https://tuempresa.com"
+                                  type="url"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Facebook */}
+                        <FormField
+                          control={form.control}
+                          name="facebook"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Facebook className="h-4 w-4 text-blue-600" />
+                                <span>Facebook</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="https://facebook.com/tuempresa"
+                                  type="url"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Instagram */}
+                        <FormField
+                          control={form.control}
+                          name="instagram"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Instagram className="h-4 w-4 text-pink-600" />
+                                <span>Instagram</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="@tuempresa o https://instagram.com/tuempresa"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* TikTok */}
+                        <FormField
+                          control={form.control}
+                          name="tiktok"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Music className="h-4 w-4 text-gray-900" />
+                                <span>TikTok</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="@tuempresa o https://tiktok.com/@tuempresa"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* YouTube */}
+                        <FormField
+                          control={form.control}
+                          name="youtube"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Youtube className="h-4 w-4 text-red-600" />
+                                <span>YouTube</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="https://youtube.com/@tucanal"
+                                  type="url"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* WhatsApp Business */}
+                        <FormField
+                          control={form.control}
+                          name="whatsappBusiness"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <MessageCircle className="h-4 w-4 text-green-600" />
+                                <span>WhatsApp Business</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="+52 614 123 4567"
+                                  type="tel"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription className="text-xs">
+                                Número dedicado para atención al cliente
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Información Adicional */}
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <FileCheck className="h-4 w-4 text-green-600" />
+                        <h4 className="font-medium text-gray-900">Información Adicional</h4>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Años de experiencia */}
+                        <FormField
+                          control={form.control}
+                          name="experienceYears"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4 text-gray-500" />
+                                <span>Años de Experiencia</span>
+                              </FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="h-11">
+                                    <SelectValue placeholder="Selecciona tu experiencia" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="1-2">🌱 1-2 años</SelectItem>
+                                  <SelectItem value="3-5">🌿 3-5 años</SelectItem>
+                                  <SelectItem value="6-10">🌳 6-10 años</SelectItem>
+                                  <SelectItem value="11-15">🏆 11-15 años</SelectItem>
+                                  <SelectItem value="15+">👑 Más de 15 años</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Idiomas del equipo */}
+                        <FormField
+                          control={form.control}
+                          name="businessLanguages"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <Languages className="h-4 w-4 text-gray-500" />
+                                <span>Idiomas del Equipo</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Ej: Español, Inglés, Francés"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription className="text-xs">
+                                Separa con comas los idiomas que maneja tu equipo
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* RFC/Tax ID */}
+                        <FormField
+                          control={form.control}
+                          name="taxId"
+                          render={({ field }) => (
+                            <FormItem className="md:col-span-2">
+                              <FormLabel className="flex items-center space-x-2">
+                                <FileCheck className="h-4 w-4 text-gray-500" />
+                                <span>RFC / Tax ID / RUC</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Tu número de identificación fiscal"
+                                  className="h-11"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription className="text-xs">
+                                🔒 Ayuda a validar que tu empresa está legalmente registrada
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="text-blue-600 text-xl">💡</div>
+                        <div>
+                          <h4 className="font-medium text-blue-900 mb-1">¿Por qué es importante esta información?</h4>
+                          <p className="text-sm text-blue-700">
+                            Estos datos nos ayudan a verificar tu empresa más rápidamente y mostrar tu negocio 
+                            de forma más atractiva a los viajeros. <strong>Mientras más información proporciones, 
+                            más rápida será tu aprobación.</strong>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Contraseñas */}
