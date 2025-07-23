@@ -21,12 +21,12 @@ import {
 import { toast } from 'sonner'
 
 import { 
-  getPendingAdminRequests, 
-  approveAdminRequest, 
-  rejectAdminRequest, 
-  getSystemStats,
-  getAllSuppliers
-} from '@/actions/super-admin-actions'
+  fetchSuppliers, 
+  fetchPendingAdminRequests, 
+  approveSupplier, 
+  rejectSupplier, 
+  fetchSystemStats
+} from '@/lib/api/super-admin-api'
 
 interface PendingRequest {
   supplierId: number
@@ -99,11 +99,10 @@ export default function SuperAdminPanel() {
   const loadData = async () => {
     try {
       const [requests, systemStats, suppliers] = await Promise.all([
-        getPendingAdminRequests(),
-        getSystemStats(),
-        getAllSuppliers()
+        fetchPendingAdminRequests(),
+        fetchSystemStats(),
+        fetchSuppliers()
       ])
-      
       setPendingRequests(requests)
       setStats(systemStats)
       setAllSuppliers(suppliers)
@@ -118,14 +117,9 @@ export default function SuperAdminPanel() {
   const handleApprove = async (supplierId: number) => {
     setActionLoading(supplierId)
     try {
-      const result = await approveAdminRequest(supplierId)
-      
-      if (result.success) {
-        toast.success(result.message)
-        await loadData() // Recargar datos
-      } else {
-        toast.error(result.error || 'Error al aprobar solicitud')
-      }
+      const result = await approveSupplier(supplierId)
+      toast.success(result.message || 'Solicitud aprobada')
+      await loadData()
     } catch (error) {
       toast.error('Error inesperado al aprobar solicitud')
     } finally {
@@ -136,14 +130,9 @@ export default function SuperAdminPanel() {
   const handleReject = async (supplierId: number) => {
     setActionLoading(supplierId)
     try {
-      const result = await rejectAdminRequest(supplierId, 'Rechazado por super-admin')
-      
-      if (result.success) {
-        toast.success(result.message)
-        await loadData() // Recargar datos
-      } else {
-        toast.error(result.error || 'Error al rechazar solicitud')
-      }
+      const result = await rejectSupplier(supplierId, 'Rechazado por super-admin')
+      toast.success(result.message || 'Solicitud rechazada')
+      await loadData()
     } catch (error) {
       toast.error('Error inesperado al rechazar solicitud')
     } finally {
@@ -263,8 +252,8 @@ export default function SuperAdminPanel() {
             </Card>
           ) : (
             <div className="space-y-4">
-              {pendingRequests.map((request) => (
-                <Card key={request.supplierId} className="border-l-4 border-l-orange-500">
+              {pendingRequests.map((request, idx) => (
+                <Card key={request.supplierId ?? `pending-${idx}`} className="border-l-4 border-l-orange-500">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
@@ -387,8 +376,8 @@ export default function SuperAdminPanel() {
               </Card>
             ) : (
               <div className="space-y-4">
-                {allSuppliers.map((supplier) => (
-                  <Card key={supplier.id} className={`border-l-4 ${
+                {allSuppliers.map((supplier, idx) => (
+                  <Card key={supplier.id ?? `supplier-${idx}`} className={`border-l-4 ${
                     supplier.statusColor === 'green' 
                       ? 'border-l-green-500' 
                       : supplier.statusColor === 'red' 
@@ -448,8 +437,8 @@ export default function SuperAdminPanel() {
                       {supplier.UserSuppliers && supplier.UserSuppliers.length > 0 && (
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-gray-900 mb-2">Usuario Asociado:</h4>
-                          {supplier.UserSuppliers.map((user) => (
-                            <div key={user.id} className="grid grid-cols-2 gap-4 text-sm">
+                          {supplier.UserSuppliers.map((user, idx) => (
+                            <div key={user.id ?? `user-${idx}`} className="grid grid-cols-2 gap-4 text-sm">
                               <div>
                                 <span className="font-medium">Nombre:</span> {user.name}
                               </div>
