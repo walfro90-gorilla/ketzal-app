@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import PlannerCreateConfirmDialog from './PlannerCreateConfirmDialog';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -306,18 +307,44 @@ export default function PlannersPage() {
   const [selectedPlanner, setSelectedPlanner] = useState<TravelPlanner | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filter, setFilter] = useState<PlannerStatus | 'all'>('all');
+  const [pendingCreateData, setPendingCreateData] = useState<Partial<TravelPlanner> | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const filteredPlanners = planners.filter(p => 
     filter === 'all' || p.status === filter
   );
 
+  // Handler para crear planner, ahora muestra el modal de confirmación
   const handleCreatePlanner = async (data: Partial<TravelPlanner>) => {
+    // Mapear solo los campos válidos para CreatePlannerRequest
+    const mapped: import('@/types/travel-planner').CreatePlannerRequest = {
+      name: data.name || '',
+      destination: data.destination || '',
+      description: data.description || '',
+      startDate: data.startDate instanceof Date ? data.startDate : (typeof data.startDate === 'string' ? new Date(data.startDate) : undefined),
+      endDate: data.endDate instanceof Date ? data.endDate : (typeof data.endDate === 'string' ? new Date(data.endDate) : undefined),
+      budget: typeof data.budget === 'number' ? data.budget : undefined,
+      travelers: typeof data.travelers === 'number' ? data.travelers : undefined,
+      currency: data.currency || 'USD',
+    };
+    setPendingCreateData(mapped);
+    setShowConfirm(true);
+  };
+
+  // Confirmación avanzada: ejecuta el create sólo si el usuario confirma
+  const confirmCreatePlanner = async () => {
+    if (!pendingCreateData) return;
+    setShowConfirm(false);
     try {
-      await createPlanner(data as Omit<TravelPlanner, 'id' | 'items' | 'createdAt' | 'updatedAt' | 'totalCost'>);
+      await createPlanner(
+        pendingCreateData as Omit<TravelPlanner, 'id' | 'items' | 'createdAt' | 'updatedAt' | 'totalCost'>,
+        async () => true // Confirmación ya fue dada por el modal
+      );
       setIsFormOpen(false);
+      setPendingCreateData(null);
       toast({
         title: "Planner creado",
-        description: `El planner "${data.name}" ha sido creado exitosamente.`,
+        description: `El planner "${pendingCreateData.name}" ha sido creado exitosamente.`,
       });
     } catch {
       toast({
@@ -329,7 +356,6 @@ export default function PlannersPage() {
 
   const handleUpdatePlanner = async (data: Partial<TravelPlanner>) => {
     if (!selectedPlanner) return;
-    
     try {
       await updatePlanner(selectedPlanner.id, data);
       setSelectedPlanner(null);
@@ -386,6 +412,13 @@ export default function PlannersPage() {
               />
             </DialogContent>
           </Dialog>
+          {/* Modal de confirmación avanzado para crear planner */}
+          <PlannerCreateConfirmDialog
+            open={showConfirm}
+            onConfirm={confirmCreatePlanner}
+            onCancel={() => { setShowConfirm(false); setPendingCreateData(null); }}
+            plannerName={pendingCreateData?.name || ''}
+          />
         </div>
 
         {/* Filtros */}

@@ -21,7 +21,6 @@ import { Session } from 'next-auth' // Import the Session type
 import { Button } from "@/components/ui/button"
 import TopBar from './TopBar'
 import ThemeToggle from './ThemeToggle'
-import TravelPlannerSidebar from './travel-planner/TravelPlannerSidebar'
 import NotificationBell from './notification-bell'
 
 interface HeaderProps {
@@ -98,11 +97,6 @@ const Header = ({ session }: HeaderProps) => {
             {/* Search, Cart, Planner and Mobile Menu */}
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              
-              {/* Travel Planner */}
-              {session && (
-                <TravelPlannerSidebar />
-              )}
               
               {/* Carrito de compras */}
               <Link href="/cart" className="relative">

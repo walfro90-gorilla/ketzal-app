@@ -28,13 +28,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     session({ session, token }) {
       if (session.user) {
-      
         session.user.role = token.role;
         session.user.supplierId = token.supplierId;
         session.user.id = token.id;
-        
       }
-      return session
+      // Agregar el JWT como accessToken para el frontend
+      session.accessToken = token?.accessToken || token?.access_token || token?.jti || token?.sub || null;
+      return session;
     },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user

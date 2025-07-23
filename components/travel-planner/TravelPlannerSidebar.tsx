@@ -45,12 +45,6 @@ const TravelPlannerSidebar: React.FC = () => {
     }).format(price);
   };
 
-  const getTotalCombined = () => {
-    const cartTotal = activeCart?.total || 0;
-    const plannerTotal = activePlanner ? getPlannerSummary(activePlanner.id).totalCost : 0;
-    return cartTotal + plannerTotal;
-  };
-
   const navigateToPlanner = (plannerId: string) => {
     setActivePlanner(plannerId);
     setCartActivePlanner(plannerId); // Sincronizar con PlannerCartContext
@@ -77,21 +71,6 @@ const TravelPlannerSidebar: React.FC = () => {
           >
             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </Button>
-        </div>
-        
-        {/* Combined Totals */}
-        <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-950/30 dark:to-blue-950/30 rounded-lg">
-          <div className="text-sm text-gray-600 dark:text-gray-300">Total Combinado</div>
-          <div className="text-xl font-bold text-emerald-600">{formatPrice(getTotalCombined())}</div>            <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-              <div className="flex items-center gap-1">
-                <ShoppingCart className="w-3 h-3" />
-                <span>Carrito: {formatPrice(activeCart?.total || 0)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                <span>Cronograma: {formatPrice(activePlanner ? getPlannerSummary(activePlanner.id).totalCost : 0)}</span>
-              </div>
-            </div>
         </div>
       </div>
 

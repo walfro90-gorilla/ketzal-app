@@ -40,6 +40,11 @@ export interface PlannerCartItem {
   paymentOption: PaymentOption;
   installmentPlan?: InstallmentPlan;
   
+  // 🔄 COMPATIBILIDAD TEMPORAL - Para migración gradual
+  plannedDate?: Date; // Para items que se agregaron con fecha
+  isPaid?: boolean; // Para tracking de pagos legacy
+  isConfirmed?: boolean; // Para confirmación de servicios legacy
+  
   // Metadata
   image?: string;
   category?: string;
@@ -124,6 +129,10 @@ export interface TravelPlanner {
   description?: string;
   destination: string;
   
+  // 👤 PROPIETARIO Y PRIVACIDAD
+  userId: string; // ID del usuario que creó el planner
+  isPrivate: boolean; // Para futuras funciones de compartir
+  
   // Fechas del viaje
   startDate?: Date;
   endDate?: Date;
@@ -133,6 +142,9 @@ export interface TravelPlanner {
   
   // 📅 TIMELINE - Servicios turísticos con fecha
   timeline: PlannerTimeline;
+  
+  // 🔄 BACKWARD COMPATIBILITY - Para migración gradual
+  items: PlannerCartItem[]; // Array requerido para compatibilidad
   
   // Presupuesto y pagos (sumatoria de cart + timeline)
   budget?: number;
@@ -159,6 +171,7 @@ export interface TravelPlanner {
 export interface PlannerDay {
   date: Date;
   timelineServices: TimelineService[]; // Solo servicios del timeline
+  items: PlannerCartItem[]; // 🔄 COMPATIBILIDAD: Para items legacy con fecha
   totalCost: number;
   notes?: string;
 }
