@@ -12,7 +12,7 @@ import { TravelPlannerProvider } from "@/context/TravelPlannerContext";
 import { PlannerCartProvider } from "@/context/PlannerCartContext";
 
 import Header from "@/components/header";
-import { auth } from "@/auth";
+
 import { SessionProvider } from "next-auth/react";
 import AppWithLoader from '@/components/AppWithLoader'
 import { LoadingProvider } from '@/components/LoadingContext'
@@ -44,7 +44,7 @@ export default async function RootLayout({
 }>) {
 
   // AUTHENTICATION - Solo sesión para header, no se pasa al cliente
-  const session = await auth()
+  // const session = await auth()
 
   // DEBUGGING: Descomentar para logs de session en layout
   // console.log("session layout", session);
@@ -66,7 +66,7 @@ export default async function RootLayout({
                           <LoadingProvider>
                             <AppWithLoader>
                               <div className="layout">
-                                <Header session={session} />
+                                <Header />
                                 <main className="main-content">
                                   {children}
                                 </main>

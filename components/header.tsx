@@ -8,7 +8,7 @@ import { useCart } from '@/context/CartContext'
 // Import Link from 'next/link'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Session } from 'next-auth' // Import the Session type
+import { useSession } from 'next-auth/react'
 
 // Import components
 // import {
@@ -23,11 +23,8 @@ import TopBar from './TopBar'
 import ThemeToggle from './ThemeToggle'
 import NotificationBell from './notification-bell'
 
-interface HeaderProps {
-  session: Session | null; // Use the Session type or null if session can be absent
-}
-
-const Header = ({ session }: HeaderProps) => {
+const Header = () => {
+  const { data: session } = useSession();
   
   // const scrollDirection = useScrollDirection()
   const [showTopBar, setShowTopBar] = useState(true)
@@ -57,7 +54,7 @@ const Header = ({ session }: HeaderProps) => {
       <div
         className={`transform transition-transform duration-300 ${showTopBar ? 'translate-y-0' : '-translate-y-full'}`}
       >
-        <TopBar session={session} />
+        <TopBar />
       </div>
 
       {/* Main Navigation */}
@@ -87,10 +84,7 @@ const Header = ({ session }: HeaderProps) => {
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="/" className="text-gray-600 dark:text-gray-200 font-medium">Inicio</Link>
               <Link href="/tours" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tours</Link>
-              <Link href="/store" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tienda</Link>
-              {session && (
-                <Link href="/planners" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Mis Planners</Link>
-              )}
+              {/* <Link href="/store" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Tienda</Link> */}
               <Link href="/contact" className="text-gray-600 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">Contacto</Link>
             </nav>
 
@@ -149,7 +143,7 @@ const Header = ({ session }: HeaderProps) => {
               <nav className="flex flex-col space-y-4">
                 <Link href="/" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Inicio</Link>
                 <Link href="/tours" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tours</Link>
-                <Link href="/store" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tienda</Link>
+                {/* <Link href="/store" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Tienda</Link> */}
                 <Link href="/contact" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Contacto</Link>
                 {session && (
                   <Link href="/wallet" className="text-foreground text-lg font-medium" onClick={() => setShowMobileMenu(false)}>Mi Monedero</Link>

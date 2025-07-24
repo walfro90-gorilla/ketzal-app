@@ -34,13 +34,14 @@ import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
-import { Session } from 'next-auth'
+import { signOut, useSession } from 'next-auth/react'
 import { useTravelPlanner } from '@/context/TravelPlannerContext'
 import { usePlannerCart } from '@/context/PlannerCartContext'
 import { useLoading } from '@/components/LoadingContext'
 
-const TopBar = ({ session }: { session: Session | null }) => {
+
+const TopBar = () => {
+  const { data: session } = useSession();
 
   useLoading();
   
@@ -432,6 +433,12 @@ const TopBar = ({ session }: { session: Session | null }) => {
                     <DropdownMenuItem className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
                       <Calendar className="mr-2 h-4 w-4" />
                       <span>Mis Planners</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/perfil">
+                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <span className="mr-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2"/><path stroke="currentColor" strokeWidth="2" d="M4 20c0-2.828 3.582-5 8-5s8 2.172 8 5"/></svg></span>
+                      <span>Perfil</span>
                     </DropdownMenuItem>
                   </Link>
                 </DropdownMenuGroup>

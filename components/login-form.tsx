@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useContext } from 'react'
+import { UserContext } from '@/context/UserContext';
 import { Card, CardContent, CardDescription,  CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -23,7 +24,7 @@ import { useForm } from "react-hook-form"
 // import { signIn } from '@/auth'
 import { loginAction } from '@/actions/auth-action'
 // import { start } from 'repl'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 // import { set } from 'date-fns'
 import Link from 'next/link'
 
@@ -40,9 +41,10 @@ export function LoginForm({
 
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
-  const router = useRouter()
+  // const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams?.get('callbackUrl') || '/home'
+  // Siempre redirigir a '/'
+  const callbackUrl = '/'
 
   // 1. Define your form. 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -54,18 +56,34 @@ export function LoginForm({
   })
 
   // 2. Define a submit handler.
+  const userContext = useContext(UserContext);
   async function onSubmit(values: z.infer<typeof signInSchema>) {
-
     setError(null)
     startTransition(async () => {
-
       const response = await loginAction({ ...values, callbackUrl })
-      
       if (response.error) {
         setError(response.error)
-        console.log("Login failed: ",response.error)
+        console.log("Login failed: ", response.error)
       } else {
-        router.push(response.callbackUrl || '/home')
+        // Intenta obtener la sesión de NextAuth (si está disponible)
+        try {
+          const sessionRes = await fetch('/api/auth/session');
+          if (sessionRes.ok) {
+            const session = await sessionRes.json();
+            if (session?.user) {
+              const userData = {
+                id: session.user.id,
+                name: session.user.name || '',
+                email: session.user.email || '',
+              };
+              localStorage.setItem('user', JSON.stringify(userData));
+              userContext?.setUser && userContext.setUser(userData);
+            }
+          }
+        } catch (e) {
+          // fallback: no hacer nada
+        }
+        window.location.replace('/')
       }
     })
   }

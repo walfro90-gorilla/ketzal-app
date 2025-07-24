@@ -1,16 +1,14 @@
-// Wallet API functions (temporal implementation)
+// Wallet API functions
 import { Wallet, WalletTransaction, AddFundsRequest, TransferRequest, ConvertCurrencyRequest } from '@/types/wallet';
 
-export const getWallet = async (): Promise<Wallet> => {
-  // Implementación temporal
-  return {
-    id: '1',
-    userId: '1',
-    mxnBalance: 0,
-    axoBalance: 0,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  };
+export const getWallet = async (userId: string): Promise<{ success: boolean; wallet?: Wallet; message?: string }> => {
+  try {
+    const res = await fetch(`/api/wallet?userId=${userId}`);
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: 'Error al conectar con la API de wallet' };
+  }
 };
 
 export const addFunds = async (request: AddFundsRequest): Promise<boolean> => {

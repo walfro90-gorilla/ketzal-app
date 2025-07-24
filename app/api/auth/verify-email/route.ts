@@ -99,6 +99,7 @@ export async function GET(req: NextRequest) {
         return new Response("Email already verified", { status: 400 });
     }
 
+
     // marcar el email como verificado
     const updatedUser = await db.user.update({
         where: {
@@ -108,6 +109,26 @@ export async function GET(req: NextRequest) {
             emailVerified: new Date(),
         },
     });
+
+    // Crear wallet con 50 AXO coins si no existe
+    const existingWallet = await db.wallet.findFirst({
+        where: { userId: updatedUser.id },
+    });
+    if (!existingWallet) {
+        await db.wallet.create({
+            data: {
+                id: crypto.randomUUID(),
+                userId: updatedUser.id,
+                balanceAxo: 50,
+                balanceMXN: 0,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        });
+        console.log(`💰 Wallet creado para usuario ${updatedUser.email} con 50 AXO coins.`);
+    } else {
+        console.log(`ℹ️ El usuario ${updatedUser.email} ya tiene wallet.`);
+    }
 
     // Crear notificaciones de bienvenida para el usuario recién verificado
     try {

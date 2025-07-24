@@ -15,19 +15,21 @@ export async function fetchPendingAdminRequests() {
   return await res.json();
 }
 
-export async function approveSupplier(supplierId) {
-  const res = await fetch(`${BACKEND_URL}/api/suppliers/${supplierId}/approve`, {
-    method: 'POST',
+export async function approveSupplier(supplierId, userId) {
+  const res = await fetch(`${BACKEND_URL}/api/suppliers/${supplierId}/approval`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'approve', userId }),
   });
   if (!res.ok) throw new Error('Error al aprobar supplier');
   return await res.json();
 }
 
-export async function rejectSupplier(supplierId, reason) {
-  const res = await fetch(`${BACKEND_URL}/api/suppliers/${supplierId}/reject`, {
-    method: 'POST',
+export async function rejectSupplier(supplierId, userId) {
+  const res = await fetch(`${BACKEND_URL}/api/suppliers/${supplierId}/approval`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ reason }),
+    body: JSON.stringify({ action: 'decline', userId }),
   });
   if (!res.ok) throw new Error('Error al rechazar supplier');
   return await res.json();

@@ -65,6 +65,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         '/contact',
         '/api/locations',
         '/api/test-simple',
+        '/store',
+        '/store/',
+        '/cart',
+        '/cart/',
       ]
 
       const isPublicRoute = publicRoutes.includes(nextUrl.pathname) ||

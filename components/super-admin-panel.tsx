@@ -114,26 +114,30 @@ export default function SuperAdminPanel() {
     }
   }
 
-  const handleApprove = async (supplierId: number) => {
+  const handleApprove = async (supplierId: number, userId?: string) => {
     setActionLoading(supplierId)
     try {
-      const result = await approveSupplier(supplierId)
+      if (!userId) throw new Error('No se encontró el usuario asociado al supplier');
+      const result = await approveSupplier(supplierId, userId)
       toast.success(result.message || 'Solicitud aprobada')
       await loadData()
     } catch (error) {
+      console.error('Error en handleApprove:', error);
       toast.error('Error inesperado al aprobar solicitud')
     } finally {
       setActionLoading(null)
     }
   }
 
-  const handleReject = async (supplierId: number) => {
+  const handleReject = async (supplierId: number, userId?: string) => {
     setActionLoading(supplierId)
     try {
-      const result = await rejectSupplier(supplierId, 'Rechazado por super-admin')
+      if (!userId) throw new Error('No se encontró el usuario asociado al supplier');
+      const result = await rejectSupplier(supplierId, userId)
       toast.success(result.message || 'Solicitud rechazada')
       await loadData()
     } catch (error) {
+      console.error('Error en handleReject:', error);
       toast.error('Error inesperado al rechazar solicitud')
     } finally {
       setActionLoading(null)
@@ -336,7 +340,7 @@ export default function SuperAdminPanel() {
                     {/* Botones de acción */}
                     <div className="flex space-x-3 pt-4 border-t">
                       <Button
-                        onClick={() => handleApprove(request.supplierId)}
+                        onClick={() => handleApprove(request.supplierId, request.user?.id)}
                         disabled={actionLoading === request.supplierId}
                         className="bg-green-600 hover:bg-green-700"
                       >
@@ -346,7 +350,7 @@ export default function SuperAdminPanel() {
                       
                       <Button
                         variant="destructive"
-                        onClick={() => handleReject(request.supplierId)}
+                        onClick={() => handleReject(request.supplierId, request.user?.id)}
                         disabled={actionLoading === request.supplierId}
                       >
                         <XCircle className="h-4 w-4 mr-2" />
