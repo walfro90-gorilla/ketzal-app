@@ -3,6 +3,17 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -143,6 +154,14 @@ export default function SuperAdminPanel() {
       setActionLoading(null)
     }
   }
+
+  // Estado para controlar el diálogo de confirmación
+  const [confirmDialog, setConfirmDialog] = useState<{
+    type: 'approve' | 'reject' | null
+    supplierId?: number
+    userId?: string
+    supplierName?: string
+  }>({ type: null })
 
   if (loading) {
     return (
@@ -339,23 +358,81 @@ export default function SuperAdminPanel() {
 
                     {/* Botones de acción */}
                     <div className="flex space-x-3 pt-4 border-t">
-                      <Button
-                        onClick={() => handleApprove(request.supplierId, request.user?.id)}
-                        disabled={actionLoading === request.supplierId}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        {actionLoading === request.supplierId ? 'Aprobando...' : 'Aprobar'}
-                      </Button>
-                      
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleReject(request.supplierId, request.user?.id)}
-                        disabled={actionLoading === request.supplierId}
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        {actionLoading === request.supplierId ? 'Rechazando...' : 'Rechazar'}
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            onClick={() => setConfirmDialog({
+                              type: 'approve',
+                              supplierId: request.supplierId,
+                              userId: request.user?.id,
+                              supplierName: request.supplierName
+                            })}
+                            disabled={actionLoading === request.supplierId}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            {actionLoading === request.supplierId ? 'Aprobando...' : 'Aprobar'}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Aprobar supplier?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              ¿Estás seguro que deseas aprobar <b>{request.supplierName}</b>? El usuario será notificado y su rol cambiará a admin.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                setConfirmDialog({ type: null })
+                                await handleApprove(request.supplierId, request.user?.id)
+                              }}
+                              disabled={actionLoading === request.supplierId}
+                            >
+                              Confirmar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            onClick={() => setConfirmDialog({
+                              type: 'reject',
+                              supplierId: request.supplierId,
+                              userId: request.user?.id,
+                              supplierName: request.supplierName
+                            })}
+                            disabled={actionLoading === request.supplierId}
+                          >
+                            <XCircle className="h-4 w-4 mr-2" />
+                            {actionLoading === request.supplierId ? 'Rechazando...' : 'Rechazar'}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Rechazar supplier?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              ¿Estás seguro que deseas rechazar <b>{request.supplierName}</b>? El usuario será notificado del rechazo.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                setConfirmDialog({ type: null })
+                                await handleReject(request.supplierId, request.user?.id)
+                              }}
+                              disabled={actionLoading === request.supplierId}
+                            >
+                              Confirmar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>

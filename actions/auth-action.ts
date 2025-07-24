@@ -368,7 +368,7 @@ export const registerAdminActionV2 = async (
                         serviceType: data.serviceType,
                         registrationDate: new Date().toISOString()
                     },
-                    actionUrl: `/admin/suppliers/${result.supplier.id}` // URL para revisar la solicitud
+                    actionUrl: `/super-admin` // URL para revisar la solicitud
                 });
                 console.log(`✅ Notificación enviada al super admin (${superAdmin.email}) sobre nueva solicitud de proveedor: ${data.company}`);
             } else {
