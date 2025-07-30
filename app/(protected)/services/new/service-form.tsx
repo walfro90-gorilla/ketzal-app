@@ -361,7 +361,7 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                 setGlobalLocations(globalLocationsData); // Usar la data obtenida, no el estado
                 setSelectedSupplier(selected)
             } catch (error) {
-                console.log("Failed to fetch suppliers", error)
+                // console.log("Failed to fetch suppliers", error)
             }
         }
         fetchSuppliers()
@@ -491,12 +491,12 @@ export function ServiceForm({ service, session }: ServiceFormProps) {
                     // await updateService(service.id, adaptedData);
                 } else {
                     await createService(adaptedData);
-                    console.log('service new', adaptedData);
+                    // console.log('service new', adaptedData);
                 }
                 router.push("/services");
                 router.refresh();
             } catch (error) {
-                console.error("Failed to submit form", error);
+                // console.error("Failed to submit form", error);
             }
         } catch (error) {
             // ...existing error handling code...

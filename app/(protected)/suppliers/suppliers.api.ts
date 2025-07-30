@@ -26,7 +26,7 @@ export async function searchSuppliers(name?: string, email?: string) {
 
 // CREATE supplier
 export async function createSupplier(supplierData: unknown) {
-    console.log('Frontend sending supplier data:', supplierData);
+    // console.log('Frontend sending supplier data:', supplierData);
     const res = await fetch(`${BACKEND_URL}/api/suppliers`, {
         method: 'POST',
         headers: {
@@ -37,7 +37,7 @@ export async function createSupplier(supplierData: unknown) {
     
     if (!res.ok) {
         const errorData = await res.json();
-        console.error('Backend error response:', errorData);
+        // console.error('Backend error response:', errorData);
         throw new Error(errorData.message || 'Error creating supplier');
     }
     
@@ -48,7 +48,14 @@ export async function createSupplier(supplierData: unknown) {
 // READ supplierS
 export async function getSuppliers() {
     const res = await fetch(`${BACKEND_URL}/api/suppliers`)
+    
+    if (!res.ok) {
+        // console.error(`Error fetching suppliers: ${res.status} ${res.statusText}`);
+        throw new Error(`Failed to fetch suppliers: ${res.status}`);
+    }
+    
     const data = await res.json()
+    // console.log('Suppliers data received:', data); // Debug log
     return data
 }
 // READ supplier
@@ -108,7 +115,7 @@ export async function deleteSupplier(id: string) {
 
         return await res.json();
     } catch (error) {
-        console.error('Error deleting supplier:', error);
+        // console.error('Error deleting supplier:', error);
         throw error;
     }
 }

@@ -54,31 +54,31 @@ export const PlannerCartProvider: React.FC<PlannerCartProviderProps> = ({ childr
 
   // Sincronizar carrito activo cuando cambia el planner
   useEffect(() => {
-    console.log('🔄 PlannerCartContext - Sincronizando carrito activo:', {
-      activePlannerId,
-      plannersLength: planners.length,
-      plannerIds: planners.map(p => p.id)
-    });
+    // console.log('🔄 PlannerCartContext - Sincronizando carrito activo:', {
+    //   activePlannerId,
+    //   plannersLength: planners.length,
+    //   plannerIds: planners.map(p => p.id)
+    // });
     
     if (activePlannerId) {
       const planner = planners.find(p => p.id === activePlannerId);
-      console.log('📋 Planner encontrado:', planner ? {
-        id: planner.id,
-        name: planner.name,
-        cartItems: planner.cart?.items.length || 0,
-        cartTotal: planner.cart?.total || 0
-      } : 'NO ENCONTRADO');
+      // console.log('📋 Planner encontrado:', planner ? {
+      //   id: planner.id,
+      //   name: planner.name,
+      //   cartItems: planner.cart?.items.length || 0,
+      //   cartTotal: planner.cart?.total || 0
+      // } : 'NO ENCONTRADO');
       
       if (planner) {
         setActiveCart(planner.cart);
-        console.log('✅ ActiveCart actualizado:', {
-          itemCount: planner.cart?.items.length || 0,
-          total: planner.cart?.total || 0
-        });
+        // console.log('✅ ActiveCart actualizado:', {
+        //   itemCount: planner.cart?.items.length || 0,
+        //   total: planner.cart?.total || 0
+        // });
       }
     } else {
       setActiveCart(null);
-      console.log('🔄 ActiveCart limpiado (no hay planner activo)');
+      // console.log('🔄 ActiveCart limpiado (no hay planner activo)');
     }
   }, [activePlannerId, planners]);
 
@@ -88,7 +88,7 @@ export const PlannerCartProvider: React.FC<PlannerCartProviderProps> = ({ childr
 
   const updatePlannerCart = async (plannerId: string, cartUpdater: (cart: PlannerCart) => PlannerCart): Promise<boolean> => {
     try {
-      console.log('🔄 updatePlannerCart iniciado:', { plannerId });
+      // console.log('🔄 updatePlannerCart iniciado:', { plannerId });
       setIsLoading(true);
       setError(null);
 
@@ -115,10 +115,10 @@ export const PlannerCartProvider: React.FC<PlannerCartProviderProps> = ({ childr
                   updatedAt: new Date(planner.cart.updatedAt)
                 }
               }));
-              console.log('📦 Planners obtenidos desde localStorage como backup:', currentPlanners.length);
+              // console.log('📦 Planners obtenidos desde localStorage como backup:', currentPlanners.length);
             }
           } catch (error) {
-            console.log('⚠️ No se pudieron obtener planners desde localStorage:', error);
+            // console.log('⚠️ No se pudieron obtener planners desde localStorage:', error);
           }
         }
         
@@ -135,13 +135,13 @@ export const PlannerCartProvider: React.FC<PlannerCartProviderProps> = ({ childr
         planner = currentPlanners.find(p => p.id === plannerId);
         
         if (!planner) {
-          console.log(`🔍 Planner no encontrado, intento ${retryCount + 1}/${maxRetries}`);
-          console.log(`📊 Planners disponibles en intento ${retryCount + 1}:`, currentPlanners.map(p => ({ id: p.id, name: p.name })));
+          // console.log(`🔍 Planner no encontrado, intento ${retryCount + 1}/${maxRetries}`);
+          // console.log(`📊 Planners disponibles en intento ${retryCount + 1}:`, currentPlanners.map(p => ({ id: p.id, name: p.name })));
           
           // 🔧 MEJORA: Si es el primer intento y no hay planners en el estado pero sí en localStorage, 
           // forzar una actualización del estado del contexto padre
           if (retryCount === 0 && planners.length === 0 && currentPlanners.length > 0) {
-            console.log('🔄 Forzando actualización de planners desde localStorage...');
+            // console.log('🔄 Forzando actualización de planners desde localStorage...');
             // Esto actualizará el estado del TravelPlannerContext
             // El useEffect se encargará de la sincronización
           }
@@ -151,30 +151,30 @@ export const PlannerCartProvider: React.FC<PlannerCartProviderProps> = ({ childr
         }
       }
       
-      console.log('📋 Planner encontrado:', planner ? { id: planner.id, name: planner.name, cart: planner.cart } : 'NO ENCONTRADO');
+      // console.log('📋 Planner encontrado:', planner ? { id: planner.id, name: planner.name, cart: planner.cart } : 'NO ENCONTRADO');
       
       if (!planner) {
-        console.error(`❌ Planner ${plannerId} no encontrado después de ${maxRetries} reintentos`);
-        console.error('📊 Estado final de planners:', getCurrentPlanners().map(p => ({ id: p.id, name: p.name })));
+        // console.error(`❌ Planner ${plannerId} no encontrado después de ${maxRetries} reintentos`);
+        // console.error('📊 Estado final de planners:', getCurrentPlanners().map(p => ({ id: p.id, name: p.name })));
         throw new Error('Planner no encontrado después de reintentos');
       }
 
-      console.log('🛒 Cart actual:', planner.cart);
+      // console.log('🛒 Cart actual:', planner.cart);
       const updatedCart = cartUpdater(planner.cart);
-      console.log('🛒 Cart actualizado:', updatedCart);
+      // console.log('🛒 Cart actualizado:', updatedCart);
       
       // Actualizar el planner directamente con el carrito actualizado
-      console.log('💾 Llamando updatePlanner con carrito actualizado...');
+      // console.log('💾 Llamando updatePlanner con carrito actualizado...');
       const success = await updatePlanner(plannerId, {
         cart: updatedCart,
         budget: updatedCart.total,
         totalEstimated: updatedCart.total
       });
       
-      console.log('✅ updatePlanner resultado:', success);
+      // console.log('✅ updatePlanner resultado:', success);
       
       if (success) {
-        console.log('🎉 Cart actualizado exitosamente');
+        // console.log('🎉 Cart actualizado exitosamente');
         
         // Forzar actualización del activeCart si es el planner activo
         if (plannerId === activePlannerId) {

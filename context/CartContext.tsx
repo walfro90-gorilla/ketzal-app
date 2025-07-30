@@ -59,7 +59,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Cargar el carrito desde localStorage al montar el componente
   useEffect(() => {
     const savedItems = loadCartFromStorage();
-    console.log('🛒 Carrito cargado desde localStorage:', savedItems);
+    // console.log('🛒 Carrito cargado desde localStorage:', savedItems);
     setItems(savedItems);
     setIsHydrated(true);
   }, []);
@@ -67,7 +67,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Guardar el carrito en localStorage cada vez que cambie
   useEffect(() => {
     if (isHydrated) {
-      console.log('💾 Guardando carrito en localStorage:', items);
+      // console.log('💾 Guardando carrito en localStorage:', items);
       saveCartToStorage(items);
     }
   }, [items, isHydrated]);

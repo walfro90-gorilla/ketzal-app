@@ -1,6 +1,6 @@
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 
-console.log('BACKEND_URL from services.api.ts:', BACKEND_URL)
+// console.log('BACKEND_URL from services.api.ts:', BACKEND_URL)
 
 // Define ServiceData to match TourCardProps for SpecialOffers
 export interface ServiceData {
@@ -69,16 +69,16 @@ export async function createService(serviceData: ServiceDataNew) {
             body: JSON.stringify(serviceData),
         })
         await res.json()
-        console.log("Service created successfully")
+        // console.log("Service created successfully")
     } catch (error) {
-        console.error("Error creating service:", error)
+        // console.error("Error creating service:", error)
     }
 }
 
 // READ serviceS
 export async function getServices() {
-    console.log('getServices - BACKEND_URL:', BACKEND_URL)
-    console.log('getServices - Full URL:', `${BACKEND_URL}/api/services`)
+    // console.log('getServices - BACKEND_URL:', BACKEND_URL)
+    // console.log('getServices - Full URL:', `${BACKEND_URL}/api/services`)
     const res = await fetch(`${BACKEND_URL}/api/services`)
     const data = await res.json()
     return data
@@ -86,8 +86,8 @@ export async function getServices() {
 
 // READ services with review statistics
 export async function getServicesWithReviews() {
-    console.log('getServicesWithReviews - BACKEND_URL:', BACKEND_URL)
-    console.log('getServicesWithReviews - Full URL:', `${BACKEND_URL}/api/services/with-reviews`)
+    // console.log('getServicesWithReviews - BACKEND_URL:', BACKEND_URL)
+    // console.log('getServicesWithReviews - Full URL:', `${BACKEND_URL}/api/services/with-reviews`)
     const res = await fetch(`${BACKEND_URL}/api/services/with-reviews`)
     const data = await res.json()
     return data
@@ -137,7 +137,7 @@ export async function deleteService(id: string) {
 
         return await res.json();
     } catch (error) {
-        console.error('Error deleting service:', error);
+        // console.error('Error deleting service:', error);
         throw error;
     }
 }
@@ -154,7 +154,7 @@ export async function checkServiceDependencies(id: string) {
 
         return await res.json();
     } catch (error) {
-        console.error('Error checking service dependencies:', error);
+        // console.error('Error checking service dependencies:', error);
         throw error;
     }
 }
