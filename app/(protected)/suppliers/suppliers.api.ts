@@ -56,6 +56,15 @@ export async function getSuppliers() {
     
     const data = await res.json()
     // console.log('Suppliers data received:', data); // Debug log
+3    
+    // Map supplierType to type for frontend compatibility
+    if (Array.isArray(data)) {
+        return data.map(supplier => ({
+            ...supplier,
+            type: supplier.supplierType
+        }));
+    }
+    
     return data
 }
 // READ supplier
