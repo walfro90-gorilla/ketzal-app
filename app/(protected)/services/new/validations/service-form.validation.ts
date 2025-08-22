@@ -4,18 +4,20 @@ export const serviceFormSchema = z.object({
   // Basic Info
   name: z.string().min(1, "El nombre es requerido"),
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
-  serviceType: z.string().optional(),
-  serviceCategory: z.string().optional(),
+  serviceType: z.string().min(1, "El tipo de servicio es requerido"),
+  serviceCategory: z.string().min(1, "La categoría del servicio es requerida"),
   sizeTour: z.number().min(1, "El tamaño del tour debe ser al menos 1").optional(),
   ytLink: z.string().url("Debe ser una URL válida").optional().or(z.literal("")),
 
   // Images
-  mainImage: z.string().optional(),
-  images: z.array(z.string()).optional(),
+  images: z.object({
+    imgBanner: z.string().min(1, "La imagen de banner es requerida"),
+    imgAlbum: z.array(z.string()).min(3, "Se requieren al menos 3 imágenes en el álbum"),
+  }),
 
   // Pricing
-  price: z.number().min(0, "El precio debe ser mayor a 0").optional(),
-  dateRanges: z.array(z.object({
+  price: z.number().min(0, "El precio no puede ser negativo"),
+  dates: z.array(z.object({
     startDate: z.string(),
     endDate: z.string(),
     price: z.number()
@@ -32,7 +34,7 @@ export const serviceFormSchema = z.object({
   hotelProviderID: z.string().optional(),
 
   // Packages
-  packages: z.array(z.object({
+  packs: z.array(z.object({
     name: z.string(),
     description: z.string(),
     qty: z.number(),
@@ -40,7 +42,14 @@ export const serviceFormSchema = z.object({
   })).optional(),
 
   // Itinerary
-  itinerary: z.array(z.any()).optional(),
+  itinerary: z.array(z.object({
+    id: z.number(),
+    title: z.string().min(1, "El título es requerido"),
+    date: z.string().min(1, "La fecha es requerida"),
+    time: z.string().min(1, "La hora es requerida"),
+    description: z.string(),
+    location: z.string().min(1, "La ubicación es requerida"),
+  })).optional(),
 
   // Includes/Excludes
   includes: z.array(z.string()).optional(),
@@ -48,6 +57,7 @@ export const serviceFormSchema = z.object({
 
   // FAQs
   faqs: z.array(z.object({
+    id: z.string(),
     question: z.string(),
     answer: z.string()
   })).optional(),
@@ -58,16 +68,23 @@ export type ServiceFormData = z.infer<typeof serviceFormSchema>;
 export const serviceFormDefaults: Partial<ServiceFormData> = {
   name: "",
   description: "",
-  serviceType: "",
-  serviceCategory: "",
+  serviceType: "tour",
+  serviceCategory: "ecoturismo",
   sizeTour: 1,
   ytLink: "",
   price: 0,
-  images: [],
-  dateRanges: [],
-  packages: [],
+  images: {
+    imgBanner: "",
+    imgAlbum: [],
+  },
+  dates: [],
+  stateFrom: "",
+  cityFrom: "",
+  stateTo: "",
+  cityTo: "",
+  packs: [],
   itinerary: [],
   includes: [],
   excludes: [],
   faqs: [],
-}; 
+};

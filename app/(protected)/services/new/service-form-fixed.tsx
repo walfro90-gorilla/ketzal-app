@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useState, useEffect, useTransition } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceFormSchema, serviceFormDefaults, ServiceFormData } from "./validations/service-form.validation";
@@ -8,6 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "./components/ui/loading-spinner";
 import { FormErrorBoundary } from "./components/form-sections/error-boundary";
+import { createService } from "@/actions/service-actions";
+import { useToast } from "@/components/ui/use-toast";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 // Props interface to match legacy form integration
 interface ServiceFormFixedProps {
@@ -37,8 +40,10 @@ const SectionLoader = () => (
 );
 
 export default function ServiceFormFixed({ suppliers, service, session }: ServiceFormFixedProps) {
-  // Simple state management like in debug
+  const [isPending, startTransition] = useTransition();
+  const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
 
   const methods = useForm<ServiceFormData>({
     resolver: zodResolver(serviceFormSchema),
@@ -71,25 +76,76 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
     { id: 8, title: "FAQs", description: "Preguntas frecuentes" },
   ];
 
-  // Navigation functions (same as debug)
-  const nextStep = () => {
-    console.log("Next step clicked, current:", currentStep);
+ 
+ console.log("handleNextOrSubmit triggered");
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
-      console.log("Moving to step:", currentStep + 1);
+    } else {
+      console.log("Final step. Triggering validation...");
+      methods.trigger().then(isValid => {
+        console.log("Validation result:", isValid);
+        if (isValid) {
+          console.log("Form is valid. Opening confirmation dialog.");
+          setConfirmOpen(true);
+        } else {
+          console.log("Form is invalid. Showing toast.");
+          showToast({
+            title: "Error de Validación",
+            description: "Por favor, revisa los campos marcados en rojo.",
+            variant: "destructive",
+          });
+        }
+      });
     }
   };
 
+  const { formState: { errors, isValid }, watch, handleSubmit } = methods;
+
+  const handleConfirmSubmit = () => {
+    console.log("handleConfirmSubmit called. Triggering form submission.");
+    handleSubmit(onSubmit)();
+    setConfirmOpen(false);
+    console.log("Confirmation dialog closed.");
+  };
+
+  const onSubmit = (data: ServiceFormData) => {
+    console.log("onSubmit function called. Data:", data);
+    startTransition(() => {
+      console.log("Starting transition for createService...");
+      createService(data)
+        .then((res) => {
+          console.log("createService response:", res);
+          if (res.error) {
+            showToast({
+              title: "Error",
+              description: res.error,
+              variant: "destructive",
+            });
+          } else if (res.success) {
+            showToast({
+              title: "Success",
+              description: res.success,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("createService promise rejected:", err);
+          showToast({
+            title: "Error",
+            description: "An unexpected error occurred.",
+            variant: "destructive",
+          });
+        });
+    });
+  };
+
   const previousStep = () => {
-    console.log("Previous step clicked, current:", currentStep);
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      console.log("Moving to step:", currentStep - 1);
     }
   };
 
   const goToStep = (stepIndex: number) => {
-    console.log("Go to step clicked:", stepIndex);
     if (stepIndex >= 0 && stepIndex < steps.length) {
       setCurrentStep(stepIndex);
     }
@@ -97,75 +153,16 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 0:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <BasicInfoSection />
-          </Suspense>
-        );
-      
-      case 1:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <ImagesSection control={methods.control} errors={methods.formState.errors} />
-          </Suspense>
-        );
-      
-      case 2:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <PricingSection />
-          </Suspense>
-        );
-
-      case 3:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <LocationSection />
-          </Suspense>
-        );
-
-      case 4:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <ProvidersSection />
-          </Suspense>
-        );
-
-      case 5:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <PackagesSection />
-          </Suspense>
-        );
-
-      case 6:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <ItinerarySection />
-          </Suspense>
-        );
-
-      case 7:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <IncludesSection />
-          </Suspense>
-        );
-
-      case 8:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <FAQsSection />
-          </Suspense>
-        );
-      
-      default:
-        return (
-          <Suspense fallback={<SectionLoader />}>
-            <BasicInfoSection />
-          </Suspense>
-        );
+      case 0: return <Suspense fallback={<SectionLoader />}><BasicInfoSection /></Suspense>;
+      case 1: return <Suspense fallback={<SectionLoader />}><ImagesSection /></Suspense>;
+      case 2: return <Suspense fallback={<SectionLoader />}><PricingSection /></Suspense>;
+      case 3: return <Suspense fallback={<SectionLoader />}><LocationSection /></Suspense>;
+      case 4: return <Suspense fallback={<SectionLoader />}><ProvidersSection /></Suspense>;
+      case 5: return <Suspense fallback={<SectionLoader />}><PackagesSection /></Suspense>;
+      case 6: return <Suspense fallback={<SectionLoader />}><ItinerarySection /></Suspense>;
+      case 7: return <Suspense fallback={<SectionLoader />}><IncludesSection /></Suspense>;
+      case 8: return <Suspense fallback={<SectionLoader />}><FAQsSection /></Suspense>;
+      default: return <Suspense fallback={<SectionLoader />}><BasicInfoSection /></Suspense>;
     }
   };
 
@@ -174,7 +171,6 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <FormProvider {...methods}>
           <div className="space-y-8">
-            {/* Success Info */}
             <div className="bg-green-50 border border-green-200 rounded-md p-4">
               <h3 className="text-green-800 font-medium">✅ Formulario Funcionando</h3>
               <p className="text-green-700 text-sm mt-1">
@@ -183,7 +179,6 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
               </p>
             </div>
             
-            {/* Form Stepper - Similar to debug */}
             <div className="flex items-center justify-between">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex items-center">
@@ -211,6 +206,31 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
               ))}
             </div>
 
+            <div className="min-h-[500px]">
+              {renderCurrentStep()}
+            </div>
+
+                 )}
+                </div>
+              ))}
+            </div>
+
+            {/* Current Step Content */}
+            <div className="min-h-[500px]">
+              {renderCurrentStep()}
+            </div>
+
+            {/* Navigation - Same as debug */}
+>
+
+            {/* Current Step Content */}
+            <div className="min-h-[500px]">
+              {renderCurrentStep()}
+            </div>
+
+            {/* Navigation - Same as debug */}
+>
+
             {/* Current Step Content */}
             <div className="min-h-[500px]">
               {renderCurrentStep()}
@@ -231,12 +251,34 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
               </div>
 
               <Button
-                onClick={nextStep}
-                disabled={currentStep === steps.length - 1}
+                onClick={handleNextOrSubmit}
+                disabled={isPending}
               >
                 {currentStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
               </Button>
             </div>
+            <ConfirmationDialog
+              isOpen={isConfirmOpen}
+              onClose={() => setConfirmOpen(false)}
+              onConfirm={handleConfirmSubmit}
+              title="Confirmar Envío"
+              description="¿Estás seguro de que deseas crear este servicio? Esta acción no se puede deshacer."
+            />
+            {currentStep === steps.length - 1 && !isValid && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-4 mt-4">
+                <h3 className="text-red-800 font-medium">⚠️ Faltan campos por llenar</h3>
+                <p className="text-red-700 text-sm mt-1">
+                  Revisa los siguientes campos antes de finalizar:
+                </p>
+                <ul className="list-disc list-inside text-red-700 text-sm mt-2">
+                  {Object.entries(errors).map(([key, error]) => (
+                    <li key={key}>
+                      <strong>{key}:</strong> {error?.message}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </FormProvider>
       </div>
@@ -245,4 +287,4 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
 }
 
 // Export both the default and named export for compatibility
-export { ServiceFormFixed }; 
+export { ServiceFormFixed };

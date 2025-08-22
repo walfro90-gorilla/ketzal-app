@@ -1,65 +1,41 @@
 "use client"
 
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useFieldArray, Controller } from "react-hook-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Package, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
-
-interface ServicePackage {
-  name: string
-  description: string
-  qty: number
-  price: number
-}
-
-interface ServiceFormData {
-  packs: {
-    data: ServicePackage[]
-  }
-}
+import { ServiceFormData } from "../../validations/service-form.validation"
 
 export function PackagesSection() {
-  const { setValue, formState: { errors }, register } = useFormContext<ServiceFormData>();
-  
-  const [packages, setPackages] = useState<ServicePackage[]>([]);
-  const [currentPackage, setCurrentPackage] = useState<ServicePackage>({
+  const { control, register, formState: { errors } } = useFormContext<ServiceFormData>();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "packs",
+  });
+
+  const [newPackage, setNewPackage] = useState({
     name: "",
     description: "",
-    qty: 0,
-    price: 0
+    qty: 1,
+    price: 0,
   });
 
   const handleAddPackage = () => {
-    if (currentPackage.name && currentPackage.description && currentPackage.qty > 0 && currentPackage.price > 0) {
-      const newPackages = [...packages, { ...currentPackage }]
-      setPackages(newPackages)
-      setValue("packs", { data: newPackages })
-      
-      // Reset form
-      setCurrentPackage({
-        name: "",
-        description: "",
-        qty: 0,
-        price: 0
-      })
+    if (newPackage.name && newPackage.description && newPackage.qty > 0 && newPackage.price > 0) {
+      append(newPackage);
+      setNewPackage({ name: "", description: "", qty: 1, price: 0 });
     }
-  }
+  };
 
-  const handleDeletePackage = (index: number) => {
-    const newPackages = packages.filter((_, i) => i !== index)
-    setPackages(newPackages)
-    setValue("packs", { data: newPackages })
-  }
-
-  const handleInputChange = (field: keyof ServicePackage, value: string | number) => {
-    setCurrentPackage(prev => ({
+  const handleInputChange = (field: keyof typeof newPackage, value: string | number) => {
+    setNewPackage(prev => ({
       ...prev,
       [field]: field === 'qty' || field === 'price' ? Number(value) : value
-    }))
-  }
+    }));
+  };
 
   return (
     <Card>
@@ -79,7 +55,7 @@ export function PackagesSection() {
               <Label htmlFor="packageName">Nombre del Paquete</Label>
               <Input
                 id="packageName"
-                value={currentPackage.name}
+                value={newPackage.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="Ej: Básico, Premium, VIP"
               />
@@ -89,7 +65,7 @@ export function PackagesSection() {
               <Label htmlFor="packageDescription">Descripción</Label>
               <Input
                 id="packageDescription"
-                value={currentPackage.description}
+                value={newPackage.description}
                 onChange={(e) => handleInputChange("description", e.target.value)}
                 placeholder="Descripción del paquete"
               />
@@ -101,7 +77,7 @@ export function PackagesSection() {
                 id="packageQty"
                 type="number"
                 min="1"
-                value={currentPackage.qty || ""}
+                value={newPackage.qty}
                 onChange={(e) => handleInputChange("qty", e.target.value)}
                 placeholder="Cantidad disponible"
               />
@@ -114,17 +90,17 @@ export function PackagesSection() {
                 type="number"
                 min="0"
                 step="0.01"
-                value={currentPackage.price || ""}
+                value={newPackage.price}
                 onChange={(e) => handleInputChange("price", e.target.value)}
                 placeholder="Precio del paquete"
               />
             </div>
           </div>
 
-          <Button 
-            type="button" 
+          <Button
+            type="button"
             onClick={handleAddPackage}
-            disabled={!currentPackage.name || !currentPackage.description || currentPackage.qty <= 0 || currentPackage.price <= 0}
+            disabled={!newPackage.name || !newPackage.description || newPackage.qty <= 0 || newPackage.price <= 0}
             className="flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -133,37 +109,53 @@ export function PackagesSection() {
         </div>
 
         {/* Packages List */}
-        {packages.length > 0 && (
+        {fields.length > 0 && (
           <div className="space-y-4">
             <Label className="text-base font-medium">Paquetes Configurados</Label>
-            
             <div className="space-y-3">
-              {packages.map((pkg, index) => (
-                <div 
-                  key={index}
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
                   className="flex items-center justify-between p-4 border rounded-lg bg-gray-50 dark:bg-gray-800"
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <h4 className="font-medium">{pkg.name}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{pkg.description}</p>
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium">Cantidad: {pkg.qty}</span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium">Precio: ${pkg.price.toLocaleString()}</span>
-                      </div>
-                    </div>
+                  <div className="flex-1 grid grid-cols-4 gap-4 items-center">
+                    <Input {...register(`packs.${index}.name`)} placeholder="Nombre" className="col-span-1" />
+                    <Input {...register(`packs.${index}.description`)} placeholder="Descripción" className="col-span-1" />
+                    <Controller
+                      control={control}
+                      name={`packs.${index}.qty`}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <Input
+                          type="number"
+                          onBlur={onBlur}
+                          onChange={e => onChange(parseInt(e.target.value, 10))}
+                          value={value}
+                          placeholder="Cantidad"
+                          className="col-span-1"
+                        />
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name={`packs.${index}.price`}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <Input
+                          type="number"
+                          onBlur={onBlur}
+                          onChange={e => onChange(parseFloat(e.target.value))}
+                          value={value}
+                          placeholder="Precio"
+                          className="col-span-1"
+                        />
+                      )}
+                    />
                   </div>
-                  
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDeletePackage(index)}
-                    className="text-red-500 hover:text-red-700"
+                    onClick={() => remove(index)}
+                    className="text-red-500 hover:text-red-700 ml-4"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -176,10 +168,7 @@ export function PackagesSection() {
         {errors.packs && (
           <p className="text-sm text-red-500">{errors.packs.message as string}</p>
         )}
-
-        {/* Hidden input for form registration */}
-        <input {...register("packs")} type="hidden" />
       </CardContent>
     </Card>
   )
-} 
+}

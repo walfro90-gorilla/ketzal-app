@@ -4,8 +4,6 @@ import { MapPin, Wifi, Car } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 
-
-
 // Define the interface first
 interface TransportProvider {
   id: string
@@ -15,18 +13,11 @@ interface TransportProvider {
   services: string[]
 }
 
-
-
-
-
-
 interface TransportProviderProps {
   transportProvider: TransportProvider;
 }
 
 export default function TransportProvider({ transportProvider }: TransportProviderProps) {
-
-
 
   return (
     <div className="w-full max-w-3xl mx-auto p-2">
@@ -42,7 +33,7 @@ export default function TransportProvider({ transportProvider }: TransportProvid
               <div>
                 <h3 className="text-[10px] font-medium mb-1 text-gray-900 dark:text-gray-100">Info:</h3>
                 <div className="space-y-0.5">
-                  {(transportProvider.info || []).map((line, index) => (
+                  {Array.isArray(transportProvider.info) && transportProvider.info.map((line, index) => (
                     <p key={index} className="text-[10px] text-gray-700 dark:text-gray-300 leading-tight">
                       {line}
                     </p>
@@ -54,7 +45,7 @@ export default function TransportProvider({ transportProvider }: TransportProvid
               <div>
                 <h3 className="text-[10px] font-medium mb-1 text-gray-900 dark:text-gray-100">Services:</h3>
                 <div className="flex gap-2">
-                  {(transportProvider.services || []).map((service) => (
+                  {Array.isArray(transportProvider.services) && transportProvider.services.map((service) => (
                     <div key={service} className="flex items-center gap-0.5">
                       {service === "WiFi" && <Wifi className="h-3 w-3 text-gray-700 dark:text-gray-300" />}
                       {service === "Parking" && <Car className="h-3 w-3 text-gray-700 dark:text-gray-300" />}
@@ -71,7 +62,7 @@ export default function TransportProvider({ transportProvider }: TransportProvid
               <div className="text-[10px] font-medium mb-1 text-center text-gray-900 dark:text-gray-100">Carousel Photos</div>
               <Carousel className="w-full">
                 <CarouselContent>
-                  {(transportProvider.photos || []).map((photo, index) => (
+                  {Array.isArray(transportProvider.photos) && transportProvider.photos.map((photo, index) => (
                     <CarouselItem key={index}>
                       <img
                         src={photo || "/placeholder.svg"}
@@ -91,4 +82,3 @@ export default function TransportProvider({ transportProvider }: TransportProvid
     </div>
   )
 }
-

@@ -16,12 +16,17 @@ interface ServiceFormData {
 }
 
 export function FAQsSection() {
-  const { setValue, formState: { errors }, register } = useFormContext<ServiceFormData>();
+  const { setValue, watch, formState: { errors }, register } = useFormContext<ServiceFormData>();
   const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingFAQ, setEditingFAQ] = useState<FAQ | null>(null)
+  const [editingFAQ, setEditingFAQ] = useState<FAQ | undefined>(undefined)
   
-  const { faqs, addFAQ, updateFAQ, deleteFAQ } = useFAQs()
+  const currentFAQs = watch("faqs") || []
+
+  const { faqs, addFAQ, updateFAQ, deleteFAQ } = useFAQs({
+    initialFAQs: currentFAQs,
+    onFAQsChange: (updatedFAQs) => setValue("faqs", updatedFAQs, { shouldValidate: true }),
+  })
 
   // Filter FAQs based on search term
   const filteredFAQs = faqs.filter(faq =>
@@ -30,13 +35,13 @@ export function FAQsSection() {
   )
 
   const handleOpenModal = () => {
-    setEditingFAQ(null)
+    setEditingFAQ(undefined)
     setIsModalOpen(true)
   }
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
-    setEditingFAQ(null)
+    setEditingFAQ(undefined)
   }
 
   const handleSubmitFAQ = (faq: Omit<FAQ, "id">) => {
@@ -46,12 +51,6 @@ export function FAQsSection() {
       addFAQ(faq)
     }
     handleCloseModal()
-    
-    // Update form value
-    const updatedFAQs = editingFAQ 
-      ? faqs.map(f => f.id === editingFAQ.id ? { ...faq, id: editingFAQ.id } : f)
-      : [...faqs, { ...faq, id: Date.now().toString() }]
-    setValue("faqs", updatedFAQs)
   }
 
   const handleEdit = (faq: FAQ) => {
@@ -61,10 +60,6 @@ export function FAQsSection() {
 
   const handleDelete = (id: string) => {
     deleteFAQ(id)
-    
-    // Update form value
-    const updatedFAQs = faqs.filter(f => f.id !== id)
-    setValue("faqs", updatedFAQs)
   }
 
   return (
@@ -135,4 +130,4 @@ export function FAQsSection() {
       </CardContent>
     </Card>
   )
-} 
+}

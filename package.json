@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbopack",
@@ -9,6 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
+    "test": "jest",
     "test:cloudinary": "node scripts/test-cloudinary.js",
     "test:cloudinary:practical": "node scripts/test-cloudinary-practical.js",
     "test:cloudinary:unit": "jest __tests__/cloudinary.test.ts",
@@ -34,6 +36,7 @@
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-navigation-menu": "^1.2.3",
     "@radix-ui/react-popover": "^1.1.5",
+    "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-scroll-area": "^1.2.9",
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.1",
@@ -64,6 +67,7 @@
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
+    "react-dropzone": "^14.3.8",
     "react-fast-marquee": "^1.6.5",
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.5.0",
@@ -79,14 +83,19 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.2",
+    "jest": "^30.0.5",
     "postcss": "^8",
     "prisma": "^6.6.0",
     "tailwindcss": "^3.4.1",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

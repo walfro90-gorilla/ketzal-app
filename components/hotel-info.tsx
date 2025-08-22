@@ -65,7 +65,7 @@ export default function HotelInfo({ hotelProvider }: { hotelProvider: HotelProvi
                 <p className="text-xs text-muted-foreground line-clamp-4">{hotelProvider.description}</p>
               </div>
               <div className="flex flex-wrap gap-1 mb-3">
-                {hotelProvider.extras.map((service) => (
+                {Array.isArray(hotelProvider.extras) && hotelProvider.extras.map((service) => (
                   <Badge key={service} variant="outline" className="flex items-center gap-1 px-2 py-0 text-[10px]">
                     {serviceIcons[service]}
                     <span className="capitalize">{service.replace("-", " ")}</span>

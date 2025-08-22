@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
-import { ServiceFormData } from "../../types/service-form.types";
+import { ServiceFormData } from "../../validations/service-form.validation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import {
@@ -13,15 +13,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MapPin, Navigation } from "lucide-react";
-import { getGlobalLocations } from "@/app/(protected)/global-locations.api";
+import { getGlobalLocations, GlobalLocation } from "@/app/(protected)/global-locations.api";
 import { LoadingOverlay } from "../ui/loading-spinner";
 import { FormErrorBoundary } from "./error-boundary";
 import { ValidationFeedback } from "../ui/form-validation";
 
-interface GlobalLocation {
-  id: string;
-  state: string;
-  city: string;
+// Helper hook to track previous value
+function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<T | undefined>(undefined);
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
 
 export function LocationSection() {
@@ -30,16 +33,40 @@ export function LocationSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Local state for country selectors
+  const [countryFrom, setCountryFrom] = useState<string | undefined>();
+  const [countryTo, setCountryTo] = useState<string | undefined>();
+
   // Watch current values for dependent dropdowns
   const stateFrom = watch("stateFrom");
+  const cityFrom = watch("cityFrom");
   const stateTo = watch("stateTo");
+  const cityTo = watch("cityTo");
 
-  // Get unique states
-  const states = Array.from(new Set(locations.map(loc => loc.state))).sort();
+  // Track previous values to detect changes
+  const prevCountryFrom = usePrevious(countryFrom);
+  const prevStateFrom = usePrevious(stateFrom);
+  const prevCountryTo = usePrevious(countryTo);
+  const prevStateTo = usePrevious(stateTo);
+
+  // Get unique countries, states, and cities
+  const countries = Array.from(new Set(locations.map(loc => loc.country))).sort();
   
-  // Get cities for selected states
-  const citiesFrom = locations.filter(loc => loc.state === stateFrom).map(loc => loc.city).sort();
-  const citiesTo = locations.filter(loc => loc.state === stateTo).map(loc => loc.city).sort();
+  const statesFrom = countryFrom
+    ? Array.from(new Set(locations.filter(loc => loc.country === countryFrom).map(loc => loc.state))).sort()
+    : [];
+  
+  const citiesFrom = stateFrom
+    ? locations.filter(loc => loc.state === stateFrom).map(loc => loc.city).sort()
+    : [];
+
+  const statesTo = countryTo
+    ? Array.from(new Set(locations.filter(loc => loc.country === countryTo).map(loc => loc.state))).sort()
+    : [];
+
+  const citiesTo = stateTo
+    ? locations.filter(loc => loc.state === stateTo).map(loc => loc.city).sort()
+    : [];
 
   useEffect(() => {
     const loadLocations = async () => {
@@ -59,14 +86,32 @@ export function LocationSection() {
     loadLocations();
   }, []);
 
-  // Reset city when state changes
+  // Reset dependent fields only when the parent value actually changes
   useEffect(() => {
-    setValue("cityFrom", "");
-  }, [stateFrom, setValue]);
+    if (prevCountryFrom !== undefined && countryFrom !== prevCountryFrom) {
+      setValue("stateFrom", "");
+      setValue("cityFrom", "");
+    }
+  }, [countryFrom, prevCountryFrom, setValue]);
 
   useEffect(() => {
-    setValue("cityTo", "");
-  }, [stateTo, setValue]);
+    if (prevStateFrom !== undefined && stateFrom !== prevStateFrom) {
+      setValue("cityFrom", "");
+    }
+  }, [stateFrom, prevStateFrom, setValue]);
+
+  useEffect(() => {
+    if (prevCountryTo !== undefined && countryTo !== prevCountryTo) {
+      setValue("stateTo", "");
+      setValue("cityTo", "");
+    }
+  }, [countryTo, prevCountryTo, setValue]);
+
+  useEffect(() => {
+    if (prevStateTo !== undefined && stateTo !== prevStateTo) {
+      setValue("cityTo", "");
+    }
+  }, [stateTo, prevStateTo, setValue]);
 
   if (error) {
     return (
@@ -105,6 +150,28 @@ export function LocationSection() {
                   <Navigation className="h-4 w-4" />
                   <h3 className="font-medium">Origen</h3>
                 </div>
+
+                <FormItem>
+                  <FormLabel>País de Origen</FormLabel>
+                  <Select
+                    onValueChange={setCountryFrom}
+                    value={countryFrom || ""}
+                    disabled={isLoading}
+                  >
+                    <FormControl>
+                      <SelectTrigger aria-label="Seleccionar país de origen">
+                        <SelectValue placeholder="Selecciona el país" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
                 
                 <FormField
                   control={control}
@@ -115,15 +182,15 @@ export function LocationSection() {
                       <Select
                         onValueChange={field.onChange}
                         value={field.value || ""}
-                        disabled={isLoading}
+                        disabled={!countryFrom || isLoading}
                       >
                         <FormControl>
                           <SelectTrigger aria-label="Seleccionar estado de origen">
-                            <SelectValue placeholder="Selecciona el estado" />
+                            <SelectValue placeholder={!countryFrom ? "Primero selecciona un país" : "Selecciona el estado"} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {states.map((state) => (
+                          {statesFrom.map((state) => (
                             <SelectItem key={state} value={state}>
                               {state}
                             </SelectItem>
@@ -176,6 +243,28 @@ export function LocationSection() {
                   <h3 className="font-medium">Destino</h3>
                 </div>
 
+                <FormItem>
+                  <FormLabel>País de Destino</FormLabel>
+                  <Select
+                    onValueChange={setCountryTo}
+                    value={countryTo || ""}
+                    disabled={isLoading}
+                  >
+                    <FormControl>
+                      <SelectTrigger aria-label="Seleccionar país de destino">
+                        <SelectValue placeholder="Selecciona el país" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+
                 <FormField
                   control={control}
                   name="stateTo"
@@ -185,15 +274,15 @@ export function LocationSection() {
                       <Select
                         onValueChange={field.onChange}
                         value={field.value || ""}
-                        disabled={isLoading}
+                        disabled={!countryTo || isLoading}
                       >
                         <FormControl>
                           <SelectTrigger aria-label="Seleccionar estado de destino">
-                            <SelectValue placeholder="Selecciona el estado" />
+                            <SelectValue placeholder={!countryTo ? "Primero selecciona un país" : "Selecciona el estado"} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {states.map((state) => (
+                          {statesTo.map((state) => (
                             <SelectItem key={state} value={state}>
                               {state}
                             </SelectItem>
@@ -241,11 +330,11 @@ export function LocationSection() {
             </div>
 
             {/* Validation feedback */}
-            {stateFrom && cityFrom && stateTo && cityTo && (
+            {countryFrom && stateFrom && cityFrom && countryTo && stateTo && cityTo && (
               <div className="mt-4">
                 <ValidationFeedback
                   type="success"
-                  message={`Ruta configurada: ${cityFrom}, ${stateFrom} → ${cityTo}, ${stateTo}`}
+                  message={`Ruta configurada: ${cityFrom}, ${stateFrom}, ${countryFrom} → ${cityTo}, ${stateTo}, ${countryTo}`}
                 />
               </div>
             )}
@@ -254,4 +343,4 @@ export function LocationSection() {
       </Card>
     </FormErrorBoundary>
   );
-} 
+}

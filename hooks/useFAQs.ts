@@ -1,22 +1,39 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { FAQ } from "../types/faq"
 
-export const useFAQs = () => {
-  const [faqs, setFAQs] = useState<FAQ[]>([])
+interface UseFAQsProps {
+  initialFAQs?: FAQ[]
+  onFAQsChange?: (faqs: FAQ[]) => void
+}
+
+export const useFAQs = ({ initialFAQs = [], onFAQsChange }: UseFAQsProps) => {
+  const [faqs, setFAQs] = useState<FAQ[]>(initialFAQs)
+
+  useEffect(() => {
+    setFAQs(initialFAQs)
+  }, [initialFAQs])
+
+  const handleUpdate = (newFAQs: FAQ[]) => {
+    setFAQs(newFAQs)
+    onFAQsChange?.(newFAQs)
+  }
 
   const addFAQ = (newFAQ: Omit<FAQ, "id">) => {
     const faq: FAQ = { ...newFAQ, id: Date.now().toString() }
-    setFAQs([...faqs, faq])
+    handleUpdate([...faqs, faq])
   }
 
   const updateFAQ = (updatedFAQ: FAQ) => {
-    setFAQs(faqs.map((faq) => (faq.id === updatedFAQ.id ? updatedFAQ : faq)))
+    const newFAQs = faqs.map((faq) =>
+      faq.id === updatedFAQ.id ? updatedFAQ : faq
+    )
+    handleUpdate(newFAQs)
   }
 
   const deleteFAQ = (id: string) => {
-    setFAQs(faqs.filter((faq) => faq.id !== id))
+    const newFAQs = faqs.filter((faq) => faq.id !== id)
+    handleUpdate(newFAQs)
   }
 
   return { faqs, addFAQ, updateFAQ, deleteFAQ }
 }
-

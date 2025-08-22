@@ -61,6 +61,7 @@ export async function getSuppliers() {
     if (Array.isArray(data)) {
         return data.map(supplier => ({
             ...supplier,
+            id: String(supplier.id),
             type: supplier.supplierType
         }));
     }

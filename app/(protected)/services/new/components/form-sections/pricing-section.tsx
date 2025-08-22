@@ -13,24 +13,12 @@ import { CalendarIcon, Plus, X } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
-import { useFormContext } from "react-hook-form"
-
-interface ServiceFormFields {
-  price?: number
-  availableFrom?: Date | null
-  availableTo?: Date | null
-}
+import { useFormContext } from "react-hook-form";
+import { ServiceFormData } from "../../validations/service-form.validation";
 
 interface DateRange {
-  availableFrom: Date
-  availableTo: Date
-}
-
-interface PricingSectionProps {
-  control: Control<ServiceFormFields>
-  errors: FieldErrors<ServiceFormFields>
-  dateRanges: DateRange[]
-  onDateRangesChange: (ranges: DateRange[]) => void
+  availableFrom: Date;
+  availableTo: Date;
 }
 
 export function PricingSection() {
@@ -38,7 +26,7 @@ export function PricingSection() {
     control,
     setValue,
     watch
-  } = useFormContext<ServiceFormFields>();
+  } = useFormContext<ServiceFormData>();
 
   const [currentRange, setCurrentRange] = useState<{
     availableFrom: Date | null
@@ -47,11 +35,12 @@ export function PricingSection() {
 
   const addDateRange = () => {
     if (currentRange.availableFrom && currentRange.availableTo) {
-      setValue("dateRanges", [
-        ...watch("dateRanges"),
+      setValue("dates", [
+        ...(watch("dates") || []),
         {
-          availableFrom: currentRange.availableFrom,
-          availableTo: currentRange.availableTo,
+          startDate: currentRange.availableFrom.toISOString(),
+          endDate: currentRange.availableTo.toISOString(),
+          price: 0, // You might want to add a field for this
         },
       ])
       setCurrentRange({ availableFrom: null, availableTo: null })
@@ -59,7 +48,8 @@ export function PricingSection() {
   }
 
   const removeDateRange = (index: number) => {
-    setValue("dateRanges", watch("dateRanges").filter((_, i) => i !== index))
+    const dates = watch("dates") || [];
+    setValue("dates", dates.filter((_, i) => i !== index));
   }
 
   return (
@@ -94,39 +84,7 @@ export function PricingSection() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={control}
-            name="availableFrom"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Disponible Desde</FormLabel>
-                <FormControl>
-                  <DatePickerWithRange
-                    value={field.value ?? null}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="availableTo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Disponible Hasta</FormLabel>
-                <FormControl>
-                  <DatePickerWithRange
-                    value={field.value ?? null}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* These fields are redundant and will be removed */}
         </div>
 
         <div className="space-y-4">
@@ -160,9 +118,9 @@ export function PricingSection() {
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={currentRange.availableFrom}
+                  selected={currentRange.availableFrom ?? undefined}
                   onSelect={(date) => 
-                    setCurrentRange({ ...currentRange, availableFrom: date, availableTo: null })
+                    setCurrentRange({ ...currentRange, availableFrom: date ?? null, availableTo: null })
                   }
                   initialFocus
                 />
@@ -192,9 +150,9 @@ export function PricingSection() {
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={currentRange.availableTo}
+                  selected={currentRange.availableTo ?? undefined}
                   onSelect={(date) => 
-                    setCurrentRange({ ...currentRange, availableTo: date })
+                    setCurrentRange({ ...currentRange, availableTo: date ?? null })
                   }
                   disabled={(date) => 
                     !currentRange.availableFrom || 
@@ -215,18 +173,18 @@ export function PricingSection() {
             </Button>
           </div>
 
-          {watch("dateRanges").length > 0 && (
+          {(watch("dates") || []).length > 0 && (
             <div className="space-y-2">
               <FormLabel className="text-sm font-medium">Rangos Agregados:</FormLabel>
               <div className="space-y-2">
-                {watch("dateRanges").map((range, index) => (
+                {(watch("dates") || []).map((range, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-3 bg-muted rounded-lg"
                   >
                     <span className="text-sm">
-                      {format(range.availableFrom, "PPP", { locale: es })} -{" "}
-                      {format(range.availableTo, "PPP", { locale: es })}
+                      {format(new Date(range.startDate), "PPP", { locale: es })} -{" "}
+                      {format(new Date(range.endDate), "PPP", { locale: es })}
                     </span>
                     <Button
                       type="button"
@@ -245,4 +203,4 @@ export function PricingSection() {
       </CardContent>
     </Card>
   )
-} 
+}

@@ -1,11 +1,11 @@
 "use client"
 
-import { useFormContext } from "react-hook-form"
+import { useFormContext, Controller } from "react-hook-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { CheckCircle2, XCircle } from "lucide-react"
-import { useState } from "react"
+import { ServiceFormData } from "../../validations/service-form.validation"
 
 interface TourItem {
   id: string
@@ -25,58 +25,21 @@ const initialItems: TourItem[] = [
   { id: "10", name: "Personal Expenses" },
 ]
 
-interface ServiceFormData {
-  includes: string[]
-  excludes: string[]
-}
-
 export function IncludesSection() {
-  const { setValue, formState: { errors }, register } = useFormContext<ServiceFormData>();
+  const { control, watch, setValue, formState: { errors } } = useFormContext<ServiceFormData>();
   
-  const [includes, setIncludes] = useState<string[]>([]);
-  const [excludes, setExcludes] = useState<string[]>([]);
+  const includes = watch("includes") || [];
+  const excludes = watch("excludes") || [];
 
-  const handleIncludeChange = (name: string) => {
-    setIncludes((prev) => {
-      if (prev.includes(name)) {
-        const newIncludes = prev.filter((item) => item !== name)
-        setValue("includes", newIncludes)
-        return newIncludes
-      } else {
-        const newIncludes = [...prev, name]
-        setValue("includes", newIncludes)
-        return newIncludes
-      }
-    })
-    
-    // Remove from excludes if present
-    setExcludes((prev) => {
-      const newExcludes = prev.filter((item) => item !== name)
-      setValue("excludes", newExcludes)
-      return newExcludes
-    })
-  }
+  const handleCheckboxChange = (list: string[], setList: (value: string[]) => void, otherList: string[], setOtherList: (value: string[]) => void, item: string) => {
+    const newList = list.includes(item) ? list.filter(i => i !== item) : [...list, item];
+    setList(newList);
 
-  const handleExcludeChange = (name: string) => {
-    setExcludes((prev) => {
-      if (prev.includes(name)) {
-        const newExcludes = prev.filter((item) => item !== name)
-        setValue("excludes", newExcludes)
-        return newExcludes
-      } else {
-        const newExcludes = [...prev, name]
-        setValue("excludes", newExcludes)
-        return newExcludes
-      }
-    })
-    
-    // Remove from includes if present
-    setIncludes((prev) => {
-      const newIncludes = prev.filter((item) => item !== name)
-      setValue("includes", newIncludes)
-      return newIncludes
-    })
-  }
+    // Ensure item is not in the other list
+    if (otherList.includes(item)) {
+      setOtherList(otherList.filter(i => i !== item));
+    }
+  };
 
   return (
     <Card>
@@ -98,10 +61,16 @@ export function IncludesSection() {
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {initialItems.map((item) => (
                 <div key={item.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`include-${item.id}`}
-                    checked={includes.includes(item.name)}
-                    onCheckedChange={() => handleIncludeChange(item.name)}
+                  <Controller
+                    name="includes"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id={`include-${item.id}`}
+                        checked={field.value?.includes(item.name)}
+                        onCheckedChange={() => handleCheckboxChange(includes, (v) => setValue("includes", v), excludes, (v) => setValue("excludes", v), item.name)}
+                      />
+                    )}
                   />
                   <Label 
                     htmlFor={`include-${item.id}`}
@@ -128,10 +97,16 @@ export function IncludesSection() {
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {initialItems.map((item) => (
                 <div key={item.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`exclude-${item.id}`}
-                    checked={excludes.includes(item.name)}
-                    onCheckedChange={() => handleExcludeChange(item.name)}
+                  <Controller
+                    name="excludes"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id={`exclude-${item.id}`}
+                        checked={field.value?.includes(item.name)}
+                        onCheckedChange={() => handleCheckboxChange(excludes, (v) => setValue("excludes", v), includes, (v) => setValue("includes", v), item.name)}
+                      />
+                    )}
                   />
                   <Label 
                     htmlFor={`exclude-${item.id}`}
@@ -193,11 +168,7 @@ export function IncludesSection() {
             </div>
           </div>
         )}
-
-        {/* Hidden inputs for form registration */}
-        <input {...register("includes")} type="hidden" />
-        <input {...register("excludes")} type="hidden" />
       </CardContent>
     </Card>
   )
-} 
+}

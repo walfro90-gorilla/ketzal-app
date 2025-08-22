@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { useFormContext } from "react-hook-form"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Route } from "lucide-react"
-import VirtualItinerary from "@/components/virtual-itinerary-custom"
+import { useFormContext, useFieldArray } from "react-hook-form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Route } from "lucide-react";
+import VirtualItinerary from "@/components/virtual-itinerary-custom";
+import { ServiceFormData } from "../../validations/service-form.validation";
 
 export function ItinerarySection() {
-  const { register, formState: { errors } } = useFormContext()
+  const { control, formState: { errors } } = useFormContext<ServiceFormData>();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "itinerary",
+  });
 
   return (
     <Card>
@@ -22,16 +28,13 @@ export function ItinerarySection() {
             Configura el itinerario detallado de tu servicio. Agrega actividades, horarios y descripciones para cada día.
           </p>
           
-          <VirtualItinerary />
+          <VirtualItinerary activities={fields} addActivity={append} removeActivity={remove} />
         </div>
 
         {errors.itinerary && (
           <p className="text-sm text-red-500">{errors.itinerary.message as string}</p>
         )}
-
-        {/* Hidden input for form registration */}
-        <input {...register("itinerary")} type="hidden" />
       </CardContent>
     </Card>
-  )
-} 
+  );
+}
