@@ -51,16 +51,17 @@ export async function createService(values: ServiceFormData) {
     transportProviderID: data.transportProviderID ? parseInt(data.transportProviderID, 10) : undefined,
     hotelProviderID: data.hotelProviderID ? parseInt(data.hotelProviderID, 10) : undefined,
     dates: data.dates?.map(d => ({
-      availableFrom: d.startDate,
-      availableTo: d.endDate,
+      startDate: d.startDate,
+      endDate: d.endDate,
     })) || [],
-    packs: {
-      data: data.packs || []
-    }
+    packs: data.packs || []
   };
 
   try {
-    await createServiceAPI(serviceData);
+    const result = await createServiceAPI(serviceData);
+    if (result.error) {
+      return { error: result.error };
+    }
     return { success: "Service created successfully!" };
   } catch (error) {
     console.error("API error creating service:", error);

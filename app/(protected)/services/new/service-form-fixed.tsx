@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, lazy, useState, useEffect, useTransition } from "react";
+import React, { Suspense, lazy, useState, useTransition } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceFormSchema, serviceFormDefaults, ServiceFormData } from "./validations/service-form.validation";
@@ -14,9 +14,16 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 // Props interface to match legacy form integration
 interface ServiceFormFixedProps {
-  suppliers?: any[];
-  service?: any;
-  session?: any;
+  service?: {
+    name?: string;
+    description?: string;
+    serviceType?: string;
+    serviceCategory?: string;
+    sizeTour?: number;
+    ytLink?: string;
+    price?: number;
+    statusCode?: number;
+  };
 }
 
 // Lazy load components for better performance
@@ -39,7 +46,7 @@ const SectionLoader = () => (
   </Card>
 );
 
-export default function ServiceFormFixed({ suppliers, service, session }: ServiceFormFixedProps) {
+export default function ServiceFormFixed({ service }: ServiceFormFixedProps) {
   const [isPending, startTransition] = useTransition();
   const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
@@ -76,8 +83,8 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
     { id: 8, title: "FAQs", description: "Preguntas frecuentes" },
   ];
 
- 
- console.log("handleNextOrSubmit triggered");
+  const handleNextOrSubmit = () => {
+    console.log("handleNextOrSubmit triggered");
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -99,7 +106,7 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
     }
   };
 
-  const { formState: { errors, isValid }, watch, handleSubmit } = methods;
+  const { formState: { errors, isValid }, handleSubmit } = methods;
 
   const handleConfirmSubmit = () => {
     console.log("handleConfirmSubmit called. Triggering form submission.");
@@ -210,33 +217,6 @@ export default function ServiceFormFixed({ suppliers, service, session }: Servic
               {renderCurrentStep()}
             </div>
 
-                 )}
-                </div>
-              ))}
-            </div>
-
-            {/* Current Step Content */}
-            <div className="min-h-[500px]">
-              {renderCurrentStep()}
-            </div>
-
-            {/* Navigation - Same as debug */}
->
-
-            {/* Current Step Content */}
-            <div className="min-h-[500px]">
-              {renderCurrentStep()}
-            </div>
-
-            {/* Navigation - Same as debug */}
->
-
-            {/* Current Step Content */}
-            <div className="min-h-[500px]">
-              {renderCurrentStep()}
-            </div>
-
-            {/* Navigation - Same as debug */}
             <div className="flex justify-between items-center pt-6 border-t">
               <Button
                 variant="outline"

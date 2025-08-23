@@ -13,14 +13,14 @@ export interface ServiceData {
     availableFrom: string;
     availableTo: string;
     createdAt: string;
-    packs: { data: { description: string; name: string; price: number; qty: number }[] };
+    packs: { description: string; name: string; price: number; qty: number }[];
     images: { imgAlbum: string[]; imgBanner: string };
 
     cityTo: string;
 }
 export interface ServiceDateRange {
-    availableFrom: string;
-    availableTo: string;
+    startDate: string;
+    endDate: string;
 }
 
 export interface ServiceDataNew {
@@ -30,10 +30,8 @@ export interface ServiceDataNew {
     description: string;
     price: number;
     location: string;
-    availableFrom: string;
-    availableTo: string;
     createdAt: string;
-    packs: { data: { description: string; name: string; price: number; qty: number }[] };
+    packs: { description: string; name: string; price: number; qty: number }[];
     images: { imgAlbum: string[]; imgBanner: string };
     ytLink?: string;
     sizeTour?: number;
@@ -59,20 +57,50 @@ export interface ServiceDataNew {
 }
 
 // CREATE service
+// export async function createService(serviceData: ServiceDataNew) {
+//     try {
+//         const res = await fetch(`${BACKEND_URL}/api/services`, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(serviceData),
+//         })
+//         await res.json()
+//         console.log("Service created successfully")
+//     } catch (error) {
+//         console.error("Error creating service:", error)
+//     }
+// }
+
 export async function createService(serviceData: ServiceDataNew) {
-    try {
-        const res = await fetch(`${BACKEND_URL}/api/services`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(serviceData),
-        })
-        await res.json()
-        // console.log("Service created successfully")
-    } catch (error) {
-        // console.error("Error creating service:", error)
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/services`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(serviceData),
+    });
+
+    const responseBody = await res.json();
+
+    if (!res.ok) {
+      // The request failed.
+      console.error("Backend error:", responseBody);
+      // Return an object with the error message from the backend.
+      return { error: responseBody.message || "An unknown error occurred" };
     }
+
+    // The request was successful.
+    console.log("Service created successfully:", responseBody);
+    // Return an object indicating success.
+    return { success: "Service created successfully!", data: responseBody };
+  } catch (error) {
+    // This will catch network errors or errors from parsing the JSON.
+    console.error("Network or other error creating service:", error);
+    return { error: "Network error or could not parse response." };
+  }
 }
 
 // READ serviceS
