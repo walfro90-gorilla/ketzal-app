@@ -40,8 +40,10 @@ export async function createService(values: ServiceFormData) {
     sizeTour: data.sizeTour || 0,
     serviceType: data.serviceType || "tour",
     serviceCategory: data.serviceCategory || "ecoturismo",
+    countryFrom: data.countryFrom || "",
     stateFrom: data.stateFrom || "",
     cityFrom: data.cityFrom || "",
+    countryTo: data.countryTo || "",
     stateTo: data.stateTo || "",
     cityTo: data.cityTo || "",
     includes: data.includes || [],
@@ -51,6 +53,7 @@ export async function createService(values: ServiceFormData) {
     transportProviderID: data.transportProviderID ? parseInt(data.transportProviderID, 10) : undefined,
     hotelProviderID: data.hotelProviderID ? parseInt(data.hotelProviderID, 10) : undefined,
     dates: data.dates?.map(d => ({
+      id: d.id,
       startDate: d.startDate,
       endDate: d.endDate,
     })) || [],

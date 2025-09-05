@@ -13,12 +13,13 @@ export interface ServiceData {
     availableFrom: string;
     availableTo: string;
     createdAt: string;
-    packs: { description: string; name: string; price: number; qty: number }[];
+        packs: { id?: string; description: string; name: string; price: number; qty: number }[];
     images: { imgAlbum: string[]; imgBanner: string };
 
     cityTo: string;
 }
 export interface ServiceDateRange {
+    id?: string;
     startDate: string;
     endDate: string;
 }
@@ -31,14 +32,16 @@ export interface ServiceDataNew {
     price: number;
     location: string;
     createdAt: string;
-    packs: { description: string; name: string; price: number; qty: number }[];
+    packs: { id?: string; description: string; name: string; price: number; qty: number }[];
     images: { imgAlbum: string[]; imgBanner: string };
     ytLink?: string;
     sizeTour?: number;
     serviceType?: string;
     serviceCategory?: string;
+    countryFrom?: string;
     stateFrom?: string;
     cityFrom: string;
+    countryTo?: string;
     cityTo: string;
     stateTo?: string;
 

@@ -18,14 +18,17 @@ export const serviceFormSchema = z.object({
   // Pricing
   price: z.number().min(0, "El precio no puede ser negativo"),
   dates: z.array(z.object({
+    id: z.string().optional(),
     startDate: z.string(),
     endDate: z.string(),
     price: z.number()
   })).optional(),
 
   // Location
+  countryFrom: z.string().optional(),
   stateFrom: z.string().optional(),
   cityFrom: z.string().optional(),
+  countryTo: z.string().optional(),
   stateTo: z.string().optional(),
   cityTo: z.string().optional(),
 
@@ -35,6 +38,7 @@ export const serviceFormSchema = z.object({
 
   // Packages
   packs: z.array(z.object({
+    id: z.string().optional(),
     name: z.string(),
     description: z.string(),
     qty: z.number(),
@@ -78,8 +82,10 @@ export const serviceFormDefaults: Partial<ServiceFormData> = {
     imgAlbum: [],
   },
   dates: [],
+  countryFrom: "",
   stateFrom: "",
   cityFrom: "",
+  countryTo: "",
   stateTo: "",
   cityTo: "",
   packs: [],

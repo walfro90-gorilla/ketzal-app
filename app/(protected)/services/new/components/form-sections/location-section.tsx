@@ -33,9 +33,9 @@ export function LocationSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Local state for country selectors
-  const [countryFrom, setCountryFrom] = useState<string | undefined>();
-  const [countryTo, setCountryTo] = useState<string | undefined>();
+  // Local state for country selectors, initialized from form state
+  const [countryFrom, setCountryFrom] = useState<string | undefined>(watch("countryFrom"));
+  const [countryTo, setCountryTo] = useState<string | undefined>(watch("countryTo"));
 
   // Watch current values for dependent dropdowns
   const stateFrom = watch("stateFrom");
@@ -154,7 +154,10 @@ export function LocationSection() {
                 <FormItem>
                   <FormLabel>País de Origen</FormLabel>
                   <Select
-                    onValueChange={setCountryFrom}
+                    onValueChange={(value) => {
+                      setCountryFrom(value);
+                      setValue("countryFrom", value, { shouldValidate: true });
+                    }}
                     value={countryFrom || ""}
                     disabled={isLoading}
                   >
@@ -246,7 +249,10 @@ export function LocationSection() {
                 <FormItem>
                   <FormLabel>País de Destino</FormLabel>
                   <Select
-                    onValueChange={setCountryTo}
+                    onValueChange={(value) => {
+                      setCountryTo(value);
+                      setValue("countryTo", value, { shouldValidate: true });
+                    }}
                     value={countryTo || ""}
                     disabled={isLoading}
                   >
