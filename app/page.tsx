@@ -48,7 +48,7 @@ export default function HomePage() {
     fetchData()
   }, [])
 
-  if (loading || !services || !reviews || !users || !categories) return <Loader />
+  if (loading || !services || !reviews || !users || !categories || !Array.isArray(categories)) return <Loader />
   console.log('Categories:', categories)
 
   return (

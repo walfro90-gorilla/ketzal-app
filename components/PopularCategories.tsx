@@ -20,7 +20,7 @@ interface Category {
 
 interface PopularCategoriesProps {
   services: unknown[];
-  categories: Category[];
+  categories: Category[] | null;
 }
 
 const PopularCategories = ({ services, categories }: PopularCategoriesProps) => {
@@ -28,10 +28,21 @@ const PopularCategories = ({ services, categories }: PopularCategoriesProps) => 
     console.log("Services:", services)
   })
 
+  // Handle case when categories is null or not an array
+  if (!categories || !Array.isArray(categories)) {
+    return (
+      <section className="py-16 bg-gray-100 dark:bg-zinc-900">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-gray-100">Categorías populares</h2>
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            No hay categorías disponibles
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-
-
     <section className="py-16 bg-gray-100 dark:bg-zinc-900">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-gray-100">Categorías populares</h2>
@@ -55,7 +66,6 @@ const PopularCategories = ({ services, categories }: PopularCategoriesProps) => 
         </div>
       </div>
     </section>
-
   )
 }
 
