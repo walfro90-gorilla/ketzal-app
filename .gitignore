@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma (legacy SQLite — current datasource is Postgres/Supabase)
+prisma/dev.db
+prisma/dev.db-journal
+
+# dev server logs (local)
+dev*.log

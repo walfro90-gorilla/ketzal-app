@@ -61,15 +61,6 @@ export default {
             throw new Error("Por favor verifica tu email para continuar. Revisa tu bandeja de entrada y spam.")
           }
 
-          // Actualizar estado del usuario después de verificar email
-          if (user.status === 'PENDING_EMAIL_VERIFICATION') {
-            const newStatus = user.adminRequest ? 'PENDING_ADMIN_APPROVAL' : 'ACTIVE'
-            await db.user.update({
-              where: { id: user.id },
-              data: { status: newStatus }
-            })
-            user.status = newStatus // Actualizar la variable local
-          }
           // Return only the fields required by the NextAuth User type
           return {
             id: user.id,

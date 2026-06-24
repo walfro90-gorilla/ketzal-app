@@ -1,8 +1,23 @@
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.AUTH_RESEND_API_KEY)
+// Cliente Resend lazy: se construye al primer uso y solo si hay API key.
+// Evita que el módulo crashee al cargar (p.ej. el middleware) cuando
+// AUTH_RESEND_API_KEY no está configurada en el entorno.
+let _resend: Resend | null = null
+function getResend(): Resend | null {
+    if (_resend) return _resend
+    const key = process.env.AUTH_RESEND_API_KEY
+    if (!key) {
+        console.warn("AUTH_RESEND_API_KEY no configurada — envío de email deshabilitado")
+        return null
+    }
+    _resend = new Resend(key)
+    return _resend
+}
 
 export const sendEmailVerification = async (email: string, token: string) => {
+    const resend = getResend()
+    if (!resend) return { error: true }
     try {
         await resend.emails.send({
            from: "Ketzal app <ketzal.app@gorillabs.dev>",
@@ -24,6 +39,8 @@ export const sendEmailVerification = async (email: string, token: string) => {
 }
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
+    const resend = getResend()
+    if (!resend) return { error: true }
     try {
         await resend.emails.send({
             from: "Ketzal app <ketzal.app@gorillabs.dev>",

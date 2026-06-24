@@ -1,4 +1,4 @@
-import { object, string, boolean } from "zod"
+import { object, string } from "zod"
 
 export const signInSchema = object({
   email: string({ required_error: "Email es requerido" })
@@ -80,10 +80,17 @@ export const signUpAdminSchema = object({
   city: string({ required_error: "Ciudad es requerida" })
     .min(1, "Ciudad es requerida")
     .max(50, "La ciudad debe tener menos de 50 caracteres"),
+  // Acepta cualquier formato visual (+52 951 123 4567, (951) 123-4567, etc.)
+  // y normaliza a dígitos limpios (E.164: 10–15 dígitos). El valor parseado
+  // que devuelve el schema ya está normalizado — guardarlo así en DB.
   phone: string({ required_error: "Número de teléfono es requerido" })
-    .min(10, "El número debe tener al menos 10 dígitos")
-    .max(15, "El número debe tener máximo 15 dígitos")
-    .regex(/^[\+]?[\d\s\-\(\)]+$/, "Formato de teléfono inválido"),
+    .regex(/^[\+]?[\d\s\-\(\)]+$/, "Formato de teléfono inválido")
+    .transform((s) => s.replace(/\D/g, ""))
+    .pipe(
+      string()
+        .min(10, "El número debe tener al menos 10 dígitos")
+        .max(15, "El número debe tener máximo 15 dígitos")
+    ),
   documentation: string().optional(),
   
   // Campos opcionales - Presencia Digital y Datos Adicionales

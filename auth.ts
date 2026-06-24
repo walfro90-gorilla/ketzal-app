@@ -40,14 +40,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isLoggedIn = !!auth?.user
       const userRole = auth?.user?.role
 
-      console.log('🔍 MIDDLEWARE AUTH CALLBACK:')
-      console.log('  - Path:', nextUrl.pathname)
-      console.log('  - Logged in:', isLoggedIn)
-      console.log('  - Role:', userRole)
-
       // Proteger rutas de super-admin
       if (nextUrl.pathname.startsWith('/super-admin')) {
-        console.log('🛡️ SUPER-ADMIN ROUTE - Role check:', userRole)
         return isLoggedIn && userRole === 'superadmin'
       }
 
@@ -69,6 +63,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         '/store/',
         '/cart',
         '/cart/',
+        // Flujo Supabase Auth (paralelo a NextAuth durante la migración).
+        // /cuenta-sb se auto-protege: la página redirige a /login-sb si no hay
+        // sesión Supabase; aquí solo evitamos que el middleware NextAuth la bloquee.
+        '/login-sb',
+        '/registro-sb',
+        '/cuenta-sb',
       ]
 
       const isPublicRoute = publicRoutes.includes(nextUrl.pathname) ||

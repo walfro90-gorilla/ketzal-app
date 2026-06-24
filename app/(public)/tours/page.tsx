@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input, Slider, Rate, Button as AntButton,  Card as AntCard } from 'antd'
 import { Card, CardContent } from '@/components/ui/card'
-import { getServicesWithReviews } from '@/app/(protected)/services/services.api'
+import { fetchKetzalTours } from '@/lib/supabase/services-api'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
@@ -13,24 +13,22 @@ import { useLoading } from '@/components/LoadingContext'
 const { Search } = Input
 
 interface Tour {
-  id: number;
+  id: string; // uuid desde ketzal.services (era Int en el viejo backend)
   name: string;
   price: number;
-  location?: string;
+  location?: string | null;
   rating?: number;
   reviewCount?: number;
-  description?: string;
+  description?: string | null;
   images?: {
     imgBanner?: string;
     [key: string]: string | undefined;
   };
-  serviceType?: string;
-  // Propiedades necesarias del API
-  availableFrom?: string;
+  serviceType?: string | null;
+  availableFrom?: string | null;
   availableTo?: string | null;
   packageType?: string;
   packageDescription?: string;
-  // Add more fields as needed
 }
 
 export default function TourPage() {
@@ -55,12 +53,13 @@ export default function TourPage() {
   }, [])
 
   useEffect(() => {
-    getServicesWithReviews().then((data) => {
-      const onlyTours = data.filter((s: Tour) => s.serviceType === 'tour')
-      setTours(onlyTours)
-      setFiltered(onlyTours)
-      setLoading(false)
-    })
+    fetchKetzalTours()
+      .then((data) => {
+        setTours(data as Tour[])
+        setFiltered(data as Tour[])
+      })
+      .catch((err) => console.error('fetchKetzalTours failed:', err))
+      .finally(() => setLoading(false))
   }, [setLoading])
 
   useEffect(() => {
