@@ -6,10 +6,11 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
 // GET - Obtener configuración de transporte para un servicio
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const serviceId = parseInt(params.id);
+    const { id } = await params;
+    const serviceId = parseInt(id);
 
     if (isNaN(serviceId)) {
       return NextResponse.json(
@@ -51,10 +52,11 @@ export async function GET(
 // PUT - Actualizar configuración de transporte para un servicio
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const serviceId = parseInt(params.id);
+    const { id } = await params;
+    const serviceId = parseInt(id);
 
     if (isNaN(serviceId)) {
       return NextResponse.json(
