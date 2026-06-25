@@ -1,36 +1,545 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# 🌎 Ketzal App
 
-First, run the development server:
+**Marketplace de experiencias turísticas en México**
+_B2C donde turistas reservan tours, hospedaje y productos · operadores administran su catálogo · pagos en MXN + AXO Coins_
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[![Next.js](https://img.shields.io/badge/Next.js-15.1.11-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=000)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres-3ECF8E?logo=supabase&logoColor=fff)](https://supabase.com/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=fff)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?logo=vercel)](https://vercel.com/)
+
+</div>
+
+---
+
+## 📑 Tabla de contenidos
+
+- [✨ TL;DR](#-tldr)
+- [🏛️ Arquitectura](#️-arquitectura)
+- [🗄️ Modelo de datos](#️-modelo-de-datos)
+- [🔐 Autenticación](#-autenticación)
+- [🛡️ Row Level Security](#️-row-level-security)
+- [🧩 Stack técnico](#-stack-técnico)
+- [📁 Estructura del repo](#-estructura-del-repo)
+- [🚀 Getting started](#-getting-started)
+- [🌐 Despliegue](#-despliegue)
+- [🧪 Testing](#-testing)
+- [🗺️ Roadmap](#️-roadmap)
+- [📚 Convenciones](#-convenciones)
+
+---
+
+## ✨ TL;DR
+
+Ketzal NO es un e‑commerce clásico. Tiene **tres piezas** que reemplazan/extienden el carrito tradicional:
+
+| Pieza | Qué hace |
+|---|---|
+| 🧭 **TravelPlanner** | Sustituye al carrito. Un usuario tiene múltiples planners (por viaje/destino), con estados `PLANNING → RESERVED → CONFIRMED → TRAVELLING → COMPLETED` |
+| 💰 **Wallet** | Saldo dual: **MXN** (pesos) + **AXO Coins** (moneda interna gamificada). 50 AXO de bienvenida en cada signup |
+| 💖 **Wishlist** | Listas compartibles vía `share_code` + alertas de precio |
+
+Vive como **inquilino dedicado** dentro del Supabase compartido de **Gorilla‑Labs** (la oficina virtual de la casa matter), aprovechando el sistema de auth y la infra existente sin pisarse con la app de agencia ni con `tiendas`.
+
+---
+
+## 🏛️ Arquitectura
+
+```mermaid
+flowchart LR
+    user([👤 Usuario])
+    browser[🌐 Next.js App<br/>App Router + RSC]
+    middleware[🛡️ Middleware<br/>NextAuth gate + Supabase refresh]
+    actions[⚙️ Server Actions<br/>lib/supabase/auth-actions.ts]
+    supaAuth[(🔐 auth.users<br/>Supabase Auth)]
+    supaDB[(🗄️ ketzal schema<br/>14 tablas + RLS)]
+    trigger{{🪝 on_auth_user_created<br/>handle_new_user app-aware}}
+    cloudinary[(☁️ Cloudinary<br/>Imágenes)]
+
+    user --> browser
+    browser <-->|cookies| middleware
+    browser -->|@supabase/supabase-js| supaDB
+    browser -->|server action| actions
+    actions -->|@supabase/ssr| supaAuth
+    actions -->|@supabase/ssr| supaDB
+    supaAuth -->|on insert| trigger
+    trigger -->|app=ketzal| supaDB
+    browser --> cloudinary
+
+    style supaDB fill:#3ECF8E,color:#000
+    style supaAuth fill:#3ECF8E,color:#000
+    style trigger fill:#FFD93D,color:#000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Lo clave:**
+- **Identidad compartida**: `auth.users` es UNA tabla, usada por la oficina (agencia), `tiendas` y Ketzal. El trigger `handle_new_user` es **app‑aware**: si el signup trae `raw_user_meta_data.app = 'ketzal'`, crea solo el perfil Ketzal; cualquier otro signup mantiene el flujo de agencia.
+- **Aislamiento por schema**: todo lo de Ketzal vive en `ketzal.*` (igual que `tiendas.*`). Cero colisión con las 21 tablas de `public.*` de la agencia.
+- **RLS como puerta**: el cliente del navegador habla directo a Supabase con la anon key; las 36 políticas RLS deciden quién ve qué.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗄️ Modelo de datos
 
-## Learn More
+### Schemas vivos en el proyecto Supabase
 
-To learn more about Next.js, take a look at the following resources:
+```mermaid
+flowchart LR
+    auth[(🔐 auth)]
+    public[(🏢 public<br/>plataforma agencia)]
+    tiendas[(🛒 tiendas<br/>e-commerce SaaS)]
+    ketzal[(🌎 ketzal<br/>marketplace turismo)]
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    auth -.->|users| public
+    auth -.->|users| tiendas
+    auth -.->|users| ketzal
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    style ketzal fill:#10B981,color:#fff
+    style public fill:#94A3B8,color:#000
+    style tiendas fill:#94A3B8,color:#000
+    style auth fill:#3ECF8E,color:#000
+```
 
-## Deploy on Vercel
+### ER del schema `ketzal`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```mermaid
+erDiagram
+    auth_users ||--o| profiles : "1:1 (via trigger)"
+    profiles }o--|| suppliers : "supplier_id"
+    suppliers ||--o{ services : "supplier_id"
+    suppliers ||--o{ services : "transport_provider_id"
+    suppliers ||--o{ services : "hotel_provider_id"
+    services ||--o{ reviews : "service_id"
+    auth_users ||--o{ reviews : "user_id"
+    services ||--o{ planner_items : ""
+    products ||--o{ planner_items : ""
+    services ||--o{ wishlist_items : ""
+    products ||--o{ wishlist_items : ""
+    auth_users ||--o{ travel_planners : "user_id"
+    travel_planners ||--o{ planner_items : "planner_id"
+    auth_users ||--o{ wishlists : "user_id"
+    wishlists ||--o{ wishlist_items : "wishlist_id"
+    auth_users ||--|| wallets : "user_id"
+    wallets ||--o{ wallet_transactions : "wallet_id"
+    auth_users ||--o{ payments : "user_id"
+    travel_planners ||--o{ payments : "planner_id"
+    auth_users ||--o{ notifications : "user_id"
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    auth_users {
+        uuid id PK
+        text email
+        jsonb raw_user_meta_data "app=ketzal"
+    }
+    profiles {
+        uuid id PK_FK
+        text email
+        text name
+        user_role role "user|admin|superadmin"
+        numeric axo_coins_earned "default 50"
+        uuid supplier_id FK
+    }
+    suppliers {
+        uuid id PK
+        text name UK
+        text contact_email UK
+        text supplier_type
+        jsonb location
+        jsonb photos
+    }
+    services {
+        uuid id PK
+        uuid supplier_id FK
+        uuid transport_provider_id FK
+        uuid hotel_provider_id FK
+        text name
+        numeric price
+        numeric price_axo
+        text service_type
+        jsonb images
+        int max_capacity
+    }
+    products {
+        uuid id PK
+        text name UK
+        numeric price
+        numeric price_axo
+        int stock
+    }
+    travel_planners {
+        uuid id PK
+        uuid user_id FK
+        planner_status status "PLANNING -> COMPLETED"
+        numeric total_mxn
+        numeric total_axo
+        bool is_public
+        text share_code UK
+    }
+    planner_items {
+        uuid id PK
+        uuid planner_id FK
+        uuid service_id FK
+        uuid product_id FK
+        int quantity
+        numeric price_mxn
+    }
+    wallets {
+        uuid id PK
+        uuid user_id FK_UK
+        numeric balance_mxn
+        numeric balance_axo
+    }
+    wallet_transactions {
+        uuid id PK
+        uuid wallet_id FK
+        wallet_txn_type type
+        numeric amount_mxn
+        numeric amount_axo
+    }
+    payments {
+        uuid id PK
+        uuid user_id FK
+        uuid planner_id FK
+        payment_status status
+        int installments
+        int current_installment
+    }
+    notifications {
+        uuid id PK
+        uuid user_id FK
+        notification_type type
+        notification_priority priority
+        bool is_read
+        jsonb metadata
+    }
+```
+
+### 📊 Tablas del schema `ketzal`
+
+| Tabla | Propósito | Vive de | RLS |
+|---|---|---|---|
+| `profiles` | Datos Ketzal por usuario (rol, AXO, supplier_id) | 1:1 con `auth.users` | dueño select/update |
+| `suppliers` | Proveedores turísticos | catálogo público | public read, owner write |
+| `categories` | Catálogo de categorías | catálogo público | public read, superadmin write |
+| `products` | Tienda (shop items) | catálogo público | public read, superadmin write |
+| `services` | Tours/experiencias (3 FKs a suppliers) | catálogo público | public read, owner write |
+| `reviews` | Reseñas con rating 1‑5 | usuarios autenticados | public read, author write |
+| `travel_planners` | Carritos por viaje (con estados) | privado/compartible | owner + public si `is_public` |
+| `planner_items` | Items dentro de un planner | derivado del padre | hereda del planner |
+| `wishlists` | Listas compartibles | privado/compartible | owner + public si `is_public` |
+| `wishlist_items` | Items dentro de wishlist | derivado | hereda del wishlist |
+| `wallets` | Saldo MXN + AXO | privado | **dueño solo lectura**, write via service_role |
+| `wallet_transactions` | Historial | privado | **dueño solo lectura**, write via service_role |
+| `payments` | Pagos con cuotas | privado | **dueño solo lectura**, write via service_role |
+| `notifications` | Avisos al usuario | privado | dueño lee/marca/borra, write via service_role |
+
+### 🏷️ Enums
+
+| Enum | Valores |
+|---|---|
+| `user_role` | `user`, `admin`, `superadmin` |
+| `planner_status` | `PLANNING`, `RESERVED`, `CONFIRMED`, `TRAVELLING`, `COMPLETED` |
+| `payment_status` | `PENDING`, `PARTIAL`, `COMPLETED`, `REFUNDED` |
+| `wallet_txn_type` | `DEPOSIT`, `WITHDRAWAL`, `PURCHASE`, `REFUND`, `TRANSFER_SENT`, `TRANSFER_RECEIVED`, `REWARD` |
+| `notification_type` | `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `SUPPLIER_APPROVAL`, `USER_REGISTRATION`, `WELCOME_BONUS`, `WELCOME_MESSAGE`, `BOOKING_UPDATE`, `SYSTEM_UPDATE` |
+| `notification_priority` | `LOW`, `NORMAL`, `HIGH`, `URGENT` |
+
+### 🧰 Helpers SQL en `ketzal`
+
+| Función | Devuelve | Para qué |
+|---|---|---|
+| `ketzal.is_superadmin()` | `boolean` | RLS check rápido en políticas (SECURITY DEFINER, evita recursión) |
+| `ketzal.my_supplier_id()` | `uuid` | El supplier que administra el usuario logueado |
+| `ketzal.set_updated_at()` | `trigger` | Mantiene `updated_at = now()` automático |
+
+### 🪝 Trigger compartido `public.handle_new_user`
+
+Corre en CADA `INSERT` sobre `auth.users` (todos los signups del proyecto). **Es app‑aware**:
+
+```sql
+if (new.raw_user_meta_data->>'app') = 'ketzal' then
+  insert into ketzal.profiles (id, email, name) values (...);
+  return new;
+end if;
+
+-- Comportamiento original de la agencia (sin cambios):
+insert into public.organizations (...) returning id into new_org_id;
+insert into public.org_members (...);
+perform public.seed_org_agents(new_org_id);
+perform public.claim_orphan_resources(new_org_id);
+```
+
+➡️ Un alta de Ketzal NO contamina la tabla `organizations` con workspaces de agencia.
+
+---
+
+## 🔐 Autenticación
+
+### Flujo signup desde Ketzal
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 Usuario
+    participant F as 🌐 /registro-sb
+    participant SA as ⚙️ ketzalSignUp<br/>(server action)
+    participant GT as 🔐 GoTrue<br/>(Supabase Auth)
+    participant T as 🪝 trigger<br/>handle_new_user
+    participant DB as 🗄️ ketzal.profiles
+
+    U->>F: nombre, email, password
+    F->>SA: ketzalSignUp({email, password, fullName})
+    SA->>GT: signUp({options:{data:{app:'ketzal', full_name}}})
+    GT->>DB: insert auth.users
+    DB->>T: trigger BEFORE INSERT
+    T->>T: raw_user_meta_data.app == 'ketzal'?
+    T->>DB: insert ketzal.profiles<br/>(role=user, axo=50)
+    T-->>GT: NEW
+    GT-->>SA: {user, session}
+    SA->>F: cookies sesion seteadas
+    F->>U: redirect /cuenta-sb
+```
+
+### Páginas del flujo nuevo (Supabase, paralelo a NextAuth)
+
+| Ruta | Componente |
+|---|---|
+| `/registro-sb` | [`SupabaseRegisterForm`](components/supabase-register-form.tsx) — signup con `app:'ketzal'` |
+| `/login-sb` | [`SupabaseLoginForm`](components/supabase-login-form.tsx) — password grant |
+| `/cuenta-sb` | Server component — `getKetzalUser()` muestra rol/email/AXO, logout |
+
+### NextAuth coexiste
+
+`/login`, `/register`, `/register-admin`, `/forgot-password`, `/reset-password` siguen con NextAuth + JWT hasta que el flujo Supabase esté 100% validado en producción. Plan de retirar NextAuth → [Roadmap](#️-roadmap).
+
+---
+
+## 🛡️ Row Level Security
+
+**Todas las 14 tablas tienen RLS habilitado.** 36 políticas activas. Patrones:
+
+- 🌐 **Catálogo público** (`suppliers`, `categories`, `products`, `services`, `reviews`): SELECT `using (true)` → cualquiera lee.
+- ✍️ **Catálogo controlado**: INSERT/UPDATE/DELETE solo `ketzal.is_superadmin()` o `services.supplier_id = ketzal.my_supplier_id()` (el dueño del supplier).
+- 👤 **Datos del usuario** (`profiles`, `travel_planners`, `wishlists`, `notifications`): `auth.uid() = user_id` para R/W. Planners y wishlists tienen lectura adicional si `is_public = true`.
+- 🔗 **Items de padres** (`planner_items`, `wishlist_items`): heredan el acceso del planner/wishlist padre via `EXISTS`.
+- 💰 **Dinero solo lectura del dueño** (`wallets`, `wallet_transactions`, `payments`): SELECT al dueño y superadmin. **Cero política de write para autenticados** → todas las mutaciones deben pasar por backend con `service_role` (que bypassa RLS). Esto **previene fraude por modificación directa de saldos** desde el cliente.
+
+---
+
+## 🧩 Stack técnico
+
+<table>
+<tr><td>
+
+**Frontend**
+- ⚛️ Next.js 15 (App Router)
+- 🦾 React 18 + TypeScript estricto
+- 🎨 Shadcn/UI (Radix) + Tailwind 3
+- 🧠 React Hook Form + Zod
+- 📦 Zustand (legacy, contextos)
+
+</td><td>
+
+**Backend / Data**
+- 🐘 PostgreSQL via **Supabase**
+- 🔐 **Supabase Auth** (`auth.users`, GoTrue)
+- 📚 `@supabase/supabase-js` + `@supabase/ssr`
+- 🪪 NextAuth v5 beta (en migración a Supabase)
+- 🛠️ Prisma (legacy, en retiro)
+
+</td><td>
+
+**Infra**
+- ▲ Vercel (deploy)
+- ☁️ Cloudinary (imágenes)
+- ✉️ Resend (email, lazy init)
+- 🧪 Jest + ts-jest + Testing Library
+
+</td></tr>
+</table>
+
+---
+
+## 📁 Estructura del repo
+
+```
+ketzal-app/
+├── 📱 app/
+│   ├── (auth)/              ← login, registro, forgot/reset password
+│   │   ├── login-sb/        🆕 Supabase login
+│   │   ├── registro-sb/     🆕 Supabase registro
+│   │   └── cuenta-sb/       🆕 Account view (proof E2E)
+│   ├── (protected)/         ← sesión requerida (services, users, suppliers, super-admin)
+│   ├── (public)/            ← abiertas (tours, store, planners, wallet)
+│   └── api/                 ← API Routes
+├── ⚙️ actions/              ← Server Actions ("use server") — legacy NextAuth
+├── 🧩 components/
+│   ├── ui/                  ← primitivos shadcn
+│   ├── travel-planner/      ← Sidebar, AddToPlanner, SeatSelector
+│   ├── supabase-login-form  🆕 Form Supabase
+│   └── supabase-register-form 🆕
+├── 🔌 lib/
+│   ├── supabase/            🆕 cliente browser/server/middleware + auth-actions + types
+│   │   ├── client.ts        🌐 browser (createBrowserClient)
+│   │   ├── server.ts        🖥️ server (createServerClient + cookies)
+│   │   ├── middleware.ts    🔄 updateSession helper
+│   │   ├── auth-actions.ts  ketzalSignUp/SignIn/SignOut/getKetzalUser
+│   │   ├── services-api.ts  fetchKetzalTours (browser fetch público)
+│   │   └── database.types.ts (generados del schema ketzal)
+│   ├── mail.ts              ← Resend lazy (no crashea sin AUTH_RESEND_API_KEY)
+│   ├── zod.ts               ← schemas (phone E.164 normalize)
+│   └── ...
+├── 🌐 middleware.ts          ← NextAuth gating + updateSession Supabase compuestos
+├── 🔐 auth.ts / auth.config.ts ← NextAuth v5 (JWT)
+├── 📜 prisma/                ← schema legacy + migrations
+├── 📚 docs/
+│   ├── SUPABASE_INTEGRATION_PLAN.md ← plan completo de la migración
+│   └── sql/
+│       ├── phase1_ketzal_schema.sql 🗄️ schema + profiles + trigger app-aware
+│       ├── phase2_ketzal_catalog.sql 🛒 suppliers/services/products/...
+│       └── phase3_ketzal_domain.sql 💰 planners/wallets/payments/notifs
+├── 🧪 __tests__/             ← Jest (zod, planners-api, auth-action, super-admin, wallet)
+├── 🔧 scripts/
+│   ├── check-secrets-expiry.mjs ← `npm run check:secrets`
+│   └── supabase-smoke.mjs
+└── 🗝️ config/secrets-expiry.json ← metadata-only, sin valores
+```
+
+---
+
+## 🚀 Getting started
+
+### 1. Pre‑requisitos
+
+- Node.js ≥ 18 (recomendado 20+)
+- Cuenta de Supabase con acceso al proyecto `Gorilla-Labs` (`wnujoyzdpdyxblgdtxjw`)
+- (Opcional) Cuenta Cloudinary + Resend para features completas
+
+### 2. Variables de entorno
+
+Crear `.env.local` (gitignored):
+
+```env
+# Supabase (público — anon key va al bundle del browser)
+NEXT_PUBLIC_SUPABASE_URL=https://wnujoyzdpdyxblgdtxjw.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key del dashboard Supabase>
+
+# NextAuth (legacy, hasta retirar)
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=<openssl rand -base64 32>
+AUTH_RESEND_API_KEY=<opcional — sin esto el envío de email solo no funciona>
+
+# Cloudinary (opcional, para subir imágenes)
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
+
+### 3. Instalar y correr
+
+```bash
+npm install
+npm run dev          # localhost:3000
+```
+
+### 4. Comandos útiles
+
+```bash
+npm run dev              # next dev
+npm run dev:turbo        # next dev --turbopack
+npm run build            # build de producción
+npm run lint             # ESLint
+npm run test             # Jest
+npm run test:watch
+npm run test:coverage
+npm run check:secrets    # Alertas de expiración de credenciales
+```
+
+---
+
+## 🌐 Despliegue
+
+Producción en **Vercel**. Auto‑deploy desde `main`.
+
+**Env vars en Vercel** (todas en Production/Preview/Development):
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (mientras coexista NextAuth)
+- `AUTH_RESEND_API_KEY` (opcional, lazy init no crashea sin él)
+- `CLOUDINARY_*`
+
+**Notas:**
+- `eslint.ignoreDuringBuilds = true` en [next.config.ts](next.config.ts) — el lint corre con `npm run lint`, no bloquea deploy.
+- `**/BU/**` excluido del typecheck (carpetas de código archivado).
+
+---
+
+## 🧪 Testing
+
+- **Framework**: Jest + ts-jest, `testEnvironment: 'node'`.
+- **Convenciones**: tests en `__tests__/` espejando estructura de origen.
+- **Estado**: 4 suites, ~38 tests verdes cubriendo:
+  - Schemas Zod (sign‑in, sign‑up, sign‑up admin con normalización E.164)
+  - Server Actions: `registerAction`, `super-admin-actions`
+  - API routes: `GET /api/wallet`
+  - `planners-api` (proxy fetch)
+
+---
+
+## 🗺️ Roadmap
+
+> 🎯 **Estado actual**: DB + auth Supabase desplegados en prod. Web carga. Auth nuevo conviviendo con NextAuth.
+
+### 🔥 Siguiente fase — Refactor lvl 2
+
+| # | Item | Por qué | Impacto |
+|---|---|---|---|
+| 1 | **Retirar NextAuth** | Apuntar `/login` y `/register` a las páginas Supabase, dropear `next-auth`, `auth.ts`, `auth.config.ts`. Borra una capa entera. | Alto |
+| 2 | **Migrar `services.api`, `users.api`, `suppliers.api`, `reviews.api`** a supabase-js | Hoy apuntan al backend Railway **muerto**. Causa los warnings de CORS+404 que viste. | Alto |
+| 3 | **Migrar `/tours/[id]` (detalle)** | Página rica con 5 fetches al backend muerto. Necesita mapping de shapes (jsonb images, suppliers, reviews). | Medio‑Alto |
+| 4 | **Aggregations de reviews** | RPC en Supabase `service_rating(service_id) -> {avg, count}` para no calcular client‑side. | Medio |
+| 5 | **Wallet ops por backend** | RPCs en Supabase (`wallet_add_funds`, `wallet_transfer`, `wallet_purchase`) con `service_role`. Lock con `select for update`. | Alto |
+| 6 | **Realtime de notifications** | `supabase.channel('notifications').on('postgres_changes', ...)` para badge en vivo. | Medio |
+| 7 | **Suppliers self‑management** | Que un `admin` pueda editar SU supplier desde el dashboard. Hoy RLS permite, falta UI. | Medio |
+| 8 | **Email verification toggle** | Hoy está OFF en el proyecto (sesión inmediata). Para prod B2C, encender + manejar el callback. | Bajo |
+| 9 | **Rotar token Supabase** | El token de management quedó expuesto en chat (ya vencía 2026‑06‑26 — se rota igual). | Crítico (seguridad) |
+| 10 | **Cobertura tests** | Wallet ops, planner CRUD, notification flow, componentes UI con `@testing-library/react`. | Medio |
+
+### 🌱 Fase futura — Producto
+
+- 🎯 **Programa de fidelidad con AXO Coins** (badges, leaderboard)
+- 🤝 **Pagos en cuotas con pasarela real** (Stripe / MercadoPago)
+- 🌐 **Compartir wishlists/planners en redes sociales** (OG dinámico)
+- 📱 **PWA / app móvil** (Expo + reuso de supabase-js)
+
+---
+
+## 📚 Convenciones
+
+- **Mutaciones → Server Actions** en `actions/*.ts` o `lib/supabase/auth-actions.ts` con `"use server"`. API Routes solo para integraciones (uploads, webhooks).
+- **Cliente Supabase**: importar de `@/lib/supabase/client` (browser) o `@/lib/supabase/server` (SSR/Server Actions).
+- **Cliente Prisma (legacy)**: `@/lib/db` singleton. **En retiro** — preferir supabase-js para código nuevo.
+- **Validación**: Zod en [lib/zod.ts](lib/zod.ts). Phone se normaliza a dígitos E.164 (10‑15) automáticamente.
+- **Imágenes**: Cloudinary vía `lib/cloudinary.ts`; mostrar con `<OptimizedImage>` / `<CloudinaryImage>`.
+- **Notificaciones**: backend usa `service_role` (RLS bypass) para insertar; cliente solo lee + marca como leída.
+- **Naming en `ketzal.*`**: snake_case (alineado con la plataforma). camelCase en código TS donde el mapeo es necesario.
+- **Comentarios `ponytail:`**: marcan simplificaciones deliberadas con su camino de upgrade. Respetarlos.
+
+---
+
+## 🤝 Contributing
+
+1. Fork → branch desde `main`.
+2. `npm run test` + `npm run lint` deben pasar (lint no bloquea deploy pero sí PR).
+3. Tipos: `npx tsc --noEmit` clean.
+4. Commits: español + conventional ish (`feat:`, `fix:`, `docs:`).
+
+---
+
+<div align="center">
+
+**Ketzal** es un experimento de **Gorilla‑Labs** 🦍 — la oficina virtual de la casa matter.
+Operando en el mismo Supabase que la agencia y `tiendas`, pero con su propio universo en `ketzal.*`.
+
+</div>
