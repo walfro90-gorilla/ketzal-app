@@ -1,6 +1,6 @@
-"use client"
+﻿"use client"
 
-import { signOut } from "next-auth/react"
+import { signOut } from "@/lib/auth/client"
 import { Button } from "./ui/button"
 import { LogOut } from "lucide-react"
 import { useState } from "react"
@@ -11,14 +11,14 @@ const LogoutButton = () => {
     const handleClick = async () => {
         try {
             setIsLoading(true)
-            // Logout con redirección a login
+            // Logout con redirecciÃ³n a login
             await signOut({
                 callbackUrl: '/login',
                 redirect: true
             })
         } catch (error) {
             console.error('Error during logout:', error)
-            // En caso de error, también redirigir al login
+            // En caso de error, tambiÃ©n redirigir al login
             window.location.href = '/login'
         } finally {
             setIsLoading(false)
@@ -34,7 +34,7 @@ const LogoutButton = () => {
             className="flex items-center gap-2"
         >
             <LogOut size={16} />
-            {isLoading ? 'Cerrando sesión...' : 'Cerrar sesión'}
+            {isLoading ? 'Cerrando sesiÃ³n...' : 'Cerrar sesiÃ³n'}
         </Button>      
     </div>
   )

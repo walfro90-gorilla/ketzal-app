@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 import { sendEmailVerification } from "@/lib/mail"
 import { createNotification } from "@/app/api/notifications/notifications.api"
 
-jest.mock("@/auth", () => ({
+jest.mock("@/lib/auth/server", () => ({
   signIn: jest.fn(),
 }))
 

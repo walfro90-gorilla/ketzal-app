@@ -1,11 +1,11 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import { getProducts } from "./products.api"
 import { ProductCard } from "@/components/product-card"
 import { buttonVariants } from "@/components/ui/button"
 import type { Product } from "@/components/product-card"
 
 // IMPORTING AUTH
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/server"
 
 
 export default async function Products() {

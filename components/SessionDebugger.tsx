@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth/client';
 import { useSessionReady } from '@/hooks/useSessionReady';
 import { useAuthDetection } from '@/hooks/useAuthDetection';
 
@@ -11,7 +11,7 @@ const SessionDebugger = () => {
 
   return (
     <div className="fixed bottom-4 right-4 bg-black text-white p-4 rounded-lg text-xs max-w-md overflow-auto z-50">
-      <h3 className="font-bold mb-2">🔍 Session Debug</h3>
+      <h3 className="font-bold mb-2">ðŸ” Session Debug</h3>
       
       <div className="mb-2">
         <strong>Raw useSession:</strong>

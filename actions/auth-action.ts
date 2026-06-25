@@ -1,16 +1,23 @@
-"use server"
+﻿"use server"
 
-import { signIn } from "@/auth";
 import { db } from "@/lib/db";
 import { signInSchema, signUpSchema, signUpAdminSchema, forgotPasswordSchema, resetPasswordSchema } from "@/lib/zod";
-import { AuthError } from "next-auth";
+
+// Stubs locales: NextAuth ya no esta instalado. AuthError nunca se lanza
+// (las ramas instanceof quedan dead-code). signIn stub para que typecheck.
+// El codigo activo de auth vive en lib/supabase/auth-actions.
+class AuthError extends Error { cause?: unknown }
+async function signIn(_provider?: string, _opts?: Record<string, unknown>) {
+  void _provider; void _opts
+  throw new AuthError("signIn() deprecated — use Supabase Auth via /login")
+}
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { sendEmailVerification, sendPasswordResetEmail } from "@/lib/mail";
 import { createNotification, NotificationType, NotificationPriority } from "@/app/api/notifications/notifications.api";
 
-// Función auxiliar para obtener el super admin
+// FunciÃ³n auxiliar para obtener el super admin
 async function getSuperAdmin() {
     return await db.user.findFirst({
         where: {
@@ -19,18 +26,18 @@ async function getSuperAdmin() {
     });
 }
 
-// Función auxiliar para crear notificaciones de bienvenida para nuevos usuarios
+// FunciÃ³n auxiliar para crear notificaciones de bienvenida para nuevos usuarios
 async function createWelcomeNotifications(userId: string, userEmail: string, userName: string, userRole: string) {
     try {
         const currentDate = new Date();
         const coinsExpirationDate = new Date();
-        coinsExpirationDate.setDate(currentDate.getDate() + 365); // Los coins expiran en 1 año
+        coinsExpirationDate.setDate(currentDate.getDate() + 365); // Los coins expiran en 1 aÃ±o
 
-        // 1. Notificación de AXO Coins de Bienvenida
+        // 1. NotificaciÃ³n de AXO Coins de Bienvenida
         await createNotification({
             userId: userId,
-            title: '🎁 ¡50 AXO Coins de Bienvenida!',
-            message: '¡Bienvenido a Ketzal! Te hemos regalado 50 AXO Coins para que comiences a explorar. Úsalos en tus próximas reservas y descubre experiencias increíbles.',
+            title: 'ðŸŽ Â¡50 AXO Coins de Bienvenida!',
+            message: 'Â¡Bienvenido a Ketzal! Te hemos regalado 50 AXO Coins para que comiences a explorar. Ãšsalos en tus prÃ³ximas reservas y descubre experiencias increÃ­bles.',
             type: NotificationType.WELCOME_BONUS,
             priority: NotificationPriority.HIGH,
             metadata: {
@@ -46,11 +53,11 @@ async function createWelcomeNotifications(userId: string, userEmail: string, use
             actionUrl: '/wallet'
         });
 
-        // 2. Notificación de Bienvenida General
+        // 2. NotificaciÃ³n de Bienvenida General
         await createNotification({
             userId: userId,
-            title: '👋 ¡Bienvenido a Ketzal!',
-            message: 'Estamos emocionados de tenerte en nuestra comunidad. Explora destinos increíbles, vive experiencias únicas y conecta con los mejores proveedores de servicios turísticos.',
+            title: 'ðŸ‘‹ Â¡Bienvenido a Ketzal!',
+            message: 'Estamos emocionados de tenerte en nuestra comunidad. Explora destinos increÃ­bles, vive experiencias Ãºnicas y conecta con los mejores proveedores de servicios turÃ­sticos.',
             type: NotificationType.WELCOME_MESSAGE,
             priority: NotificationPriority.NORMAL,
             metadata: {
@@ -69,10 +76,10 @@ async function createWelcomeNotifications(userId: string, userEmail: string, use
             actionUrl: userRole === 'admin' ? '/admin/dashboard' : '/explore'
         });
 
-        console.log(`✅ Notificaciones de bienvenida creadas para usuario: ${userName} (${userEmail})`);
+        console.log(`âœ… Notificaciones de bienvenida creadas para usuario: ${userName} (${userEmail})`);
         return true;
     } catch (error) {
-        console.error('❌ Error creando notificaciones de bienvenida:', error);
+        console.error('âŒ Error creando notificaciones de bienvenida:', error);
         return false;
     }
 }
@@ -89,20 +96,20 @@ export const loginAction = async (
         return { success: true, callbackUrl: values.callbackUrl || "/home" }
     } catch (error) {
         if (error instanceof AuthError) {
-            // Mapear errores específicos de NextAuth a mensajes user-friendly
+            // Mapear errores especÃ­ficos de NextAuth a mensajes user-friendly
             const message = (error.cause as any)?.message
             if (message?.includes("email") && message?.includes("verify")) {
-                return { error: message } // Ya viene en español del auth.config
+                return { error: message } // Ya viene en espaÃ±ol del auth.config
             }
             if (message?.includes("incorrectos")) {
-                return { error: message } // Ya viene en español del auth.config
+                return { error: message } // Ya viene en espaÃ±ol del auth.config
             }
-            if (message?.includes("válidos")) {
-                return { error: message } // Ya viene en español del auth.config
+            if (message?.includes("vÃ¡lidos")) {
+                return { error: message } // Ya viene en espaÃ±ol del auth.config
             }
-            return { error: "Credenciales incorrectas. Verifica tu email y contraseña." }
+            return { error: "Credenciales incorrectas. Verifica tu email y contraseÃ±a." }
         }
-        return { error: "Ocurrió un error inesperado. Inténtalo de nuevo." }
+        return { error: "OcurriÃ³ un error inesperado. IntÃ©ntalo de nuevo." }
     }
 }
 
@@ -114,7 +121,7 @@ export const registerAction = async (
         const { data, success } = signUpSchema.safeParse(values)
         if (!success) {
             return {
-                error: "Los datos proporcionados no son válidos"
+                error: "Los datos proporcionados no son vÃ¡lidos"
             }
         }
 
@@ -126,7 +133,7 @@ export const registerAction = async (
         })
         if (user) {
             return {
-                error: "Ya existe una cuenta con este email. ¿Deseas iniciar sesión?"
+                error: "Ya existe una cuenta con este email. Â¿Deseas iniciar sesiÃ³n?"
             }
         }
 
@@ -149,7 +156,7 @@ export const registerAction = async (
             }
         })
 
-        // Crear token de verificación y enviar email
+        // Crear token de verificaciÃ³n y enviar email
         const token = nanoid()
         await db.verificationToken.create({
             data: {
@@ -159,19 +166,19 @@ export const registerAction = async (
             },
         })
         
-        // Enviar email de verificación
+        // Enviar email de verificaciÃ³n
         await sendEmailVerification(data.email, token)
 
-        // Enviar notificación a super-admin sobre nuevo registro de usuario
+        // Enviar notificaciÃ³n a super-admin sobre nuevo registro de usuario
         try {
             const superAdmin = await getSuperAdmin();
             if (superAdmin) {
                 const notificationTitle = isAdminRequest 
-                    ? '👤 Nueva Solicitud de Cuenta Administrador'
-                    : '🎉 Nuevo Usuario Registrado';
+                    ? 'ðŸ‘¤ Nueva Solicitud de Cuenta Administrador'
+                    : 'ðŸŽ‰ Nuevo Usuario Registrado';
                 
                 const notificationMessage = isAdminRequest
-                    ? `${data.name} (${data.email}) ha solicitado una cuenta de administrador. Requiere revisión y aprobación.`
+                    ? `${data.name} (${data.email}) ha solicitado una cuenta de administrador. Requiere revisiÃ³n y aprobaciÃ³n.`
                     : `${data.name} se ha registrado como nuevo usuario en la plataforma. Email: ${data.email}`;
                 
                 const notificationPriority = isAdminRequest ? NotificationPriority.HIGH : NotificationPriority.NORMAL;
@@ -194,19 +201,19 @@ export const registerAction = async (
                     actionUrl: isAdminRequest ? `/admin/users/${newUser.id}` : `/admin/users`
                 });
                 
-                console.log(`✅ Notificación enviada al super admin (${superAdmin.email}) sobre nuevo ${isAdminRequest ? 'admin' : 'usuario'}: ${data.name}`);
+                console.log(`âœ… NotificaciÃ³n enviada al super admin (${superAdmin.email}) sobre nuevo ${isAdminRequest ? 'admin' : 'usuario'}: ${data.name}`);
             } else {
-                console.log('⚠️  No se encontró super admin para enviar notificación');
+                console.log('âš ï¸  No se encontrÃ³ super admin para enviar notificaciÃ³n');
             }
         } catch (notificationError) {
-            console.error('❌ Error enviando notificación al super admin:', notificationError);
-            // No fallar el registro si la notificación falla
+            console.error('âŒ Error enviando notificaciÃ³n al super admin:', notificationError);
+            // No fallar el registro si la notificaciÃ³n falla
         }
 
         // Mensaje de respuesta diferente para admin vs user
         const message = isAdminRequest
-            ? "Solicitud de administrador enviada exitosamente. Por favor verifica tu email y espera la aprobación de tu solicitud."
-            : "Cuenta creada exitosamente. Por favor revisa tu email para verificar tu cuenta antes de iniciar sesión."
+            ? "Solicitud de administrador enviada exitosamente. Por favor verifica tu email y espera la aprobaciÃ³n de tu solicitud."
+            : "Cuenta creada exitosamente. Por favor revisa tu email para verificar tu cuenta antes de iniciar sesiÃ³n."
         
         return { 
             success: true, 
@@ -220,16 +227,16 @@ export const registerAction = async (
         if (error instanceof AuthError) {
             const message = (error.cause as any)?.message
             if (message?.includes("email") && message?.includes("verify")) {
-                return { error: message } // Ya viene en español del auth.config
+                return { error: message } // Ya viene en espaÃ±ol del auth.config
             }
-            return { error: "Error al crear la cuenta. Inténtalo de nuevo." }
+            return { error: "Error al crear la cuenta. IntÃ©ntalo de nuevo." }
         }
-        return { error: "Ocurrió un error inesperado durante el registro. Inténtalo de nuevo." }
+        return { error: "OcurriÃ³ un error inesperado durante el registro. IntÃ©ntalo de nuevo." }
     }
 
 }
 
-// NUEVA VERSIÓN: Registro de admin con Supplier separado
+// NUEVA VERSIÃ“N: Registro de admin con Supplier separado
 export const registerAdminActionV2 = async (
     values: z.infer<typeof signUpAdminSchema>
 ) => {
@@ -237,7 +244,7 @@ export const registerAdminActionV2 = async (
         const { data, success } = signUpAdminSchema.safeParse(values)
         if (!success) {
             return {
-                error: "Los datos proporcionados no son válidos"
+                error: "Los datos proporcionados no son vÃ¡lidos"
             }
         }
 
@@ -249,7 +256,7 @@ export const registerAdminActionV2 = async (
         })
         if (existingUser) {
             return {
-                error: "Ya existe una cuenta con este email. ¿Deseas iniciar sesión?"
+                error: "Ya existe una cuenta con este email. Â¿Deseas iniciar sesiÃ³n?"
             }
         }
 
@@ -268,7 +275,7 @@ export const registerAdminActionV2 = async (
         // HASH PASSWORD
         const passwordHash = await bcrypt.hash(data.password, 10)
 
-        // Usar transacción para crear ambos registros
+        // Usar transacciÃ³n para crear ambos registros
         const result = await db.$transaction(async (tx) => {
             // 1. Crear USUARIO (inicia como user normal)
             const newUser = await tx.user.create({
@@ -276,8 +283,8 @@ export const registerAdminActionV2 = async (
                     email: data.email,
                     name: data.name,
                     password: passwordHash,
-                    role: 'user', // Inicia como user normal, se promociona después de aprobación
-                    // emailVerified se mantiene null hasta verificación
+                    role: 'user', // Inicia como user normal, se promociona despuÃ©s de aprobaciÃ³n
+                    // emailVerified se mantiene null hasta verificaciÃ³n
                 }
             })
 
@@ -290,7 +297,7 @@ export const registerAdminActionV2 = async (
                     description: data.documentation,
                     supplierType: data.serviceType,
                     address: data.city,
-                    // Usar extras para información adicional y digitalPresence para redes sociales
+                    // Usar extras para informaciÃ³n adicional y digitalPresence para redes sociales
                     extras: {
                         isApproved: false,
                         isPending: true,
@@ -299,7 +306,7 @@ export const registerAdminActionV2 = async (
                             serviceType: data.serviceType,
                             city: data.city,
                             documentation: data.documentation,
-                            // Información adicional
+                            // InformaciÃ³n adicional
                             experienceYears: data.experienceYears || null,
                             businessLanguages: data.businessLanguages || null,
                             taxId: data.taxId || null,
@@ -337,7 +344,7 @@ export const registerAdminActionV2 = async (
             return { user: newUser, supplier: newSupplier }
         })
 
-        // Crear token de verificación y enviar email
+        // Crear token de verificaciÃ³n y enviar email
         const token = nanoid()
         await db.verificationToken.create({
             data: {
@@ -347,17 +354,17 @@ export const registerAdminActionV2 = async (
             },
         })
         
-        // Enviar email de verificación
+        // Enviar email de verificaciÃ³n
         await sendEmailVerification(data.email, token)
 
-        // Enviar notificación a super-admin sobre nueva solicitud de proveedor
+        // Enviar notificaciÃ³n a super-admin sobre nueva solicitud de proveedor
         try {
             const superAdmin = await getSuperAdmin();
             if (superAdmin) {
                 await createNotification({
                     userId: superAdmin.id,
-                    title: '🏢 Nueva Solicitud de Proveedor Turístico',
-                    message: `${data.name} (${data.company}) ha solicitado convertirse en proveedor de servicios turísticos. Tipo: ${data.serviceType}. Requiere aprobación.`,
+                    title: 'ðŸ¢ Nueva Solicitud de Proveedor TurÃ­stico',
+                    message: `${data.name} (${data.company}) ha solicitado convertirse en proveedor de servicios turÃ­sticos. Tipo: ${data.serviceType}. Requiere aprobaciÃ³n.`,
                     type: NotificationType.SUPPLIER_APPROVAL,
                     priority: NotificationPriority.HIGH,
                     metadata: {
@@ -370,18 +377,18 @@ export const registerAdminActionV2 = async (
                     },
                     actionUrl: `/super-admin` // URL para revisar la solicitud
                 });
-                console.log(`✅ Notificación enviada al super admin (${superAdmin.email}) sobre nueva solicitud de proveedor: ${data.company}`);
+                console.log(`âœ… NotificaciÃ³n enviada al super admin (${superAdmin.email}) sobre nueva solicitud de proveedor: ${data.company}`);
             } else {
-                console.log('⚠️  No se encontró super admin para enviar notificación');
+                console.log('âš ï¸  No se encontrÃ³ super admin para enviar notificaciÃ³n');
             }
         } catch (notificationError) {
-            console.error('❌ Error enviando notificación al super admin:', notificationError);
-            // No fallar el registro si la notificación falla
+            console.error('âŒ Error enviando notificaciÃ³n al super admin:', notificationError);
+            // No fallar el registro si la notificaciÃ³n falla
         }
         
         return { 
             success: true, 
-            message: "¡Cuenta creada exitosamente! Tu perfil de usuario está activo. Hemos recibido tu solicitud para convertirte en proveedor de servicios turísticos y está pendiente de revisión por nuestro equipo. Te notificaremos por email cuando sea aprobada. Mientras tanto, puedes navegar y usar la plataforma como usuario normal.",
+            message: "Â¡Cuenta creada exitosamente! Tu perfil de usuario estÃ¡ activo. Hemos recibido tu solicitud para convertirte en proveedor de servicios turÃ­sticos y estÃ¡ pendiente de revisiÃ³n por nuestro equipo. Te notificaremos por email cuando sea aprobada. Mientras tanto, puedes navegar y usar la plataforma como usuario normal.",
             requiresEmailVerification: true,
             isAdminRequest: true,
             userId: result.user.id,
@@ -395,9 +402,9 @@ export const registerAdminActionV2 = async (
             if (message?.includes("email") && message?.includes("verify")) {
                 return { error: message }
             }
-            return { error: "Error al crear la solicitud de proveedor. Inténtalo de nuevo." }
+            return { error: "Error al crear la solicitud de proveedor. IntÃ©ntalo de nuevo." }
         }
-        return { error: "Ocurrió un error inesperado durante el registro. Inténtalo de nuevo." }
+        return { error: "OcurriÃ³ un error inesperado durante el registro. IntÃ©ntalo de nuevo." }
     }
 }
 
@@ -409,7 +416,7 @@ export const registerAdminAction = async (
         const { data, success } = signUpAdminSchema.safeParse(values)
         if (!success) {
             return {
-                error: "Los datos proporcionados no son válidos"
+                error: "Los datos proporcionados no son vÃ¡lidos"
             }
         }
 
@@ -421,21 +428,21 @@ export const registerAdminAction = async (
         })
         if (user) {
             return {
-                error: "Ya existe una cuenta con este email. ¿Deseas iniciar sesión?"
+                error: "Ya existe una cuenta con este email. Â¿Deseas iniciar sesiÃ³n?"
             }
         }
 
         // HASH PASSWORD
         const passwordHash = await bcrypt.hash(data.password, 10)
 
-        // Usar transacción para crear Usuario y Supplier
+        // Usar transacciÃ³n para crear Usuario y Supplier
         const result = await db.$transaction(async (tx) => {
             // 1. Crear el Supplier primero
             const newSupplier = await tx.supplier.create({
                 data: {
                     name: data.company,
                     contactEmail: data.email,
-                    phoneNumber: "", // Se puede actualizar después
+                    phoneNumber: "", // Se puede actualizar despuÃ©s
                     address: data.city,
                     description: `Supplier for ${data.company}`,
                     supplierType: data.serviceType,
@@ -462,7 +469,7 @@ export const registerAdminAction = async (
             return { user: newUser, supplier: newSupplier }
         })
 
-        // Crear token de verificación y enviar email
+        // Crear token de verificaciÃ³n y enviar email
         const token = nanoid()
         await db.verificationToken.create({
             data: {
@@ -472,14 +479,14 @@ export const registerAdminAction = async (
             },
         })
         
-        // Enviar email de verificación
+        // Enviar email de verificaciÃ³n
         await sendEmailVerification(data.email, token)
 
-        // TODO: Enviar notificación a super-admin sobre nueva solicitud de administrador
+        // TODO: Enviar notificaciÃ³n a super-admin sobre nueva solicitud de administrador
         
         return { 
             success: true, 
-            message: "Solicitud de administrador enviada exitosamente. Por favor verifica tu email y espera la aprobación de tu solicitud por parte del equipo de Ketzal.",
+            message: "Solicitud de administrador enviada exitosamente. Por favor verifica tu email y espera la aprobaciÃ³n de tu solicitud por parte del equipo de Ketzal.",
             requiresEmailVerification: true,
             isAdminRequest: true
         }
@@ -489,16 +496,16 @@ export const registerAdminAction = async (
         if (error instanceof AuthError) {
             const message = (error.cause as any)?.message
             if (message?.includes("email") && message?.includes("verify")) {
-                return { error: message } // Ya viene en español del auth.config
+                return { error: message } // Ya viene en espaÃ±ol del auth.config
             }
-            return { error: "Error al crear la solicitud de administrador. Inténtalo de nuevo." }
+            return { error: "Error al crear la solicitud de administrador. IntÃ©ntalo de nuevo." }
         }
-        return { error: "Ocurrió un error inesperado durante el registro de administrador. Inténtalo de nuevo." }
+        return { error: "OcurriÃ³ un error inesperado durante el registro de administrador. IntÃ©ntalo de nuevo." }
     }
 
 }
 
-// ===== FUNCIONES PARA RESET DE CONTRASEÑA =====
+// ===== FUNCIONES PARA RESET DE CONTRASEÃ‘A =====
 
 export const forgotPasswordAction = async (
     values: z.infer<typeof forgotPasswordSchema>
@@ -507,7 +514,7 @@ export const forgotPasswordAction = async (
         const { data, success } = forgotPasswordSchema.safeParse(values)
         if (!success) {
             return {
-                error: "Email no válido"
+                error: "Email no vÃ¡lido"
             }
         }
 
@@ -519,7 +526,7 @@ export const forgotPasswordAction = async (
         })
 
         // Por seguridad, siempre devolvemos el mismo mensaje aunque el usuario no exista
-        const successMessage = "Si existe una cuenta con este email, recibirás un enlace para restablecer tu contraseña."
+        const successMessage = "Si existe una cuenta con este email, recibirÃ¡s un enlace para restablecer tu contraseÃ±a."
 
         if (!user) {
             return {
@@ -528,7 +535,7 @@ export const forgotPasswordAction = async (
             }
         }
 
-        // Crear token de reset (más corto que verificación, 1 hora)
+        // Crear token de reset (mÃ¡s corto que verificaciÃ³n, 1 hora)
         const resetToken = nanoid()
         
         // Eliminar tokens de reset anteriores para este email
@@ -552,7 +559,7 @@ export const forgotPasswordAction = async (
         
         if (emailResult?.error) {
             return {
-                error: "Error al enviar el email. Inténtalo de nuevo más tarde."
+                error: "Error al enviar el email. IntÃ©ntalo de nuevo mÃ¡s tarde."
             }
         }
 
@@ -564,7 +571,7 @@ export const forgotPasswordAction = async (
     } catch (error) {
         console.log("forgot password error", error)
         return { 
-            error: "Ocurrió un error inesperado. Inténtalo de nuevo." 
+            error: "OcurriÃ³ un error inesperado. IntÃ©ntalo de nuevo." 
         }
     }
 }
@@ -576,7 +583,7 @@ export const resetPasswordAction = async (
         const { data, success } = resetPasswordSchema.safeParse(values)
         if (!success) {
             return {
-                error: "Los datos proporcionados no son válidos"
+                error: "Los datos proporcionados no son vÃ¡lidos"
             }
         }
 
@@ -592,7 +599,7 @@ export const resetPasswordAction = async (
 
         if (!resetToken) {
             return {
-                error: "El enlace de restablecimiento es inválido o ha expirado. Solicita uno nuevo."
+                error: "El enlace de restablecimiento es invÃ¡lido o ha expirado. Solicita uno nuevo."
             }
         }
 
@@ -609,12 +616,12 @@ export const resetPasswordAction = async (
             }
         }
 
-        // Hash de la nueva contraseña
+        // Hash de la nueva contraseÃ±a
         const newPasswordHash = await bcrypt.hash(data.password, 10)
 
-        // Usar transacción para actualizar contraseña y eliminar token
+        // Usar transacciÃ³n para actualizar contraseÃ±a y eliminar token
         await db.$transaction(async (tx) => {
-            // Actualizar contraseña
+            // Actualizar contraseÃ±a
             await tx.user.update({
                 where: { id: user.id },
                 data: {
@@ -633,13 +640,13 @@ export const resetPasswordAction = async (
 
         return {
             success: true,
-            message: "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña."
+            message: "Tu contraseÃ±a ha sido restablecida exitosamente. Ahora puedes iniciar sesiÃ³n con tu nueva contraseÃ±a."
         }
 
     } catch (error) {
         console.log("reset password error", error)
         return { 
-            error: "Ocurrió un error inesperado. Inténtalo de nuevo." 
+            error: "OcurriÃ³ un error inesperado. IntÃ©ntalo de nuevo." 
         }
     }
 }

@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { 
   Bell, 
@@ -65,7 +65,7 @@ export default function NotificationsPage() {
   useEffect(() => {
     let filtered = notifications;
 
-    // Filtro por término de búsqueda
+    // Filtro por tÃ©rmino de bÃºsqueda
     if (searchTerm.trim()) {
       filtered = filtered.filter(notification =>
         notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -80,7 +80,7 @@ export default function NotificationsPage() {
       filtered = filtered.filter(notification => notification.isRead);
     }
 
-    // Filtro por categoría
+    // Filtro por categorÃ­a
     if (filterCategory !== 'all') {
       filtered = filtered.filter(notification => notification.type === filterCategory);
     }
@@ -170,7 +170,7 @@ export default function NotificationsPage() {
     setSelectedNotifications([]);
   };
 
-  // Función para obtener color según tipo de notificación
+  // FunciÃ³n para obtener color segÃºn tipo de notificaciÃ³n
   const getNotificationColor = (type: string) => {
     switch (type) {
       case 'SUCCESS':
@@ -189,15 +189,15 @@ export default function NotificationsPage() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'SUCCESS':
-        return '✅';
+        return 'âœ…';
       case 'WARNING':
-        return '⚠️';
+        return 'âš ï¸';
       case 'ERROR':
-        return '❌';
+        return 'âŒ';
       case 'SUPPLIER_APPROVAL':
-        return '🏢';
+        return 'ðŸ¢';
       default:
-        return 'ℹ️';
+        return 'â„¹ï¸';
     }
   };
 
@@ -267,7 +267,7 @@ export default function NotificationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Leídas</p>
+                <p className="text-sm font-medium text-muted-foreground">LeÃ­das</p>
                 <p className="text-2xl font-bold text-green-500">{stats.read}</p>
               </div>
               <CheckCheck className="h-8 w-8 text-green-500" />
@@ -299,17 +299,17 @@ export default function NotificationsPage() {
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="unread">Sin leer</SelectItem>
-                  <SelectItem value="read">Leídas</SelectItem>
+                  <SelectItem value="read">LeÃ­das</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Categoría" />
+                  <SelectValue placeholder="CategorÃ­a" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="INFO">Info</SelectItem>
-                  <SelectItem value="SUCCESS">Éxito</SelectItem>
+                  <SelectItem value="SUCCESS">Ã‰xito</SelectItem>
                   <SelectItem value="WARNING">Advertencia</SelectItem>
                   <SelectItem value="ERROR">Error</SelectItem>
                   <SelectItem value="SUPPLIER_APPROVAL">Proveedores</SelectItem>
@@ -327,7 +327,7 @@ export default function NotificationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">
-                {selectedNotifications.length} notificación(es) seleccionada(s)
+                {selectedNotifications.length} notificaciÃ³n(es) seleccionada(s)
               </p>
               <div className="flex gap-2">
                 <Button
@@ -337,7 +337,7 @@ export default function NotificationsPage() {
                   className="flex items-center gap-2"
                 >
                   <Check className="h-4 w-4" />
-                  Marcar como leídas
+                  Marcar como leÃ­das
                 </Button>
                 <Button
                   variant="outline"
@@ -378,7 +378,7 @@ export default function NotificationsPage() {
             onClick={handleMarkAllAsRead}
             disabled={stats.unread === 0}
           >
-            Marcar todas como leídas
+            Marcar todas como leÃ­das
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -401,8 +401,8 @@ export default function NotificationsPage() {
               </p>
               <p className="text-sm text-gray-400">
                 {notifications.length === 0 
-                  ? 'Las notificaciones aparecerán aquí cuando las recibas'
-                  : 'Intenta cambiar los filtros de búsqueda'
+                  ? 'Las notificaciones aparecerÃ¡n aquÃ­ cuando las recibas'
+                  : 'Intenta cambiar los filtros de bÃºsqueda'
                 }
               </p>
             </CardContent>
@@ -459,7 +459,7 @@ export default function NotificationsPage() {
                             className="flex items-center gap-2"
                           >
                             <ExternalLink className="h-4 w-4" />
-                            Ver más
+                            Ver mÃ¡s
                           </Button>
                         )}
                       </div>
@@ -471,7 +471,7 @@ export default function NotificationsPage() {
                             size="sm"
                             onClick={() => handleMarkAsRead(notification.id)}
                             className="flex items-center gap-2"
-                            title="Marcar como leída"
+                            title="Marcar como leÃ­da"
                           >
                             <Check className="h-4 w-4" />
                           </Button>
@@ -481,7 +481,7 @@ export default function NotificationsPage() {
                           size="sm"
                           onClick={() => handleDelete(notification.id)}
                           className="text-red-500 hover:text-red-700 flex items-center gap-2"
-                          title="Eliminar notificación"
+                          title="Eliminar notificaciÃ³n"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

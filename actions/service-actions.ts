@@ -1,8 +1,8 @@
-"use server";
+﻿"use server";
 
 import { z } from "zod";
 import { serviceFormSchema, ServiceFormData } from "@/app/(protected)/services/new/validations/service-form.validation";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth/server";
 import { 
   createService as createServiceAPI, 
   ServiceDataNew 

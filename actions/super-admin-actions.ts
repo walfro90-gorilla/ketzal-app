@@ -1,7 +1,7 @@
-"use server"
+﻿"use server"
 
 import { db } from "@/lib/db"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/server"
 import { revalidatePath } from "next/cache"
 
 // Verificar si el usuario es super-admin
@@ -55,7 +55,7 @@ export async function getPendingAdminRequests() {
     }
   })
 
-  // Filtrar solo los que están pendientes
+  // Filtrar solo los que estÃ¡n pendientes
   const pendingRequests = suppliers.filter(supplier => {
     const extras = supplier.extras as any
     return extras?.isPending === true && extras?.isApproved !== true
@@ -195,7 +195,7 @@ export async function rejectAdminRequest(supplierId: number, reason?: string) {
   }
 }
 
-// Obtener estadísticas del sistema
+// Obtener estadÃ­sticas del sistema
 export async function getSystemStats() {
   await verifySuperAdmin()
 
@@ -253,11 +253,11 @@ export async function getSystemStats() {
     pendingRequests,
     approvedSuppliers,
     rejectedSuppliers,
-    superAdmins: 1 // Solo tú por ahora
+    superAdmins: 1 // Solo tÃº por ahora
   }
 }
 
-// Obtener todos los suppliers con su estado de aprobación
+// Obtener todos los suppliers con su estado de aprobaciÃ³n
 export async function getAllSuppliers() {
   await verifySuperAdmin()
 

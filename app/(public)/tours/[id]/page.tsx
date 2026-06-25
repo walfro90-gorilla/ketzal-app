@@ -18,7 +18,7 @@ import ReviewSection from '@/components/ReviewSection'
 import SpecialOffers from '@/components/SpecialOffers'
 import { getReviews } from '../../reviews/reviews.api'
 import { getUsers } from '@/app/(protected)/users/users.api'
-import { auth } from '@/auth'
+import { auth } from '@/lib/auth/server'
 import { notFound } from 'next/navigation'
 import type { Service } from '@/components/service-card'
 

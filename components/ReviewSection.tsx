@@ -8,7 +8,7 @@ import { useUser } from "@/context/UserContext";
 // import { nanoid } from 'nanoid';
 import type { Review, User } from "@/types/review";
 
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/client";
 
 
 

@@ -1,6 +1,6 @@
-
+﻿
 // IMPORTING AUTH
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/server"
 
 
 const ProtectedLayout = async ({

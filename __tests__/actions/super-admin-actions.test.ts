@@ -3,10 +3,10 @@ import {
   approveAdminRequest,
   rejectAdminRequest,
 } from "@/actions/super-admin-actions"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/server"
 import { db } from "@/lib/db"
 
-jest.mock("@/auth", () => ({
+jest.mock("@/lib/auth/server", () => ({
   auth: jest.fn(),
 }))
 

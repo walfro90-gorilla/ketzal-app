@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { getServices } from "@/app/(protected)/services/services.api";
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api";
 
@@ -6,7 +6,7 @@ import type { Service } from "@/components/service-card";
 import { ServiceCard } from "@/components/service-card";
 
 import { buttonVariants } from "@/components/ui/button";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth/server";
 import { Card } from "antd";
 
 export default async function Service() {

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Menu, Wallet } from 'lucide-react'
@@ -8,7 +8,7 @@ import { useCart } from '@/context/CartContext'
 // Import Link from 'next/link'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/lib/auth/client'
 
 // Import components
 // import {
@@ -117,7 +117,7 @@ const Header = () => {
                 size="icon"
                 className="md:hidden"
                 onClick={() => setShowMobileMenu((v) => !v)}
-                aria-label="Abrir menú"
+                aria-label="Abrir menÃº"
               >
                 <Menu className="h-6 w-6 text-gray-600 dark:text-gray-200" />
               </Button>
@@ -136,8 +136,8 @@ const Header = () => {
           >
             <div className="flex flex-col h-full p-6 space-y-6">
               <div className="flex justify-end">
-                <Button variant="ghost" size="icon" onClick={() => setShowMobileMenu(false)} aria-label="Cerrar menú">
-                  <span className="text-2xl text-gray-600 dark:text-gray-200">×</span>
+                <Button variant="ghost" size="icon" onClick={() => setShowMobileMenu(false)} aria-label="Cerrar menÃº">
+                  <span className="text-2xl text-gray-600 dark:text-gray-200">Ã—</span>
                 </Button>
               </div>
               <nav className="flex flex-col space-y-4">

@@ -1,14 +1,14 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth/client';
 import { usePathname } from 'next/navigation';
 
-// 🐛 DEBUGGING - Cambiar a true para activar logs detallados de autenticación
+// ðŸ› DEBUGGING - Cambiar a true para activar logs detallados de autenticaciÃ³n
 const DEBUG_AUTH = false;
 
 /**
- * Hook que detecta autenticación basándose en múltiples señales:
+ * Hook que detecta autenticaciÃ³n basÃ¡ndose en mÃºltiples seÃ±ales:
  * 1. useSession de NextAuth
  * 2. Si el usuario puede acceder a rutas protegidas (no redirigido a login)
  * 3. Headers del servidor
@@ -25,7 +25,7 @@ export const useAuthDetection = () => {
   useEffect(() => {
     const detectAuth = async () => {
       if (DEBUG_AUTH) {
-        console.log('🕵️ AuthDetection: Starting detection...', {
+        console.log('ðŸ•µï¸ AuthDetection: Starting detection...', {
           sessionStatus: status,
           sessionExists: !!session,
           pathname,
@@ -33,9 +33,9 @@ export const useAuthDetection = () => {
         });
       }
 
-      // Método 1: Si useSession dice que está autenticado
+      // MÃ©todo 1: Si useSession dice que estÃ¡ autenticado
       if (status === 'authenticated' && session?.user?.id) {
-        if (DEBUG_AUTH) console.log('✅ AuthDetection: Detected via useSession');
+        if (DEBUG_AUTH) console.log('âœ… AuthDetection: Detected via useSession');
         setIsAuthenticated(true);
         setDetectionMethod('useSession');
         setSessionData(session);
@@ -44,12 +44,12 @@ export const useAuthDetection = () => {
         return;
       }
 
-      // Método 2: Si estamos en una ruta protegida y no fuimos redirigidos
+      // MÃ©todo 2: Si estamos en una ruta protegida y no fuimos redirigidos
       const protectedRoutes = ['/wallet', '/services', '/suppliers', '/users', '/products'];
       const isOnProtectedRoute = pathname ? protectedRoutes.some(route => pathname.startsWith(route)) : false;
       
       if (isOnProtectedRoute && status !== 'loading') {
-        if (DEBUG_AUTH) console.log('🚀 AuthDetection: On protected route, fetching session data...');
+        if (DEBUG_AUTH) console.log('ðŸš€ AuthDetection: On protected route, fetching session data...');
         
         // Intentar obtener los datos de usuario del endpoint
         try {
@@ -61,14 +61,14 @@ export const useAuthDetection = () => {
             }
           });
           
-          if (DEBUG_AUTH) console.log('📡 AuthDetection: Session endpoint status:', response.status);
+          if (DEBUG_AUTH) console.log('ðŸ“¡ AuthDetection: Session endpoint status:', response.status);
           
           if (response.ok) {
             const fetchedSessionData = await response.json();
-            if (DEBUG_AUTH) console.log('📡 AuthDetection: Session endpoint response:', fetchedSessionData);
+            if (DEBUG_AUTH) console.log('ðŸ“¡ AuthDetection: Session endpoint response:', fetchedSessionData);
             
             if (fetchedSessionData?.user?.id) {
-              if (DEBUG_AUTH) console.log('✅ AuthDetection: Got complete session data');
+              if (DEBUG_AUTH) console.log('âœ… AuthDetection: Got complete session data');
               setIsAuthenticated(true);
               setDetectionMethod('protectedRoute+sessionEndpoint');
               setSessionData(fetchedSessionData);
@@ -78,13 +78,13 @@ export const useAuthDetection = () => {
             }
           }
           
-          if (DEBUG_AUTH) console.log('⚠️ AuthDetection: Session endpoint returned no user data');
+          if (DEBUG_AUTH) console.log('âš ï¸ AuthDetection: Session endpoint returned no user data');
         } catch (error) {
-          if (DEBUG_AUTH) console.error('❌ AuthDetection: Error fetching session data:', error);
+          if (DEBUG_AUTH) console.error('âŒ AuthDetection: Error fetching session data:', error);
         }
         
         // Si estamos en ruta protegida pero no pudimos obtener datos de usuario
-        if (DEBUG_AUTH) console.log('⚠️ AuthDetection: Authenticated via protected route but no user data');
+        if (DEBUG_AUTH) console.log('âš ï¸ AuthDetection: Authenticated via protected route but no user data');
         setIsAuthenticated(true);
         setDetectionMethod('protectedRoute');
         setSessionData(null);
@@ -93,9 +93,9 @@ export const useAuthDetection = () => {
         return;
       }
 
-      // Si llegamos aquí y el status no es loading, no estamos autenticados
+      // Si llegamos aquÃ­ y el status no es loading, no estamos autenticados
       if (status !== 'loading') {
-        if (DEBUG_AUTH) console.log('❌ AuthDetection: Not authenticated');
+        if (DEBUG_AUTH) console.log('âŒ AuthDetection: Not authenticated');
         setIsAuthenticated(false);
         setDetectionMethod('none');
         setSessionData(null);

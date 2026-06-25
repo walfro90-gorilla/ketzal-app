@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import {
   BadgeCheck,
@@ -29,7 +29,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { signOut } from "next-auth/react"
+import { signOut } from "@/lib/auth/client"
 import { Button } from "./ui/button"
 
 

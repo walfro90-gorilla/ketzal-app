@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
@@ -8,8 +8,8 @@ import { createSupplier, updateSupplier, searchSuppliers } from "@/app/(protecte
 import { useParams, useRouter } from "next/navigation"
 import { useDialog } from "@/components/dialog-supplier"
 import { updateIdSupplier } from "@/actions/user-action"
-import { useSession } from "next-auth/react"
-import { signOut } from "next-auth/react"
+import { useSession } from "@/lib/auth/client"
+import { signOut } from "@/lib/auth/client"
 import { useAlertDialog } from "@/components/alert-dialog"
 import { useState } from "react"
 import { Avatar, Space, Upload } from "antd"
@@ -60,9 +60,9 @@ export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
 
         // Fix: use a local variable instead of assigning to a constant
         const confirmed = await showDialog({
-            title: "Confirma tu Seleccion ✅",
+            title: "Confirma tu Seleccion âœ…",
             message1: "Estas completamente segur@ en pertenecer a este Team? ",
-            message2: "Recuerda que no podras cambiar de Team hasta que termine la temporada.⚠️ AL ACTUALIZAR TU EQUIPO SE CERRARA TU SESION ⚠️",
+            message2: "Recuerda que no podras cambiar de Team hasta que termine la temporada.âš ï¸ AL ACTUALIZAR TU EQUIPO SE CERRARA TU SESION âš ï¸",
             confirmText: "Yes",
             cancelText: "No",
         });
@@ -112,7 +112,7 @@ export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
                     };
 
                     await updateIdSupplier({ id: dataUpdate.id.toString() }, userForUpdate);
-                    console.log('✅ Supplier created and user updated successfully');
+                    console.log('âœ… Supplier created and user updated successfully');
                 } else if (!user) {
                     console.error("User is null. Cannot update supplier ID.");
                     alert("Error: Usuario no autenticado. No se puede asignar el proveedor.");

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { auth } from "@/auth"
+﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { auth } from "@/lib/auth/server"
 import { getService } from "@/app/(protected)/services/services.api"
 import { getSuppliers } from "@/app/(protected)/suppliers/suppliers.api"
 
@@ -20,7 +20,7 @@ async function ServicesNewPage({ params }: { params: Promise< { id: string }> })
                 <Card className="bg-white dark:bg-gray-800 text-black dark:text-white">
                     <CardHeader>
                         <CardTitle>
-                            {!('statusCode' in (service as any)) ? "Editar Servicio 🖍️" : "Crear Nuevo Servicio ➕"}
+                            {!('statusCode' in (service as any)) ? "Editar Servicio ðŸ–ï¸" : "Crear Nuevo Servicio âž•"}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

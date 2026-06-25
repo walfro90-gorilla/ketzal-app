@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth/client';
 
 // Define the shape of the user data
 interface User {

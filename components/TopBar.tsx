@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 
@@ -34,7 +34,7 @@ import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Link from 'next/link'
-import { signOut, useSession } from 'next-auth/react'
+import { signOut, useSession } from '@/lib/auth/client'
 import { useTravelPlanner } from '@/context/TravelPlannerContext'
 import { usePlannerCart } from '@/context/PlannerCartContext'
 import { useLoading } from '@/components/LoadingContext'
@@ -69,7 +69,7 @@ const TopBar = () => {
     return cartTotal + plannerTotal;
   };
 
-  // Función de logout optimizada
+  // FunciÃ³n de logout optimizada
   const handleLogout = async () => {
     try {
       await signOut({
@@ -94,16 +94,16 @@ const TopBar = () => {
         description: `Viaje a ${newPlannerDestination.trim()}`,
         currency: 'MXN',
         travelers: 1
-      }, async () => true); // Confirmación por defecto
+      }, async () => true); // ConfirmaciÃ³n por defecto
       
       if (plannerId) {
         setNewPlannerName('');
         setNewPlannerDestination('');
         setShowNewPlannerModal(false);
-        console.log('✅ Nuevo planner creado:', plannerId);
+        console.log('âœ… Nuevo planner creado:', plannerId);
       }
     } catch (error) {
-      console.error('❌ Error creando planner:', error);
+      console.error('âŒ Error creando planner:', error);
     } finally {
       setIsCreatingPlanner(false);
     }
@@ -141,8 +141,8 @@ const TopBar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem disabled>English</DropdownMenuItem>
-              <DropdownMenuItem disabled>中国人</DropdownMenuItem>
-              <DropdownMenuItem disabled>Français</DropdownMenuItem>
+              <DropdownMenuItem disabled>ä¸­å›½äºº</DropdownMenuItem>
+              <DropdownMenuItem disabled>FranÃ§ais</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -156,8 +156,8 @@ const TopBar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem disabled>$ USD</DropdownMenuItem>
-              <DropdownMenuItem disabled>€ EUR</DropdownMenuItem>
-              <DropdownMenuItem disabled>£ GBP</DropdownMenuItem>
+              <DropdownMenuItem disabled>â‚¬ EUR</DropdownMenuItem>
+              <DropdownMenuItem disabled>Â£ GBP</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -252,9 +252,9 @@ const TopBar = () => {
                   </div>
                 </DropdownMenuLabel>
 
-                {/* Sección de Planner - Adaptable */}
+                {/* SecciÃ³n de Planner - Adaptable */}
                 {!activePlanner ? (
-                  /* Sin planner activo - Mostrar botón crear nuevo */
+                  /* Sin planner activo - Mostrar botÃ³n crear nuevo */
                   <div className="mx-4 mb-3">
                     <Dialog open={showNewPlannerModal} onOpenChange={setShowNewPlannerModal}>
                       <DialogTrigger asChild>
@@ -270,7 +270,7 @@ const TopBar = () => {
                         <DialogHeader>
                           <DialogTitle>Crear Nuevo Planner</DialogTitle>
                           <DialogDescription>
-                            Crea un nuevo planner para organizar tu próximo viaje
+                            Crea un nuevo planner para organizar tu prÃ³ximo viaje
                           </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
@@ -278,7 +278,7 @@ const TopBar = () => {
                             <Label htmlFor="planner-name">Nombre del Planner</Label>
                             <Input
                               id="planner-name"
-                              placeholder="ej. Vacaciones en Cancún"
+                              placeholder="ej. Vacaciones en CancÃºn"
                               value={newPlannerName}
                               onChange={(e) => setNewPlannerName(e.target.value)}
                             />
@@ -287,7 +287,7 @@ const TopBar = () => {
                             <Label htmlFor="planner-destination">Destino</Label>
                             <Input
                               id="planner-destination"
-                              placeholder="ej. Cancún, México"
+                              placeholder="ej. CancÃºn, MÃ©xico"
                               value={newPlannerDestination}
                               onChange={(e) => setNewPlannerDestination(e.target.value)}
                             />
@@ -313,7 +313,7 @@ const TopBar = () => {
                 ) : (
                   /* Con planner activo - Mostrar mini visualizador */
                   <div className="mx-4 mb-3 space-y-3">
-                    {/* Selector de Planner (si hay más de uno) */}
+                    {/* Selector de Planner (si hay mÃ¡s de uno) */}
                     {planners.length > 1 && (
                       <div className="space-y-1">
                         <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -466,7 +466,7 @@ const TopBar = () => {
                   onClick={handleLogout}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Cerrar Sesión</span>
+                  <span>Cerrar SesiÃ³n</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

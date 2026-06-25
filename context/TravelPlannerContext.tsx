@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth/client';
 import { fetchPlanners, createPlannerAPI, updatePlannerAPI, deletePlannerAPI } from '@/lib/api/planners.api';
 import { 
   TravelPlanner, 
@@ -15,7 +15,7 @@ import {
   PaymentPlanCalculation
 } from '@/types/travel-planner';
 
-// 🐛 DEBUGGING - Cambiar a true para activar logs detallados del planner
+// ðŸ› DEBUGGING - Cambiar a true para activar logs detallados del planner
 const DEBUG_PLANNER = false;
 
 
@@ -65,7 +65,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   useEffect(() => {
     const loadPlanners = async () => {
       if (!session?.user?.id || !session?.accessToken) {
-        if (DEBUG_PLANNER) console.log('❌ No user session, skipping planner load');
+        if (DEBUG_PLANNER) console.log('âŒ No user session, skipping planner load');
         setIsInitialized(true);
         return;
       }
@@ -92,7 +92,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   // Crear nuevo planner (guarda en la base de datos)
   const createPlanner = async (request: CreatePlannerRequest, confirmFn: () => Promise<boolean>): Promise<string | null> => {
     if (!session?.user?.id || !session?.accessToken) {
-      setError('No hay sesión de usuario');
+      setError('No hay sesiÃ³n de usuario');
       return null;
     }
     const confirmed = await confirmFn();
@@ -114,10 +114,10 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   // Actualizar planner
   const updatePlanner = async (plannerId: string, updates: UpdatePlannerRequest): Promise<boolean> => {
     if (!session?.user?.id || !session?.accessToken) {
-      setError('No hay sesión de usuario');
+      setError('No hay sesiÃ³n de usuario');
       return false;
     }
-    if (DEBUG_PLANNER) console.log('📝 Actualizando planner:', plannerId, updates);
+    if (DEBUG_PLANNER) console.log('ðŸ“ Actualizando planner:', plannerId, updates);
     setIsLoading(true);
     setError(null);
     try {
@@ -133,7 +133,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
       return true;
     } catch (error) {
       setError('Error al actualizar el planner');
-      console.error('❌ Error updating planner:', error);
+      console.error('âŒ Error updating planner:', error);
       return false;
     } finally {
       setIsLoading(false);
@@ -143,10 +143,10 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   // Eliminar planner
   const deletePlanner = async (plannerId: string): Promise<boolean> => {
     if (!session?.user?.id || !session?.accessToken) {
-      setError('No hay sesión de usuario');
+      setError('No hay sesiÃ³n de usuario');
       return false;
     }
-    if (DEBUG_PLANNER) console.log('🗑️ Eliminando planner:', plannerId);
+    if (DEBUG_PLANNER) console.log('ðŸ—‘ï¸ Eliminando planner:', plannerId);
     setIsLoading(true);
     try {
       await deletePlannerAPI(session.accessToken, plannerId);
@@ -157,7 +157,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
       return true;
     } catch (error) {
       setError('Error al eliminar el planner');
-      console.error('❌ Error deleting planner:', error);
+      console.error('âŒ Error deleting planner:', error);
       return false;
     } finally {
       setIsLoading(false);
@@ -166,7 +166,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
 
   // Establecer planner activo
   const setActivePlanner = (plannerId: string | null): void => {
-    if (DEBUG_PLANNER) console.log('🎯 Estableciendo planner activo:', plannerId);
+    if (DEBUG_PLANNER) console.log('ðŸŽ¯ Estableciendo planner activo:', plannerId);
     if (!plannerId) {
       setActiveplannerState(null);
       return;
@@ -184,7 +184,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
       setError('No hay planner activo seleccionado');
       return false;
     }
-    if (DEBUG_PLANNER) console.log('➕ Agregando item al planner:', targetPlannerId, request);
+    if (DEBUG_PLANNER) console.log('âž• Agregando item al planner:', targetPlannerId, request);
     try {
       const newItem: PlannerCartItem = {
         id: `item_${Date.now()}`,
@@ -233,7 +233,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
       return true;
     } catch (error) {
       setError('Error al agregar item al planner');
-      console.error('❌ Error adding item to planner:', error);
+      console.error('âŒ Error adding item to planner:', error);
       return false;
     }
   };
@@ -242,7 +242,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   const removeFromPlanner = async (itemId: string, plannerId?: string): Promise<boolean> => {
     const targetPlannerId = plannerId || activePlanner?.id;
     if (!targetPlannerId) return false;
-    if (DEBUG_PLANNER) console.log('➖ Removiendo item del planner:', itemId);
+    if (DEBUG_PLANNER) console.log('âž– Removiendo item del planner:', itemId);
     try {
       setPlanners(prev => prev.map(planner => {
         if (planner.id === targetPlannerId) {
@@ -273,7 +273,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
       return true;
     } catch (error) {
       setError('Error al remover item del planner');
-      console.error('❌ Error removing item from planner:', error);
+      console.error('âŒ Error removing item from planner:', error);
       return false;
     }
   };
@@ -286,7 +286,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   ): Promise<boolean> => {
     const targetPlannerId = plannerId || activePlanner?.id;
     if (!targetPlannerId) return false;
-    if (DEBUG_PLANNER) console.log('📝 Actualizando item del planner:', itemId, updates);
+    if (DEBUG_PLANNER) console.log('ðŸ“ Actualizando item del planner:', itemId, updates);
     try {
       setPlanners(prev => prev.map(planner => {
         if (planner.id === targetPlannerId) {
@@ -321,7 +321,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
       return true;
     } catch (error) {
       setError('Error al actualizar item del planner');
-      console.error('❌ Error updating planner item:', error);
+      console.error('âŒ Error updating planner item:', error);
       return false;
     }
   };
@@ -331,7 +331,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
     return updatePlannerItem(itemId, { plannedDate: newDate }, plannerId);
   };
 
-  // Obtener días organizados del planner
+  // Obtener dÃ­as organizados del planner
   const getPlannerDays = (plannerId?: string): PlannerDay[] => {
     const targetPlanner = plannerId 
       ? planners.find(p => p.id === plannerId)
@@ -435,9 +435,9 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
     };
   };
 
-  // Migrar desde cart (implementación básica)
+  // Migrar desde cart (implementaciÃ³n bÃ¡sica)
   const migrateFromCart = async (migration: CartToPlannerMigration): Promise<string | null> => {
-    if (DEBUG_PLANNER) console.log('🔄 Migrando desde cart:', migration);
+    if (DEBUG_PLANNER) console.log('ðŸ”„ Migrando desde cart:', migration);
     // Crear nuevo planner
     const plannerId = await createPlanner({
       name: migration.plannerName,
@@ -468,12 +468,12 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
 
   // Funciones placeholder para funcionalidades futuras
   const sharePlanner = async (plannerId: string): Promise<string | null> => {
-    console.log('🔗 Compartir planner:', plannerId);
+    console.log('ðŸ”— Compartir planner:', plannerId);
     return `share_${plannerId}_${Date.now()}`;
   };
 
   const joinSharedPlanner = async (shareCode: string): Promise<boolean> => {
-    console.log('🤝 Unirse a planner compartido:', shareCode);
+    console.log('ðŸ¤ Unirse a planner compartido:', shareCode);
     return true;
   };
 
@@ -492,7 +492,7 @@ export const TravelPlannerProvider = ({ children }: { children: ReactNode }) => 
   };
 
   const payForItems = async (itemIds: string[], plannerId: string): Promise<boolean> => {
-    console.log('💳 Pagar items:', itemIds, plannerId);
+    console.log('ðŸ’³ Pagar items:', itemIds, plannerId);
     return true;
   };
 

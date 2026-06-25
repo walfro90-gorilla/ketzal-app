@@ -1,13 +1,9 @@
-import { auth } from "./auth"
 import { updateSession } from "./lib/supabase/middleware"
 
-// Compone: NextAuth gatea rutas (callback `authorized`); cuando deja pasar,
-// refrescamos la cookie de sesión de Supabase. Cuando NextAuth redirige,
-// no llega aquí — y como no hay sesión, no hay nada que refrescar.
-// ponytail: composición mínima; cuando se retire NextAuth queda solo updateSession.
-export default auth(async (req) => {
-  return await updateSession(req)
-})
+// Solo Supabase: refresca la cookie de sesion en cada request del matcher.
+// Las rutas protegidas se auto-gateean: las paginas server-side llaman
+// auth() de @/lib/auth/server y redirigen si no hay sesion.
+export default updateSession
 
 export const config = {
   matcher: [

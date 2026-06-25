@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -13,7 +13,7 @@ import { PlannerCartProvider } from "@/context/PlannerCartContext";
 
 import Header from "@/components/header";
 
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider } from "@/lib/auth/client";
 import AppWithLoader from '@/components/AppWithLoader'
 import { LoadingProvider } from '@/components/LoadingContext'
 import { CartProvider } from "@/context/CartContext";
@@ -32,9 +32,9 @@ const geistMono = Geist_Mono({
 
 // SEO metadata
 export const metadata: Metadata = {
-  title: "Ketzal app - Conoce México",
+  title: "Ketzal app - Conoce MÃ©xico",
   description: "Red social de viajeros para viajeros.",
-  keywords: ["viajes", "méxico", "red social", "viajeros"],
+  keywords: ["viajes", "mÃ©xico", "red social", "viajeros"],
 };
 
 export default async function RootLayout({
@@ -43,7 +43,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  // AUTHENTICATION - Solo sesión para header, no se pasa al cliente
+  // AUTHENTICATION - Solo sesiÃ³n para header, no se pasa al cliente
   // const session = await auth()
 
   // DEBUGGING: Descomentar para logs de session en layout
@@ -76,7 +76,7 @@ export default async function RootLayout({
                                   closeButton
                                   duration={4000}
                                 />
-                                {/* DEBUGGING: Descomentar la línea siguiente para activar debug visual */}
+                                {/* DEBUGGING: Descomentar la lÃ­nea siguiente para activar debug visual */}
                                 {/* <SessionDebugger /> */}
                               </div>
                             </AppWithLoader>

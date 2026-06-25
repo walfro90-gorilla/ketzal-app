@@ -1,19 +1,19 @@
-'use client'
+﻿'use client'
 
 import React from 'react';
 import WalletDashboard from '@/components/wallet/WalletDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, Shield, TrendingUp, Gift } from 'lucide-react';
 // DEBUGGING: Imports disponibles para debugging (descomentar si es necesario)
-// import { useSession } from 'next-auth/react';
+// import { useSession } from '@/lib/auth/client';
 // import { useSessionReady } from '@/hooks/useSessionReady';
 import { useAuthDetection } from '@/hooks/useAuthDetection';
 
-// 🐛 DEBUGGING - Cambiar a true para activar logs detallados de la página
+// ðŸ› DEBUGGING - Cambiar a true para activar logs detallados de la pÃ¡gina
 const DEBUG_WALLET_PAGE = false;
 
 const WalletPage: React.FC = () => {
-  if (DEBUG_WALLET_PAGE) console.log('💳 WalletPage: Page component rendering...');
+  if (DEBUG_WALLET_PAGE) console.log('ðŸ’³ WalletPage: Page component rendering...');
   
   // DEBUGGING: Variables disponibles para debugging (descomentar si es necesario)
   // const rawSession = useSession();
@@ -21,15 +21,15 @@ const WalletPage: React.FC = () => {
   
   const authDetection = useAuthDetection();
   
-  // DEBUGGING: Descomentar para verificar estados de autenticación
+  // DEBUGGING: Descomentar para verificar estados de autenticaciÃ³n
   /*
-  console.log('💳 WalletPage: Raw session state:', { 
+  console.log('ðŸ’³ WalletPage: Raw session state:', { 
     status: rawSession.status, 
     hasSession: !!rawSession.data, 
     userId: rawSession.data?.user?.id 
   });
   
-  console.log('💳 WalletPage: Ready session state:', { 
+  console.log('ðŸ’³ WalletPage: Ready session state:', { 
     status: readySession.status,
     isReady: readySession.isReady,
     isAuthenticated: readySession.isAuthenticated,
@@ -38,7 +38,7 @@ const WalletPage: React.FC = () => {
     userId: readySession.session?.user?.id
   });
   
-  console.log('💳 WalletPage: Auth detection state:', { 
+  console.log('ðŸ’³ WalletPage: Auth detection state:', { 
     isAuthenticated: authDetection.isAuthenticated,
     isLoading: authDetection.isLoading,
     detectionMethod: authDetection.detectionMethod,
@@ -47,7 +47,7 @@ const WalletPage: React.FC = () => {
   */
   
   if (authDetection.isLoading) {
-    if (DEBUG_WALLET_PAGE) console.log('💳 WalletPage: Auth detection is loading...');
+    if (DEBUG_WALLET_PAGE) console.log('ðŸ’³ WalletPage: Auth detection is loading...');
     return (
       <div className="container mx-auto p-6 space-y-6">
         <div className="text-center">
@@ -58,17 +58,17 @@ const WalletPage: React.FC = () => {
   }
   
   if (!authDetection.isAuthenticated) {
-    if (DEBUG_WALLET_PAGE) console.log('💳 WalletPage: User is not authenticated');
+    if (DEBUG_WALLET_PAGE) console.log('ðŸ’³ WalletPage: User is not authenticated');
     return (
       <div className="container mx-auto p-6 space-y-6">
         <div className="text-center space-y-4">
-          <p className="text-lg">⚠️ Acceso denegado</p>
-          <p className="text-gray-600">Debes iniciar sesión para acceder al wallet</p>
+          <p className="text-lg">âš ï¸ Acceso denegado</p>
+          <p className="text-gray-600">Debes iniciar sesiÃ³n para acceder al wallet</p>
           <button 
             onClick={() => window.location.href = '/login'}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            Iniciar Sesión
+            Iniciar SesiÃ³n
           </button>
         </div>
       </div>
@@ -89,7 +89,7 @@ const WalletPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Información destacada */}
+      {/* InformaciÃ³n destacada */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
         <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="pb-3">
@@ -108,7 +108,7 @@ const WalletPage: React.FC = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Conversión
+              ConversiÃ³n
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -136,23 +136,23 @@ const WalletPage: React.FC = () => {
         <WalletDashboard />
       </div>
 
-      {/* Información de seguridad */}
+      {/* InformaciÃ³n de seguridad */}
       <Card className="max-w-2xl mx-auto bg-blue-50 border-blue-200">
         <CardContent className="p-6 text-center">
-          <div className="text-blue-800 font-semibold mb-2">🔒 Tu dinero está seguro</div>
+          <div className="text-blue-800 font-semibold mb-2">ðŸ”’ Tu dinero estÃ¡ seguro</div>
           <div className="text-blue-700 text-sm space-y-1">
-            <p>Utilizamos encriptación de nivel bancario para proteger tus fondos.</p>
+            <p>Utilizamos encriptaciÃ³n de nivel bancario para proteger tus fondos.</p>
             <p>Todas las transacciones son monitoreadas 24/7 para detectar actividad sospechosa.</p>
             <p>Tus datos financieros nunca se comparten con terceros.</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Información adicional */}
+      {/* InformaciÃ³n adicional */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">¿Qué son los Axo Coins?</CardTitle>
+            <CardTitle className="text-lg">Â¿QuÃ© son los Axo Coins?</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-3">
@@ -190,7 +190,7 @@ const WalletPage: React.FC = () => {
             <ul className="space-y-2 text-sm text-gray-600">
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                Tarjetas de crédito y débito
+                Tarjetas de crÃ©dito y dÃ©bito
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -198,7 +198,7 @@ const WalletPage: React.FC = () => {
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                PayPal y otros métodos digitales
+                PayPal y otros mÃ©todos digitales
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>

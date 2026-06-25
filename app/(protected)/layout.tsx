@@ -1,7 +1,7 @@
-import { Dashboard } from "@/components/dashboard/page";
+﻿import { Dashboard } from "@/components/dashboard/page";
 
 // IMPORTING AUTH
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth/server"
 import LogoutButton from "@/components/logout-button"
 import HomeButton from "@/components/home-button";
 import { AlertDialogProvider } from "@/components/alert-dialog"

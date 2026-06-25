@@ -1,14 +1,14 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useRef } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/lib/auth/client';
 
 /**
- * Hook personalizado que espera a que NextAuth termine la hidratación
- * antes de reportar que la sesión está lista.
+ * Hook personalizado que espera a que NextAuth termine la hidrataciÃ³n
+ * antes de reportar que la sesiÃ³n estÃ¡ lista.
  * 
  * Esto resuelve el problema de timing donde el WalletContext
- * recibe status 'unauthenticated' temporalmente después del login.
+ * recibe status 'unauthenticated' temporalmente despuÃ©s del login.
  */
 export const useSessionReady = () => {
   const { data: session, status } = useSession();
@@ -18,22 +18,22 @@ export const useSessionReady = () => {
   const [justLoggedIn, setJustLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Marcar que hemos pasado por al menos un ciclo de hidratación
+    // Marcar que hemos pasado por al menos un ciclo de hidrataciÃ³n
     if (status !== 'loading' && !hasHydrated) {
       setHasHydrated(true);
     }
 
     // Detectar cuando acaba de hacer login
     if (previousStatus.current === 'unauthenticated' && status === 'authenticated') {
-      console.log('🎉 useSessionReady: Login detected!');
+      console.log('ðŸŽ‰ useSessionReady: Login detected!');
       setJustLoggedIn(true);
-      // Reset flag después de un tiempo
+      // Reset flag despuÃ©s de un tiempo
       setTimeout(() => setJustLoggedIn(false), 1000);
     }
 
-    // La sesión está "ready" cuando:
+    // La sesiÃ³n estÃ¡ "ready" cuando:
     // 1. NextAuth ha terminado de cargar (status !== 'loading')
-    // 2. Y hemos pasado por al menos un ciclo de hidratación
+    // 2. Y hemos pasado por al menos un ciclo de hidrataciÃ³n
     if (status !== 'loading' && hasHydrated) {
       setIsReady(true);
     }

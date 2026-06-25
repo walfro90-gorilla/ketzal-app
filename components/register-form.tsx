@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription,  CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,7 @@ import { z } from 'zod';
 import { signUpSchema } from '@/lib/zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-// import { signIn } from '@/auth';
+// import { signIn } from '@/lib/auth/server';
 import { registerAction } from '@/actions/auth-action';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -51,11 +51,11 @@ export default function RegisterForm() {
         console.log(response.error);
       } else if (response.success) {
         if (response.requiresEmailVerification) {
-          setSuccess(response.message || "Cuenta creada exitosamente. Por favor verifica tu email antes de iniciar sesión.");
-          // No redirigir automáticamente - dejar que el usuario lea el mensaje
+          setSuccess(response.message || "Cuenta creada exitosamente. Por favor verifica tu email antes de iniciar sesiÃ³n.");
+          // No redirigir automÃ¡ticamente - dejar que el usuario lea el mensaje
           setTimeout(() => {
             router.push('/login');
-          }, 5000); // Redirigir después de 5 segundos
+          }, 5000); // Redirigir despuÃ©s de 5 segundos
         } else {
           router.push('/home');
         }
@@ -72,9 +72,9 @@ export default function RegisterForm() {
               <Compass className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-800">¡Bienvenido Viajero!</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-800">Â¡Bienvenido Viajero!</CardTitle>
           <CardDescription className="text-gray-600">
-            Únete a nuestra comunidad y comienza tu próxima aventura 🌟
+            Ãšnete a nuestra comunidad y comienza tu prÃ³xima aventura ðŸŒŸ
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -91,14 +91,14 @@ export default function RegisterForm() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="¿Cómo te llamas?"
+                        placeholder="Â¿CÃ³mo te llamas?"
                         type='text'
                         className="h-11"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription className="text-xs text-gray-500">
-                      Este será tu nombre público en la plataforma.
+                      Este serÃ¡ tu nombre pÃºblico en la plataforma.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -111,7 +111,7 @@ export default function RegisterForm() {
                   <FormItem>
                     <FormLabel className="flex items-center space-x-2">
                       <Mail className="h-4 w-4 text-gray-500" />
-                      <span>Correo Electrónico</span>
+                      <span>Correo ElectrÃ³nico</span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -122,7 +122,7 @@ export default function RegisterForm() {
                       />
                     </FormControl>
                     <FormDescription className="text-xs text-gray-500">
-                      Te enviaremos un enlace de verificación.
+                      Te enviaremos un enlace de verificaciÃ³n.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -137,12 +137,12 @@ export default function RegisterForm() {
                     <FormItem>
                       <FormLabel className="flex items-center space-x-2">
                         <Lock className="h-4 w-4 text-gray-500" />
-                        <span>Contraseña</span>
+                        <span>ContraseÃ±a</span>
                       </FormLabel>
                       <FormControl>
                         <Input
                           type='password'
-                          placeholder="Contraseña segura"
+                          placeholder="ContraseÃ±a segura"
                           className="h-11"
                           {...field}
                         />
@@ -163,7 +163,7 @@ export default function RegisterForm() {
                       <FormControl>
                         <Input
                           type='password'
-                          placeholder="Repite contraseña"
+                          placeholder="Repite contraseÃ±a"
                           className="h-11"
                           {...field}
                         />
@@ -177,7 +177,7 @@ export default function RegisterForm() {
               {error && (
                 <div className="text-red-700 text-sm p-4 bg-red-50 border border-red-200 rounded-lg">
                   <div className="flex items-start space-x-2">
-                    <div className="text-red-500">⚠️</div>
+                    <div className="text-red-500">âš ï¸</div>
                     <div>{error}</div>
                   </div>
                 </div>
@@ -186,11 +186,11 @@ export default function RegisterForm() {
               {success && (
                 <div className="text-green-700 text-sm p-4 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-start space-x-2">
-                    <div className="text-green-600">✅</div>
+                    <div className="text-green-600">âœ…</div>
                     <div>
                       <p className="font-medium">{success}</p>
                       <p className="text-xs text-green-600 mt-1">
-                        Serás redirigido al login en unos segundos...
+                        SerÃ¡s redirigido al login en unos segundos...
                       </p>
                     </div>
                   </div>
@@ -209,7 +209,7 @@ export default function RegisterForm() {
                   </div>
                 ) : success ? (
                   <div className="flex items-center space-x-2">
-                    <span>✓ Cuenta creada</span>
+                    <span>âœ“ Cuenta creada</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-2">
@@ -224,15 +224,15 @@ export default function RegisterForm() {
           <div className="text-center space-y-3">
             <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg border border-green-100">
               <p className="text-sm text-gray-700 font-medium">
-                ¿Ya tienes cuenta?
+                Â¿Ya tienes cuenta?
               </p>
               <Link href="/login" className="text-green-600 hover:text-green-700 font-semibold hover:underline transition-colors">
-                Iniciar sesión →
+                Iniciar sesiÃ³n â†’
               </Link>
             </div>
             
             <p className="text-sm text-gray-600">
-              ¿Eres proveedor de servicios? <Link href="/register-admin" className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">Solicitar cuenta de administrador</Link>
+              Â¿Eres proveedor de servicios? <Link href="/register-admin" className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">Solicitar cuenta de administrador</Link>
             </p>
           </div>
         </CardContent>

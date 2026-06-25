@@ -1,4 +1,4 @@
-import { signOut } from "@/auth"
+﻿import { signOut } from "@/lib/auth/server"
 import { NextResponse } from "next/server"
 
 export async function GET() {
@@ -7,12 +7,12 @@ export async function GET() {
     
     return NextResponse.json({
       success: true,
-      message: "Sesión cerrada exitosamente"
+      message: "SesiÃ³n cerrada exitosamente"
     })
   } catch (error) {
     console.error("Logout error:", error)
     return NextResponse.json({ 
-      error: "Error cerrando sesión",
+      error: "Error cerrando sesiÃ³n",
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }

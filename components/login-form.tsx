@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useTransition, useContext } from 'react'
 import { UserContext } from '@/context/UserContext';
@@ -21,7 +21,7 @@ import { z } from 'zod'
 import { signInSchema } from '@/lib/zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-// import { signIn } from '@/auth'
+// import { signIn } from '@/lib/auth/server'
 import { loginAction } from '@/actions/auth-action'
 // import { start } from 'repl'
 import { useSearchParams } from 'next/navigation'
@@ -65,7 +65,7 @@ export function LoginForm({
         setError(response.error)
         console.log("Login failed: ", response.error)
       } else {
-        // Intenta obtener la sesión de NextAuth (si está disponible)
+        // Intenta obtener la sesiÃ³n de NextAuth (si estÃ¡ disponible)
         try {
           const sessionRes = await fetch('/api/auth/session');
           if (sessionRes.ok) {
@@ -97,17 +97,17 @@ export function LoginForm({
               <Compass className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-800">¡Bienvenido de Vuelta!</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-800">Â¡Bienvenido de Vuelta!</CardTitle>
           {isVerified && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
               <p className="text-green-700 text-sm font-medium flex items-center space-x-2">
-                <span>✅</span>
+                <span>âœ…</span>
                 <span>Tu email ha sido confirmado exitosamente.</span>
               </p>
             </div>
           )}
           <CardDescription className="text-gray-600">
-            Accede a tu cuenta y continúa explorando 🌍
+            Accede a tu cuenta y continÃºa explorando ðŸŒ
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -120,7 +120,7 @@ export function LoginForm({
                   <FormItem>
                     <FormLabel className="flex items-center space-x-2">
                       <Mail className="h-4 w-4 text-gray-500" />
-                      <span>Correo Electrónico</span>
+                      <span>Correo ElectrÃ³nico</span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -142,12 +142,12 @@ export function LoginForm({
                   <FormItem>
                     <FormLabel className="flex items-center space-x-2">
                       <Lock className="h-4 w-4 text-gray-500" />
-                      <span>Contraseña</span>
+                      <span>ContraseÃ±a</span>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type='password'
-                        placeholder="Tu contraseña"
+                        placeholder="Tu contraseÃ±a"
                         className="h-11"
                         {...field}
                       />
@@ -160,7 +160,7 @@ export function LoginForm({
               {error && (
                 <div className="text-red-700 text-sm p-4 bg-red-50 border border-red-200 rounded-lg">
                   <div className="flex items-start space-x-2">
-                    <div className="text-red-500">⚠️</div>
+                    <div className="text-red-500">âš ï¸</div>
                     <div>{error}</div>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export function LoginForm({
                 {isPending ? (
                   <div className="flex items-center space-x-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    <span>Iniciando sesión...</span>
+                    <span>Iniciando sesiÃ³n...</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-2">
@@ -189,7 +189,7 @@ export function LoginForm({
                   href="/forgot-password"
                   className="text-sm text-gray-600 hover:text-blue-600 hover:underline transition-colors"
                 >
-                  ¿Olvidaste tu contraseña?
+                  Â¿Olvidaste tu contraseÃ±a?
                 </Link>
               </div>
             </form>
@@ -198,15 +198,15 @@ export function LoginForm({
           <div className="text-center space-y-3">
             <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg border border-green-100">
               <p className="text-sm text-gray-700 font-medium">
-                ¿Aún no tienes cuenta?
+                Â¿AÃºn no tienes cuenta?
               </p>
               <Link href="/register" className="text-green-600 hover:text-green-700 font-semibold hover:underline transition-colors">
-                Crear cuenta gratuita →
+                Crear cuenta gratuita â†’
               </Link>
             </div>
             
             <p className="text-sm text-gray-600">
-              ¿Eres proveedor de servicios? <Link href="/register-admin" className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">Solicitar cuenta de administrador</Link>
+              Â¿Eres proveedor de servicios? <Link href="/register-admin" className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">Solicitar cuenta de administrador</Link>
             </p>
           </div>
         </CardContent>
