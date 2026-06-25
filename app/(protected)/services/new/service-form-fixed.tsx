@@ -24,6 +24,9 @@ interface ServiceFormFixedProps {
     price?: number;
     statusCode?: number;
   };
+  // ponytail: aceptados para que page.tsx tipe; el form aun no los consume
+  suppliers?: unknown;
+  session?: unknown;
 }
 
 // Lazy load components for better performance
