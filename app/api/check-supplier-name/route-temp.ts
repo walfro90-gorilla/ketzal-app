@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ 
       available: null, 
       message: 'Error al verificar disponibilidad',
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import "next-auth/jwt";
 
 declare module "next-auth" {
     interface Session {
+        accessToken?: string | null;
         user: {
             role: string;
             supplierId?: string;
@@ -28,5 +29,7 @@ declare module "next-auth/jwt" {
         role: string;
         supplierId: string;
         id: string;
+        accessToken?: string | null;
+        access_token?: string | null;
     }
 }

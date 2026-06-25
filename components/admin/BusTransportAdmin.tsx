@@ -111,7 +111,7 @@ export default function BusTransportAdmin({
   };
 
   const generatePreviewSeats = () => {
-    const seats = [];
+    const seats: { row: number; position: string; type: 'standard' | 'front' | 'table'; number: string }[] = [];
     const layout = formData.busLayout!;
     
     for (let row = 1; row <= layout.totalRows; row++) {

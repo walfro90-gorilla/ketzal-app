@@ -270,13 +270,13 @@ const PlannerDetailPage = () => {
           {/* Carrito de Compras */}
           <PlannerShoppingCart 
             plannerId={planner.id}
-            onCartUpdate={(cartTotal) => setCartTotal(cartTotal)}
+            onTotalChange={(cartTotal) => setCartTotal(cartTotal)}
           />
 
           {/* Timeline de Servicios */}
           <PlannerTimeline 
             plannerId={planner.id}
-            onTimelineUpdate={(timelineTotal) => setTimelineTotal(timelineTotal)}
+            onTotalChange={(timelineTotal: number) => setTimelineTotal(timelineTotal)}
           />
         </div>
       </div>

@@ -73,15 +73,14 @@ export default function PlannerCartTest() {
     }
 
     const testTour: Omit<PlannerCartItem, 'id' | 'addedAt'> = {
-      type: 'tour',
+      type: 'service',
       serviceId: '123',
       name: 'Tour Arqueológico Monte Albán',
       description: 'Explora las ruinas zapotecas más importantes',
       price: 850.00,
       quantity: 2,
       paymentOption: 'installments',
-      packageType: 'Doble',
-      scheduledDate: new Date('2024-03-15'),
+      plannedDate: new Date('2024-03-15'),
       image: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?w=500'
     };
 

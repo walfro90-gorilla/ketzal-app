@@ -352,7 +352,7 @@ export const PlannerCartProvider: React.FC<PlannerCartProviderProps> = ({ childr
         currency: 'MXN',
         travelers: 1,
         budget: 0
-      });
+      }, async () => true);
 
       console.log('🆔 Planner creado con ID:', plannerId);
 

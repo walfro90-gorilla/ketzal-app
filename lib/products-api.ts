@@ -260,7 +260,7 @@ export const getCategories = async (): Promise<ProductCategory[]> => {
   
   products.forEach(product => {
     if (product.category) {
-      categories.add(product.category);
+      categories.add(product.category as ProductCategory);
     }
   });
   

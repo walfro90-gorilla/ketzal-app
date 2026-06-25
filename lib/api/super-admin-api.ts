@@ -15,7 +15,7 @@ export async function fetchPendingAdminRequests() {
   return await res.json();
 }
 
-export async function approveSupplier(supplierId, userId) {
+export async function approveSupplier(supplierId: string | number, userId: string | number) {
   const res = await fetch(`${BACKEND_URL}/api/suppliers/${supplierId}/approval`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,7 @@ export async function approveSupplier(supplierId, userId) {
   return await res.json();
 }
 
-export async function rejectSupplier(supplierId, userId) {
+export async function rejectSupplier(supplierId: string | number, userId: string | number) {
   const res = await fetch(`${BACKEND_URL}/api/suppliers/${supplierId}/approval`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },

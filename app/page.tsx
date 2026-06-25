@@ -41,7 +41,7 @@ export default function HomePage() {
       ])
       setServices(servicesData)
       setReviews(reviewsData)
-      setUsers(usersData)
+      setUsers(usersData as unknown as User[])
       setCategories(categoriesData)
       setLoading(false)
     }
@@ -58,7 +58,7 @@ export default function HomePage() {
         <HeroSection />
         <PopularCategories services={services} categories={categories} />
         {/* <PopularDestinations /> */}
-        <SpecialOffers services={services} />
+        <SpecialOffers services={services as unknown as Parameters<typeof SpecialOffers>[0]['services']} />
         <Testimonials reviews={reviews} users={users} />
       </main>
       <Footer />

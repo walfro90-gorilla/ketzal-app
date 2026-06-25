@@ -33,7 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id;
       }
       // Agregar el JWT como accessToken para el frontend
-      session.accessToken = token?.accessToken || token?.access_token || token?.jti || token?.sub || null;
+      session.accessToken = (token?.accessToken || token?.access_token || token?.jti || token?.sub || null) as string | null;
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {

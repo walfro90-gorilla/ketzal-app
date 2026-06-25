@@ -17,7 +17,6 @@ import {
 
 import { Product } from '@/types/product';
 import ProductCard from '@/components/store/ProductCard';
-import PlannerTest from '@/components/PlannerTest';
 import Footer from '@/components/Footer';
 
 // Datos temporales de productos mientras arreglamos la API

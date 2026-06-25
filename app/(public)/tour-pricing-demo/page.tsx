@@ -141,6 +141,7 @@ export default function TourPricingDemo() {
             {/* Componente de pricing CON selector */}
             <TourPricingWithSeats
               packs={tourData.packs}
+              price={tourData.originalPrice}
               availableFrom={tourData.availableFrom}
               availableTo={tourData.availableTo}
               originalPrice={tourData.originalPrice}
@@ -227,6 +228,7 @@ export default function TourPricingDemo() {
             {/* Componente de pricing SIN selector */}
             <TourPricingWithSeats
               packs={tourDataWithoutBus.packs}
+              price={tourDataWithoutBus.originalPrice}
               availableFrom={tourDataWithoutBus.availableFrom}
               availableTo={tourDataWithoutBus.availableTo}
               originalPrice={tourDataWithoutBus.originalPrice}
