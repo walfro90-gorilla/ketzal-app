@@ -1,65 +1,85 @@
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL 
+// Reviews sobre Supabase (schema `ketzal`).
+import { createClient } from "@/lib/supabase/client"
 
-// Define a type for review data
 export interface ReviewData {
-    rating: number;
-    comment: string;
-    serviceId: number;
-    userId: string;
+  rating: number
+  comment: string
+  serviceId: number | string
+  userId: string
 }
 
-// CREATE review
-export async function createReview(reviewData: ReviewData) {
-    const res = await fetch(`${BACKEND_URL}/api/reviews`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reviewData),
-    });
-    
-    if (!res.ok) {
-        const errorData = await res.text();
-        console.error('❌ Backend error response:', errorData);
-        throw new Error(`Error ${res.status}: ${errorData}`);
-    }
-    
-    const result = await res.json();
-    return result;
+type ReviewAliased = {
+  id: string
+  rating: number
+  comment: string | null
+  serviceId: string
+  userId: string
+  createdAt: string
 }
 
-// READ reviewS
+const REVIEW_SELECT =
+  "id, rating, comment, serviceId:service_id, userId:user_id, createdAt:created_at"
+
 export async function getReviews() {
-    const res = await fetch(`${BACKEND_URL}/api/reviews`)
-    const data = await res.json()
-    return data
-}
-// READ review
-export async function getReview(id:string) {
-    const res = await fetch(`${BACKEND_URL}/api/reviews/${id}`)
-    const data = await res.json()
-    return await data
-}
-
-// UPDATE review
-export async function updateReview(id: string, reviewData: ReviewData){
-    const res = await fetch(`${BACKEND_URL}/api/reviews/${id}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reviewData),
-    })
-    return await res.json()
-    
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("reviews")
+    .select(REVIEW_SELECT)
+    .order("created_at", { ascending: false })
+    .returns<ReviewAliased[]>()
+  if (error) throw new Error(`getReviews: ${error.message}`)
+  return data ?? []
 }
 
-// DELETE review
-export async function deleteReview(id: string){
-    const res = await fetch(`${BACKEND_URL}/api/reviews/${id}`, {
-        method: 'DELETE',
+export async function getReview(id: string) {
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("reviews")
+    .select(REVIEW_SELECT)
+    .eq("id", id)
+    .maybeSingle()
+    .returns<ReviewAliased>()
+  if (error) throw new Error(`getReview: ${error.message}`)
+  return data
+}
+
+// CREATE — RLS exige user_id = auth.uid().
+export async function createReview(reviewData: ReviewData) {
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("reviews")
+    .insert({
+      service_id: String(reviewData.serviceId),
+      user_id: reviewData.userId,
+      rating: reviewData.rating,
+      comment: reviewData.comment,
     })
-    await res.json()
-    // console.log(data)
-    
+    .select(REVIEW_SELECT)
+    .single()
+    .returns<ReviewAliased>()
+  if (error) throw new Error(`createReview: ${error.message}`)
+  return data
+}
+
+export async function updateReview(id: string, reviewData: Partial<ReviewData>) {
+  const patch: Record<string, unknown> = {}
+  if (reviewData.rating !== undefined) patch.rating = reviewData.rating
+  if (reviewData.comment !== undefined) patch.comment = reviewData.comment
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("reviews")
+    .update(patch as never)
+    .eq("id", id)
+    .select(REVIEW_SELECT)
+    .single()
+    .returns<ReviewAliased>()
+  if (error) throw new Error(`updateReview: ${error.message}`)
+  return data
+}
+
+export async function deleteReview(id: string) {
+  const sb = createClient()
+  const { error } = await sb.from("reviews").delete().eq("id", id)
+  if (error) throw new Error(`deleteReview: ${error.message}`)
+  return { success: true }
 }

@@ -20,15 +20,15 @@ async function ServicesNewPage({ params }: { params: Promise< { id: string }> })
                 <Card className="bg-white dark:bg-gray-800 text-black dark:text-white">
                     <CardHeader>
                         <CardTitle>
-                            {!service.statusCode ? "Editar Servicio 🖍️" : "Crear Nuevo Servicio ➕"}
+                            {!('statusCode' in (service as any)) ? "Editar Servicio 🖍️" : "Crear Nuevo Servicio ➕"}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         {/* Fixed form with working navigation */}
-                        <ServiceFormFixed 
-                            suppliers={suppliers} 
-                            service={service} 
-                            session={session} 
+                        <ServiceFormFixed
+                            suppliers={suppliers}
+                            service={!('statusCode' in (service as any)) ? (service as any) : undefined}
+                            session={session}
                         />
                     </CardContent>
                 </Card>

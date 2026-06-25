@@ -2,12 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { notFound } from "next/navigation";
 
 async function SupplierDetailPage({ params }: { params: Promise<{ id: string }> }) {
 
     const { id } = await params
 
     const supplier = await getSupplier(id)
+
+    if (!supplier || 'message' in supplier) notFound()
 
     return (
         <div
@@ -30,7 +33,7 @@ async function SupplierDetailPage({ params }: { params: Promise<{ id: string }> 
                     <p>{supplier.description}</p>
                     {/* <p> ${supplier.price}</p> */}
                     <img
-                        src={supplier.image}
+                        src={supplier.imgLogo ?? ''}
                         alt=""
                     />
                 </CardContent>

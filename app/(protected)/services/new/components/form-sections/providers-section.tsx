@@ -41,7 +41,8 @@ export function ProvidersSection() {
         setError(null);
         
         console.log('Loading suppliers...');
-        const suppliers = await getSuppliers();
+        const rawSuppliers = await getSuppliers();
+        const suppliers = (rawSuppliers ?? []) as unknown as Supplier[];
         console.log('Raw suppliers response:', suppliers);
         console.log('Suppliers type:', typeof suppliers);
         console.log('Suppliers length:', suppliers?.length || 0);

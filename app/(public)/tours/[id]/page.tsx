@@ -19,14 +19,19 @@ import SpecialOffers from '@/components/SpecialOffers'
 import { getReviews } from '../../reviews/reviews.api'
 import { getUsers } from '@/app/(protected)/users/users.api'
 import { auth } from '@/auth'
+import { notFound } from 'next/navigation'
 import type { Service } from '@/components/service-card'
 
 export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   // Fetch services
-  const service = await getService(id)
-  // console.log("Service data: ", service)
+  const svcRaw = await getService(id)
+  if (!svcRaw || 'statusCode' in svcRaw) notFound()
+  // ponytail: cast a any para no migrar la página entera ahora (30+ campos
+  // jsonb sin tipar). Rewrite cuando se ataque /tours/[id] en el siguiente round.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const service: any = svcRaw
 
   const provider = await getSupplier(service.supplierId)
   // console.log("Provider data: ", provider)
@@ -37,10 +42,12 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
   const transportProvider = await getSupplier(service.transportProviderID)
   // console.log("Transport Provider data: ", transportProvider)
 
-  const tours = (await getServices()).filter((service: Service) => service.serviceType === 'tour')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tours = ((await getServices()) as any[]).filter((s: Service) => s.serviceType === 'tour')
 
   // Reviews fetching
-  const reviewsService = (await getReviews()).filter((review: { serviceId: number }) => review.serviceId === Number(id))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reviewsService = ((await getReviews()) as any[]).filter((review: { serviceId: number }) => review.serviceId === Number(id))
   // console.log("reviews: ", reviewsService)
 
   const users = (await getUsers())
@@ -116,10 +123,10 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
     packs: service.packs.data,
     reviewCount: reviewCount,
     organizer: {
-      id: provider.id,
-      name: provider.name,
-      memberSince: provider.createdAt,
-      avatar: provider.imgLogo,
+      id: provider?.id ?? '',
+      name: provider?.name ?? '',
+      memberSince: provider?.createdAt ?? '',
+      avatar: provider?.imgLogo ?? '',
     },
     faqs: service.faqs,
     localInfo: {
@@ -166,15 +173,15 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 description={tourData.description}
                 organizer={{
                   name: tourData.organizer.name,
-                  logo: tourData.organizer.avatar
+                  logo: tourData.organizer.avatar ?? undefined
                 }}
               />
               <OrganizedBy
 
                 id={tourData.organizer.id}
                 name={tourData.organizer.name}
-                memberSince={tourData.organizer.memberSince}
-                avatar={tourData.organizer.avatar}
+                memberSince={String(tourData.organizer.memberSince ?? '')}
+                avatar={tourData.organizer.avatar ?? ''}
               />
             </div>
           </div>
@@ -185,11 +192,13 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 <TourInfo tour={tourData} />
 
 
-                <HotelInfo hotelProvider={hotelProvider} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <HotelInfo hotelProvider={hotelProvider as any} />
 
 
 
-                <TransportProvider transportProvider={transportProvider} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <TransportProvider transportProvider={transportProvider as any} />
 
                 <div className="mt-8">
                   <TourLocation
@@ -211,7 +220,8 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                   <h3 className="text-lg font-semibold text-white mb-2">Reseñas</h3>
                   <ReviewSection
                     serviceId={tourData.id}
-                    reviewsService={reviewsService}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    reviewsService={reviewsService as any}
                     users={mappedUsers}
                     session={session} // Pass session as Session | null
                   />
@@ -219,7 +229,8 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 </div>
 
                 <div className="mt-8">
-                  <SpecialOffers services={tours} />
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <SpecialOffers services={tours as any} />
 
                 </div>
               </div>

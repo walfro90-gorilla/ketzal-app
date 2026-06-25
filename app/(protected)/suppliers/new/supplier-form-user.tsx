@@ -103,14 +103,14 @@ export function SupplierFormUser({ supplier }: { supplier: Supplier }) {
                     address: data.address,
                     imgLogo: data.imgLogo
                 };                console.log('Clean data being sent:', cleanData);
-                const dataUpdate = await createSupplier(cleanData);
-                
+                const dataUpdate = await createSupplier(cleanData) as unknown as { id: string };
+
                 if (user && dataUpdate && dataUpdate.id) {
                     // Format user data for the updateIdSupplier function
                     const userForUpdate = {
                         id: user.id
                     };
-                    
+
                     await updateIdSupplier({ id: dataUpdate.id.toString() }, userForUpdate);
                     console.log('✅ Supplier created and user updated successfully');
                 } else if (!user) {

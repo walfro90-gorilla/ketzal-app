@@ -38,7 +38,7 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
                 }
                 
                 alert(
-                    `❌ No se puede eliminar el proveedor "${dependencies.supplier.name}".\n\n` +
+                    `❌ No se puede eliminar el proveedor "${dependencies.supplier?.name ?? id}".\n\n` +
                     `Tiene dependencias activas:\n${dependencyDetails.join('\n')}\n\n` +
                     `Para eliminar este proveedor, primero debe:\n` +
                     `• Eliminar o reasignar todos los servicios\n` +
@@ -49,7 +49,7 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
 
             // If no dependencies, confirm deletion
             const confirmed = confirm(
-                `¿Estás seguro de que quieres eliminar el proveedor "${dependencies.supplier.name}"?\n\n` +
+                `¿Estás seguro de que quieres eliminar el proveedor "${dependencies.supplier?.name ?? id}"?\n\n` +
                 `Esta acción no se puede deshacer.`
             );
 
@@ -60,7 +60,7 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
             console.log("Proceeding to delete supplier", id);
             await deleteSupplier(id);
             
-            alert(`✅ Proveedor "${dependencies.supplier.name}" eliminado exitosamente.`);
+            alert(`✅ Proveedor "${dependencies.supplier?.name ?? id}" eliminado exitosamente.`);
             router.refresh();
               } catch (error) {
             console.error("Error removing supplier:", error);

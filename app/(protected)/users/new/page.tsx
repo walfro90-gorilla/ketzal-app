@@ -27,7 +27,7 @@ export default function NewUserPage() {
         const loadSuppliers = async () => {
             try {
                 const suppliersData = await getSuppliers();
-                setSuppliers(suppliersData);
+                setSuppliers(suppliersData as unknown as Supplier[]);
             } catch (error) {
                 message.error('Error al cargar proveedores');
                 console.error('Error loading suppliers:', error);
@@ -40,7 +40,7 @@ export default function NewUserPage() {
     const handleSubmit = async (values: any) => {
         try {
             setLoading(true);
-            
+
             const userData = {
                 name: values.name,
                 email: values.email,
@@ -49,9 +49,14 @@ export default function NewUserPage() {
                 supplierId: values.supplierId || null,
             };
 
-            const newUser = await createUser(userData);
-            message.success('Usuario creado correctamente');
-            router.push(`/users/${newUser.id}`);
+            try {
+                await createUser(userData);
+                message.success('Usuario creado correctamente');
+                router.push(`/users`);
+            } catch (err: any) {
+                message.error('Crear usuario desde panel admin no disponible — usa /registro-sb');
+                console.error('createUser deprecated:', err);
+            }
         } catch (error: any) {
             message.error(error.message || 'Error al crear usuario');
             console.error('Error creating user:', error);

@@ -33,15 +33,17 @@ export default function UserEditPage() {
                     ]);
                     
                     setUser(userData);
-                    setSuppliers(suppliersData);
-                    
+                    setSuppliers((suppliersData) as unknown as Supplier[]);
+
                     // Rellenar el formulario
-                    form.setFieldsValue({
-                        name: userData.name || '',
-                        email: userData.email || '',
-                        role: userData.role || 'user',
-                        supplierId: userData.supplierId || undefined,
-                    });
+                    if (userData) {
+                        form.setFieldsValue({
+                            name: userData.name || '',
+                            email: userData.email || '',
+                            role: userData.role || 'user',
+                            supplierId: userData.supplierId || undefined,
+                        });
+                    }
                 }
             } catch (error) {
                 message.error('Error al cargar datos del usuario');

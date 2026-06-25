@@ -57,7 +57,8 @@ export function Dashboard({ session, children }: DashboardProps) {
         return
       } else {
         const supplierDataDB = await getSupplier(session.user.supplierId)
-        setSupplierData(supplierDataDB)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setSupplierData(supplierDataDB as any)
       }
 
     }

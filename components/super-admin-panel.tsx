@@ -114,9 +114,11 @@ export default function SuperAdminPanel() {
         fetchSystemStats(),
         fetchSuppliers()
       ])
-      setPendingRequests(requests)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setPendingRequests(requests as any)
       setStats(systemStats)
-      setAllSuppliers(suppliers)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setAllSuppliers(suppliers as any)
     } catch (error) {
       console.error('Error loading data:', error)
       toast.error('Error al cargar datos del panel')
@@ -130,7 +132,7 @@ export default function SuperAdminPanel() {
     try {
       if (!userId) throw new Error('No se encontró el usuario asociado al supplier');
       const result = await approveSupplier(supplierId, userId)
-      toast.success(result.message || 'Solicitud aprobada')
+      toast.success(result.success ? 'Solicitud aprobada' : 'Resultado inesperado')
       await loadData()
     } catch (error) {
       console.error('Error en handleApprove:', error);
@@ -145,7 +147,7 @@ export default function SuperAdminPanel() {
     try {
       if (!userId) throw new Error('No se encontró el usuario asociado al supplier');
       const result = await rejectSupplier(supplierId, userId)
-      toast.success(result.message || 'Solicitud rechazada')
+      toast.success(result.success ? 'Solicitud rechazada' : 'Resultado inesperado')
       await loadData()
     } catch (error) {
       console.error('Error en handleReject:', error);

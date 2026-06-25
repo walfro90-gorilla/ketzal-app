@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export default async function Suppliers() {
 
-    const suppliers: Supplier[] = await getSuppliers();
+    const suppliers = (await getSuppliers()) as unknown as Supplier[];
 
     // Ensure suppliers is typed as Supplier[]
     return (

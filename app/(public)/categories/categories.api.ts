@@ -1,56 +1,79 @@
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL 
+// Categories sobre Supabase. El campo `link` no existe en DB — se deriva
+// client-side para compat con `PopularCategories`.
+import { createClient } from "@/lib/supabase/client"
 
-// Define Category type to match PopularCategories
 export interface Category {
-  name: string;
-  image: string;
-  link: string;
+  id?: string
+  name: string
+  image: string
+  link: string
+  description?: string
 }
 
+type CategoryRow = { id: string; name: string; image: string | null; description: string | null }
 
-// CREATE category
-export async function createCategory(categoryData: Category){
-    const res = await fetch(`${BACKEND_URL}/api/categories`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(categoryData),
-    })
-    const data = await res.json()
-    return data
+function withLink(row: CategoryRow): Category {
+  return {
+    id: row.id,
+    name: row.name,
+    image: row.image ?? "",
+    description: row.description ?? undefined,
+    link: `/tours?cat=${encodeURIComponent(row.name)}`,
+  }
 }
 
-// READ categories
-export async function getCategories() {
-    const res = await fetch(`${BACKEND_URL}/api/categories`)
-    const data = await res.json()
-    return data
-}
-// READ category
-export async function getCategory(id:string) {
-    const res = await fetch(`${BACKEND_URL}/api/categories/${id}`)
-    const data = await res.json()
-    return data
+export async function getCategories(): Promise<Category[]> {
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("categories")
+    .select("id, name, image, description")
+    .order("name")
+  if (error) throw new Error(`getCategories: ${error.message}`)
+  return (data ?? []).map(withLink)
 }
 
-// UPDATE category
-export async function updateCategory(id: string, categoryData: Category){
-    const res = await fetch(`${BACKEND_URL}/api/categories/${id}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(categoryData),
-    })
-    return await res.json()
+export async function getCategory(id: string): Promise<Category | null> {
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("categories")
+    .select("id, name, image, description")
+    .eq("id", id)
+    .maybeSingle()
+  if (error) throw new Error(`getCategory: ${error.message}`)
+  return data ? withLink(data) : null
 }
 
-// DELETE category
-export async function deleteCategory(id: string){
-    const res = await fetch(`${BACKEND_URL}/api/categories/${id}`, {
-        method: 'DELETE',
-    })
-    const data = await res.json()
-    return data
+// CREATE/UPDATE/DELETE: RLS exige superadmin.
+export async function createCategory(input: Omit<Category, "id" | "link">): Promise<Category> {
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("categories")
+    .insert({ name: input.name, image: input.image, description: input.description } as never)
+    .select("id, name, image, description")
+    .single()
+  if (error) throw new Error(`createCategory: ${error.message}`)
+  return withLink(data)
+}
+
+export async function updateCategory(id: string, input: Partial<Category>): Promise<Category> {
+  const patch: Record<string, unknown> = {}
+  if (input.name !== undefined) patch.name = input.name
+  if (input.image !== undefined) patch.image = input.image
+  if (input.description !== undefined) patch.description = input.description
+  const sb = createClient()
+  const { data, error } = await sb
+    .from("categories")
+    .update(patch as never)
+    .eq("id", id)
+    .select("id, name, image, description")
+    .single()
+  if (error) throw new Error(`updateCategory: ${error.message}`)
+  return withLink(data)
+}
+
+export async function deleteCategory(id: string) {
+  const sb = createClient()
+  const { error } = await sb.from("categories").delete().eq("id", id)
+  if (error) throw new Error(`deleteCategory: ${error.message}`)
+  return { success: true }
 }

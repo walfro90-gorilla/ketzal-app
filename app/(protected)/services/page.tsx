@@ -12,7 +12,7 @@ import { Card } from "antd";
 export default async function Service() {
 
     // Use the correct Service type for services
-    const services: Array<Service> = await getServices();
+    const services = (await getServices()) as unknown as Service[];
     await getSuppliers();
 
     // Get the current session

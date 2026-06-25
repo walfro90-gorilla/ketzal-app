@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SupplierForm } from "./supplier-form"
 import { getSupplier } from "@/app/(protected)/suppliers/suppliers.api"
+import type { Supplier } from "@prisma/client"
 
 async function SuppliersNewPage({ params }: { params: Promise< { id: string }> }) {
 
@@ -20,7 +21,8 @@ async function SuppliersNewPage({ params }: { params: Promise< { id: string }> }
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <SupplierForm supplier={supplier} />
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <SupplierForm supplier={supplier as any} />
                 </CardContent>
             </Card>
         </div>

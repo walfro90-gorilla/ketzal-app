@@ -67,7 +67,8 @@ export default function ReviewSection({ serviceId, reviewsService, users, sessio
       
       setReviews([
         ...reviews,
-        created,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        created as any,
       ]);
       setComment("");
       setRating(5);

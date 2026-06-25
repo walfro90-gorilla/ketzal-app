@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 // API Service
 import { getService } from "@/app/(protected)/services/services.api";
 import { Row } from "antd";
+import { notFound } from "next/navigation";
 
 type Pack = {
     id: string;
@@ -19,7 +20,11 @@ async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }
 
     const { id } = await params
     const service = await getService(id)
-    
+
+    if (service && typeof service === 'object' && 'statusCode' in service) {
+        notFound()
+    }
+
     console.log(service)
 
     return (
@@ -43,7 +48,7 @@ async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }
                     <p>{service.description}</p>
                     <p> ${service.price}</p>
 
-                    {service.packs.data.map((pack: Pack) =>
+                    {((service.packs as any)?.data as Pack[])?.map((pack: Pack) =>
                         <Row key={pack.id}>
                             <div >
                                 <h1>{pack.name}</h1>
