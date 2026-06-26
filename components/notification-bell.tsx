@@ -21,6 +21,7 @@ import {
   type NotificationStats,
   NotificationType
 } from '@/app/api/notifications/notifications.api';
+import { createClient } from '@/lib/supabase/client';
 
 interface NotificationBellProps {
   userId: string;
@@ -108,6 +109,27 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
+
+  // Realtime: suscripcion a INSERT/UPDATE/DELETE en ketzal.notifications
+  // filtrados por user_id. Cada evento gatilla un refresh.
+  useEffect(() => {
+    if (!userId) return;
+    const sb = createClient();
+    const channel = sb
+      .channel(`notif:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'ketzal',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => { loadNotifications(); }
+      )
+      .subscribe();
+    return () => { sb.removeChannel(channel); };
+  }, [userId, loadNotifications]);
 
   // Función para obtener color según tipo de notificación
   const getNotificationColor = (type: string) => {
