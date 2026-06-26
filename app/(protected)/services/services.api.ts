@@ -92,6 +92,49 @@ type ServiceAliased = {
   reviews?: { rating: number }[]
 }
 
+// Shape completo de un service tras el aliasing PostgREST. Tipa los jsonb
+// con la forma esperada por los consumers (tours/[id]/page, service-form, etc).
+export interface ServiceFull {
+  id: string
+  supplierId: string | null
+  name: string
+  description: string | null
+  price: number
+  priceAxo: number | null
+  location: string | null
+  availableFrom: string | null
+  availableTo: string | null
+  createdAt: string
+  packs: { data?: { name: string; description?: string; price: number; qty: number }[] } | null
+  images: { imgBanner?: string; imgAlbum?: string[] } | null
+  cityFrom: string | null
+  cityTo: string | null
+  stateFrom: string | null
+  stateTo: string | null
+  serviceType: string | null
+  serviceCategory: string | null
+  ytLink: string | null
+  sizeTour: number | null
+  includes: string[] | null
+  excludes: string[] | null
+  faqs: { question: string; answer: string }[] | null
+  itinerary: {
+    id?: string
+    date: string
+    time: string
+    title: string
+    location: string
+    description: string
+  }[] | null
+  dates: unknown
+  addOns: unknown
+  seasonalPrices: unknown
+  transportProviderID: string | null
+  hotelProviderID: string | null
+  currentBookings: number
+  maxCapacity: number | null
+}
+
 // PostgREST aliasing: regresa los datos ya en camelCase.
 const SERVICE_SELECT =
   "id, supplierId:supplier_id, name, description, price, location," +
@@ -166,16 +209,17 @@ export async function getServicesWithReviews() {
   })
 }
 
-export async function getService(id: string) {
+export async function getService(
+  id: string
+): Promise<ServiceFull | { statusCode: number; message: string }> {
   const sb = createClient()
   const { data, error } = await sb
     .from("services")
     .select(SERVICE_SELECT)
     .eq("id", id)
     .maybeSingle()
-    .returns<ServiceAliased>()
+    .returns<ServiceFull>()
   if (error) {
-    // Compat con el código viejo: shape con `statusCode` cuando no se encontró.
     return { statusCode: 404, message: error.message }
   }
   return data ?? { statusCode: 404, message: "Service not found" }

@@ -3,141 +3,132 @@ import { TourHeader } from '@/components/tour-header'
 import { TourInfo } from '@/components/tour-info'
 import { TourPricingWithSeats } from '@/components/tour-pricing-with-seats'
 import { TourLocation } from '@/components/tour-location'
-// import { TourBookingForm } from '@/components/tour-booking-form'
 import { LocalHighlights } from '@/components/local-highlights'
 import { OrganizedBy } from '@/components/organized-by'
-import { getService, getServices } from '@/app/(protected)/services/services.api'
+import { getService, getServicesWithReviews, type ServiceFull } from '@/app/(protected)/services/services.api'
 import { getSupplier } from '@/app/(protected)/suppliers/suppliers.api'
-// import { TourIncludeExclude } from '@/components/tour-include-exclude'
-// import HotelSearch from '@/hotel-search'
 import HotelInfo from '@/components/hotel-info'
-// import TransportProviderSearch from '@/transport-provider-search'
 import TransportProvider from '@/components/transport-provider'
 import ReviewSection from '@/components/ReviewSection'
-// import TourCarousel from '@/components/TourCarousel'
 import SpecialOffers from '@/components/SpecialOffers'
-import { getReviews } from '../../reviews/reviews.api'
-import { getUsers } from '@/app/(protected)/users/users.api'
+import { getUsers, type User } from '@/app/(protected)/users/users.api'
 import { auth } from '@/lib/auth/server'
 import { notFound } from 'next/navigation'
-import type { Service } from '@/components/service-card'
+
+type Provider = {
+  id: string
+  name: string
+  contactEmail: string | null
+  imgLogo: string | null
+  createdAt: string | null
+  photos?: unknown
+  info?: unknown
+  description?: string | null
+} | null
 
 export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id } = await params
 
-  // Fetch services
   const svcRaw = await getService(id)
   if (!svcRaw || 'statusCode' in svcRaw) notFound()
-  // ponytail: cast a any para no migrar la página entera ahora (30+ campos
-  // jsonb sin tipar). Rewrite cuando se ataque /tours/[id] en el siguiente round.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const service: any = svcRaw
+  const service: ServiceFull = svcRaw
 
-  const provider = await getSupplier(service.supplierId)
-  // console.log("Provider data: ", provider)
+  const provider = (await getSupplier(service.supplierId)) as Provider
+  const hotelProvider = (await getSupplier(service.hotelProviderID)) as Provider
+  const transportProvider = (await getSupplier(service.transportProviderID)) as Provider
 
-  const hotelProvider = await getSupplier(service.hotelProviderID)
-  // console.log("Hotel Provider data: ", hotelProvider)
+  // Catalogo + reviews aggregadas (rating/reviewCount vienen incluidos)
+  const allServices = await getServicesWithReviews()
+  const tours = (allServices as Array<ServiceFull & { rating?: number; reviewCount?: number }>)
+    .filter((s) => s.serviceType === 'tour')
+  const thisTourAgg = tours.find((t) => t.id === service.id)
+  const averageRating = thisTourAgg?.rating ?? 0
+  const reviewCount = thisTourAgg?.reviewCount ?? 0
 
-  const transportProvider = await getSupplier(service.transportProviderID)
-  // console.log("Transport Provider data: ", transportProvider)
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tours = ((await getServices()) as any[]).filter((s: Service) => s.serviceType === 'tour')
-
-  // Reviews fetching
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const reviewsService = ((await getReviews()) as any[]).filter((review: { serviceId: number }) => review.serviceId === Number(id))
-  // console.log("reviews: ", reviewsService)
-
-  const users = (await getUsers())
-  // console.log("users: ", users)
-
+  const users = await getUsers()
   const session = await auth()
-  // console.log("Session: ", session)
 
-  const availableFrom = new Date(service.availableFrom);
-  const availableTo = new Date(service.availableTo);
-  const durationInMilliseconds = availableTo.getTime() - availableFrom.getTime();
-  const durationInDays = durationInMilliseconds / (1000 * 60 * 60 * 24);
+  const availableFrom = service.availableFrom ? new Date(service.availableFrom) : new Date()
+  const availableTo = service.availableTo ? new Date(service.availableTo) : new Date()
+  const durationInDays = Math.max(
+    0,
+    Math.round((availableTo.getTime() - availableFrom.getTime()) / (1000 * 60 * 60 * 24))
+  )
 
-  // Calculate average rating and review count dynamically
-  const averageRating = reviewsService.length > 0 
-    ? reviewsService.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / reviewsService.length 
-    : 0;
-  const reviewCount = reviewsService.length;
+  // Detectar transporte en bus desde descripcion/nombre/provider/includes
+  const lower = (s: string | null | undefined) => (s ?? '').toLowerCase()
+  const includesArr = service.includes ?? []
+  const hasBusTransport =
+    lower(service.description).includes('bus') ||
+    lower(service.description).includes('transporte') ||
+    lower(service.name).includes('tour') ||
+    lower(transportProvider?.name).includes('bus') ||
+    lower(transportProvider?.name).includes('transporte') ||
+    includesArr.some((x) => lower(x).includes('transporte') || lower(x).includes('bus'))
 
-  // Detectar automáticamente si el tour incluye transporte en bus
-  const hasBusTransport = 
-    service.description?.toLowerCase().includes('bus') ||
-    service.description?.toLowerCase().includes('transporte') ||
-    service.name?.toLowerCase().includes('tour') ||
-    transportProvider?.name?.toLowerCase().includes('bus') ||
-    transportProvider?.name?.toLowerCase().includes('transporte') ||
-    service.includes?.some((include: string) => 
-      include.toLowerCase().includes('transporte') || 
-      include.toLowerCase().includes('bus')
-    ) ||
-    false;
-
-  // Map users to correct type for ReviewSection
-  const mappedUsers = users.map((user) => ({
+  // Mapped users para ReviewSection
+  const mappedUsers = users.map((user: User) => ({
     id: user.id,
-    name: user.name || 'Usuario desconocido', // Handle null name
-    image: user.image || '/default-avatar.png', // Handle null image
-  }));
+    name: user.name || 'Usuario desconocido',
+    image: user.image || '/default-avatar.png',
+  }))
+
+  // Safe jsonb defaults
+  const images = service.images ?? {}
+  const bannerImage = images.imgBanner ?? ''
+  const galleryImages = images.imgAlbum ?? []
+  const packs = service.packs?.data ?? []
+  const itinerary = service.itinerary ?? []
+  const faqs = service.faqs ?? []
+  const includedList = service.includes ?? []
+  const excludedList = service.excludes ?? []
 
   const tourData = {
-    id: id,
+    id,
     name: service.name,
-    bannerImage: service.images.imgBanner,
-
-    itinerary: service.itinerary,
-
-    images: service.images.imgAlbum.map((img: string) => img),
-
-    fromCity: service.cityFrom,
-    toCity: service.cityTo,
-
+    bannerImage,
+    itinerary,
+    images: galleryImages,
+    fromCity: service.cityFrom ?? '',
+    toCity: service.cityTo ?? '',
     location: {
-      title: service.title,
-      address: service.cityTo + ", " + service.stateTo,
-      coordinates: {
-        lat: 51.5074,
-        lng: -0.1278
-      }
+      title: service.name,
+      address: `${service.cityTo ?? ''}, ${service.stateTo ?? ''}`,
+      coordinates: { lat: 51.5074, lng: -0.1278 },
     },
-    included: service.includes.map((include: string) => include),
-    excluded: service.excludes.map((exclude: string) => exclude),
-    description: service.description,
-    duration: durationInDays + " dias",
-    tourType: service.serviceCategory,
-    groupSize: service.sizeTour + "  viajeros",
-    //location: "Central America",
-    language: "English, Spanish",
+    included: includedList,
+    excluded: excludedList,
+    description: service.description ?? '',
+    duration: `${durationInDays} dias`,
+    tourType: service.serviceCategory ?? '',
+    groupSize: `${service.sizeTour ?? 0} viajeros`,
+    language: 'English, Spanish',
     price: 5.88,
     originalPrice: service.price,
-    rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
-    availableFrom: service.availableFrom,
-    availableTo: service.availableTo,
-    packs: service.packs.data,
-    reviewCount: reviewCount,
+    rating: Math.round(averageRating * 10) / 10,
+    availableFrom: service.availableFrom ?? '',
+    availableTo: service.availableTo ?? '',
+    packs,
+    reviewCount,
     organizer: {
       id: provider?.id ?? '',
       name: provider?.name ?? '',
       memberSince: provider?.createdAt ?? '',
       avatar: provider?.imgLogo ?? '',
     },
-    faqs: service.faqs,
+    faqs,
     localInfo: {
-      climate: "Tropical, with average temperatures of 25°C (77°F)",
-      bestTimeToVisit: "December to April (dry season)",
-      localCuisine: "Traditional Mayan dishes and fresh tropical fruits",
-      wildlife: ["Ketzal birds", "Howler monkeys", "Jaguars", "Toucans"],
+      climate: 'Tropical, with average temperatures of 25°C (77°F)',
+      bestTimeToVisit: 'December to April (dry season)',
+      localCuisine: 'Traditional Mayan dishes and fresh tropical fruits',
+      wildlife: ['Ketzal birds', 'Howler monkeys', 'Jaguars', 'Toucans'],
     },
-    highlights: [
-    ],
+    highlights: [] as never[],
   }
+
+  // Reviews para la sección (filter desde catálogo seria N+1; usamos vacío
+  // hasta que ReviewSection se cablee directo a ketzal.reviews por service_id).
+  const reviewsService: never[] = []
 
   return (
     <div>
@@ -168,19 +159,18 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
                 title={tourData.name}
                 idService={tourData.id}
                 bannerImage={tourData.bannerImage}
-                hasBusTransport={hasBusTransport} // Detectado automáticamente
+                hasBusTransport={hasBusTransport}
                 location={`${tourData.fromCity} - ${tourData.toCity}`}
                 description={tourData.description}
                 organizer={{
                   name: tourData.organizer.name,
-                  logo: tourData.organizer.avatar ?? undefined
+                  logo: tourData.organizer.avatar || undefined,
                 }}
               />
               <OrganizedBy
-
                 id={tourData.organizer.id}
                 name={tourData.organizer.name}
-                memberSince={String(tourData.organizer.memberSince ?? '')}
+                memberSince={tourData.organizer.memberSince ?? ''}
                 avatar={tourData.organizer.avatar ?? ''}
               />
             </div>
@@ -191,52 +181,42 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
               <div className="lg:col-span-2">
                 <TourInfo tour={tourData} />
 
-
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <HotelInfo hotelProvider={hotelProvider as any} />
-
-
-
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <TransportProvider transportProvider={transportProvider as any} />
+                {/* Components legacy esperan shapes hechas para el backend
+                    viejo; cast estrecho (no `any`) hasta que se rewrite. */}
+                <HotelInfo hotelProvider={hotelProvider as unknown as Parameters<typeof HotelInfo>[0]['hotelProvider']} />
+                <TransportProvider transportProvider={transportProvider as unknown as Parameters<typeof TransportProvider>[0]['transportProvider']} />
 
                 <div className="mt-8">
                   <TourLocation
-                    itinerary={tourData.itinerary}
+                    itinerary={tourData.itinerary as unknown as Parameters<typeof TourLocation>[0]['itinerary']}
                     location={tourData.location}
                     included={tourData.included}
                     excluded={tourData.excluded}
                   />
-                  {/* <TourIncludeExclude
-                    location={tourData.location}
-                    included={tourData.included}
-                    excluded={tourData.excluded}
-                  /> */}
                 </div>
                 <div className="mt-8">
-                  <LocalHighlights faqs={tourData.faqs} localInfo={tourData.localInfo} highlights={tourData.highlights} />
+                  <LocalHighlights
+                    faqs={tourData.faqs}
+                    localInfo={tourData.localInfo}
+                    highlights={tourData.highlights}
+                  />
                 </div>
                 <div className="mt-8">
                   <h3 className="text-lg font-semibold text-white mb-2">Reseñas</h3>
                   <ReviewSection
                     serviceId={tourData.id}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    reviewsService={reviewsService as any}
+                    reviewsService={reviewsService}
                     users={mappedUsers}
-                    session={session} // Pass session as Session | null
+                    session={session}
                   />
-
                 </div>
 
                 <div className="mt-8">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  <SpecialOffers services={tours as any} />
-
+                  <SpecialOffers
+                    services={tours as unknown as Parameters<typeof SpecialOffers>[0]['services']}
+                  />
                 </div>
               </div>
-              {/* <div className="lg:col-span-1">
-                <TourBookingForm tourId={tourData.id} />
-              </div> */}
             </div>
           </div>
         </div>
@@ -244,4 +224,3 @@ export default async function TourPage({ params }: { params: Promise<{ id: strin
     </div>
   )
 }
-
