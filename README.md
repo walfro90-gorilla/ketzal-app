@@ -8,9 +8,10 @@ _B2C donde turistas reservan tours, hospedaje y productos · operadores administ
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.11-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=000)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres-3ECF8E?logo=supabase&logoColor=fff)](https://supabase.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres%20%2B%20Realtime-3ECF8E?logo=supabase&logoColor=fff)](https://supabase.com/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=fff)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?logo=vercel)](https://vercel.com/)
+[![Backend](https://img.shields.io/badge/Backend-100%25%20Supabase-3ECF8E)](https://supabase.com/)
 
 </div>
 
@@ -40,10 +41,13 @@ Ketzal NO es un e‑commerce clásico. Tiene **tres piezas** que reemplazan/exti
 | Pieza | Qué hace |
 |---|---|
 | 🧭 **TravelPlanner** | Sustituye al carrito. Un usuario tiene múltiples planners (por viaje/destino), con estados `PLANNING → RESERVED → CONFIRMED → TRAVELLING → COMPLETED` |
-| 💰 **Wallet** | Saldo dual: **MXN** (pesos) + **AXO Coins** (moneda interna gamificada). 50 AXO de bienvenida en cada signup |
+| 💰 **Wallet** | Saldo dual: **MXN** (pesos) + **AXO Coins** (moneda interna gamificada). 50 AXO de bienvenida en cada signup. **5 RPCs `SECURITY DEFINER` + `SELECT FOR UPDATE`** garantizan operaciones atomicas anti-fraude |
 | 💖 **Wishlist** | Listas compartibles vía `share_code` + alertas de precio |
+| 🔔 **Notifications** | **Realtime via `supabase.channel`** — badge unread sin polling |
 
 Vive como **inquilino dedicado** dentro del Supabase compartido de **Gorilla‑Labs** (la oficina virtual de la casa matter), aprovechando el sistema de auth y la infra existente sin pisarse con la app de agencia ni con `tiendas`.
+
+🎯 **Refactor lvl 2 completo**: backend 100% Supabase, NextAuth retirado (shim compat), data layer migrado a supabase-js, wallet con RPCs transaccionales, notifications realtime.
 
 ---
 
@@ -246,13 +250,35 @@ erDiagram
 | `notification_type` | `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `SUPPLIER_APPROVAL`, `USER_REGISTRATION`, `WELCOME_BONUS`, `WELCOME_MESSAGE`, `BOOKING_UPDATE`, `SYSTEM_UPDATE` |
 | `notification_priority` | `LOW`, `NORMAL`, `HIGH`, `URGENT` |
 
-### 🧰 Helpers SQL en `ketzal`
+### 🧰 Funciones SQL en `ketzal`
+
+**Helpers RLS** (SECURITY DEFINER, evitan recursión):
 
 | Función | Devuelve | Para qué |
 |---|---|---|
-| `ketzal.is_superadmin()` | `boolean` | RLS check rápido en políticas (SECURITY DEFINER, evita recursión) |
+| `ketzal.is_superadmin()` | `boolean` | RLS check rápido en políticas |
 | `ketzal.my_supplier_id()` | `uuid` | El supplier que administra el usuario logueado |
 | `ketzal.set_updated_at()` | `trigger` | Mantiene `updated_at = now()` automático |
+
+**💰 Wallet RPCs** (SECURITY DEFINER + `SELECT FOR UPDATE` — única vía de mutar saldos):
+
+| RPC | Garantía |
+|---|---|
+| `wallet_ensure(p_user_id?)` | get-or-create idempotente |
+| `wallet_add_funds(mxn, axo, desc, ref?, type)` | deposita + log txn |
+| `wallet_purchase(mxn, axo, desc, ref?)` | valida saldo + descuenta |
+| `wallet_transfer(to_user, mxn, axo, desc, ref?)` | atomico + **lock determinista por user_id::text** (anti-deadlock cruzado) |
+| `wallet_convert(from_currency, amount, rate, desc?)` | MXN ↔ AXO |
+
+Todas retornan `jsonb {success, wallet?, message?, transactionId?}`.
+
+**🔔 Notification RPC** (anti self-spam):
+
+| RPC | Garantía |
+|---|---|
+| `notification_create_self(title, msg, type, priority, metadata?, action_url?)` | INSERT atado a `auth.uid()` — única vía de crear notification desde cliente |
+
+**📡 Realtime publication:** `ketzal.notifications` agregada a `supabase_realtime` → broadcast de INSERT/UPDATE/DELETE a clientes suscritos con `supabase.channel('notif:userId').on('postgres_changes', filter='user_id=eq.userId', ...)`.
 
 ### 🪝 Trigger compartido `public.handle_new_user`
 
@@ -301,17 +327,24 @@ sequenceDiagram
     F->>U: redirect /cuenta-sb
 ```
 
-### Páginas del flujo nuevo (Supabase, paralelo a NextAuth)
+### Páginas canónicas Supabase
 
 | Ruta | Componente |
 |---|---|
-| `/registro-sb` | [`SupabaseRegisterForm`](components/supabase-register-form.tsx) — signup con `app:'ketzal'` |
-| `/login-sb` | [`SupabaseLoginForm`](components/supabase-login-form.tsx) — password grant |
+| `/register` ó `/registro-sb` | [`SupabaseRegisterForm`](components/supabase-register-form.tsx) — signup con `app:'ketzal'` |
+| `/login` ó `/login-sb` | [`SupabaseLoginForm`](components/supabase-login-form.tsx) — password grant |
 | `/cuenta-sb` | Server component — `getKetzalUser()` muestra rol/email/AXO, logout |
 
-### NextAuth coexiste
+### NextAuth retirado ✅
 
-`/login`, `/register`, `/register-admin`, `/forgot-password`, `/reset-password` siguen con NextAuth + JWT hasta que el flujo Supabase esté 100% validado en producción. Plan de retirar NextAuth → [Roadmap](#️-roadmap).
+NextAuth removido por completo. Las viejas importaciones se redirigen a un **shim compat** en `lib/auth/` que mantiene la misma API pero usa Supabase Auth por debajo:
+
+| Antes | Ahora |
+|---|---|
+| `import { auth } from "@/auth"` | `import { auth } from "@/lib/auth/server"` |
+| `import { useSession, signOut } from "next-auth/react"` | `import { useSession, signOut } from "@/lib/auth/client"` |
+
+El shim devuelve la shape de NextAuth (`{user, accessToken, expires}`) enriqueciendo `auth.users` con datos de `ketzal.profiles` (role, supplierId). `useSession` suscribe a `onAuthStateChange` para refresh automático.
 
 ---
 
@@ -491,20 +524,26 @@ Producción en **Vercel**. Auto‑deploy desde `main`.
 
 > 🎯 **Estado actual**: DB + auth Supabase desplegados en prod. Web carga. Auth nuevo conviviendo con NextAuth.
 
-### 🔥 Siguiente fase — Refactor lvl 2
+### ✅ Refactor lvl 2 — completo
+
+| # | Item | Estado |
+|---|---|---|
+| 1 | **Data layer a supabase-js** (7 api.ts + consumers) | ✅ done |
+| 2 | **Retirar NextAuth** (shim compat + bulk swap + delete + drop deps) | ✅ done |
+| 3 | **RPCs wallet** (5 SECURITY DEFINER + SELECT FOR UPDATE) | ✅ done |
+| 4 | **Realtime notifications** (channel + RPC self-create) | ✅ done |
+| 5 | **Rewrite `/tours/[id]`** sin `as any` (ServiceFull tipado) | ✅ done |
+
+### 🔥 Pendiente — Refactor lvl 3
 
 | # | Item | Por qué | Impacto |
 |---|---|---|---|
-| 1 | **Retirar NextAuth** | Apuntar `/login` y `/register` a las páginas Supabase, dropear `next-auth`, `auth.ts`, `auth.config.ts`. Borra una capa entera. | Alto |
-| 2 | **Migrar `services.api`, `users.api`, `suppliers.api`, `reviews.api`** a supabase-js | Hoy apuntan al backend Railway **muerto**. Causa los warnings de CORS+404 que viste. | Alto |
-| 3 | **Migrar `/tours/[id]` (detalle)** | Página rica con 5 fetches al backend muerto. Necesita mapping de shapes (jsonb images, suppliers, reviews). | Medio‑Alto |
-| 4 | **Aggregations de reviews** | RPC en Supabase `service_rating(service_id) -> {avg, count}` para no calcular client‑side. | Medio |
-| 5 | **Wallet ops por backend** | RPCs en Supabase (`wallet_add_funds`, `wallet_transfer`, `wallet_purchase`) con `service_role`. Lock con `select for update`. | Alto |
-| 6 | **Realtime de notifications** | `supabase.channel('notifications').on('postgres_changes', ...)` para badge en vivo. | Medio |
-| 7 | **Suppliers self‑management** | Que un `admin` pueda editar SU supplier desde el dashboard. Hoy RLS permite, falta UI. | Medio |
-| 8 | **Email verification toggle** | Hoy está OFF en el proyecto (sesión inmediata). Para prod B2C, encender + manejar el callback. | Bajo |
-| 9 | **Rotar token Supabase** | El token de management quedó expuesto en chat (ya vencía 2026‑06‑26 — se rota igual). | Crítico (seguridad) |
-| 10 | **Cobertura tests** | Wallet ops, planner CRUD, notification flow, componentes UI con `@testing-library/react`. | Medio |
+| 1 | **Email confirmation toggle** | Hoy OFF en Supabase Dashboard (sesión inmediata). Para prod B2C, encender + callback handler. | Bajo |
+| 2 | **Rotar token Supabase** | El de management quedó expuesto en chat (ya expira 2026‑06‑26 — se rota igual). | Crítico (seguridad) |
+| 3 | **Suppliers self‑management** | Que un `admin` pueda editar SU supplier desde el dashboard. RLS permite, falta UI. | Medio |
+| 4 | **Rewrite componentes legacy** | `HotelInfo`, `TransportProvider`, `OrganizedBy`, `TourLocation` aún con shapes del backend viejo. Cast `as unknown as Parameters<...>` en `/tours/[id]` los disfraza. | Medio |
+| 5 | **Cobertura tests** | Wallet RPCs (con mock service_role), realtime, planners flow, UI components con `@testing-library/react`. | Medio |
+| 6 | **Service worker / PWA** | Push notifications mobile vía service worker + realtime. | Bajo |
 
 ### 🌱 Fase futura — Producto
 
@@ -519,11 +558,16 @@ Producción en **Vercel**. Auto‑deploy desde `main`.
 
 - **Mutaciones → Server Actions** en `actions/*.ts` o `lib/supabase/auth-actions.ts` con `"use server"`. API Routes solo para integraciones (uploads, webhooks).
 - **Cliente Supabase**: importar de `@/lib/supabase/client` (browser) o `@/lib/supabase/server` (SSR/Server Actions).
+- **Auth shim**: importar de `@/lib/auth/server` (server) o `@/lib/auth/client` (client). API NextAuth-compat sobre Supabase.
 - **Cliente Prisma (legacy)**: `@/lib/db` singleton. **En retiro** — preferir supabase-js para código nuevo.
 - **Validación**: Zod en [lib/zod.ts](lib/zod.ts). Phone se normaliza a dígitos E.164 (10‑15) automáticamente.
+- **PostgREST aliasing**: usar `select('aliasJS:column_db, ...')` para devolver camelCase. Combinar con `.returns<T>()` para que supabase-js infiera tipos.
+- **Casts `as never`**: en `.insert(row)` / `.update(patch)` para puentear Database type genérico cuando se usa Record<string, unknown>.
+- **Boundary casts**: usar `as unknown as Parameters<typeof Comp>[0]['prop']` (estrecho, autodocumentado) en vez de `as any`. Marca explícitamente la deuda hasta rewrite.
 - **Imágenes**: Cloudinary vía `lib/cloudinary.ts`; mostrar con `<OptimizedImage>` / `<CloudinaryImage>`.
-- **Notificaciones**: backend usa `service_role` (RLS bypass) para insertar; cliente solo lee + marca como leída.
-- **Naming en `ketzal.*`**: snake_case (alineado con la plataforma). camelCase en código TS donde el mapeo es necesario.
+- **Notificaciones**: cliente crea via RPC `notification_create_self` (auto-spam protection). Lee/marca/borra con RLS directo.
+- **Wallet**: cliente lee con RLS. Mutaciones solo via RPCs `wallet_*` (SECURITY DEFINER + SELECT FOR UPDATE).
+- **Naming en `ketzal.*`**: snake_case (alineado con la plataforma). camelCase en código TS via PostgREST aliasing.
 - **Comentarios `ponytail:`**: marcan simplificaciones deliberadas con su camino de upgrade. Respetarlos.
 
 ---
